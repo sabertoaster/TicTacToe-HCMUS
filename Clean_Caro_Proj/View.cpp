@@ -281,7 +281,7 @@ void SceneHandle(string sceneName) {
 		StartMenu();
 	}
 	if (sceneName == "PLAY") {
-		StartMenu();
+		StartPlay();
 	}
 	if (sceneName == "LOAD") {
 		StartMenu();

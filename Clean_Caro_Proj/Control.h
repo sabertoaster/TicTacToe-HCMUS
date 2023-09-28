@@ -8,7 +8,7 @@
 using namespace std;
 // [Direct the pointer]
 
-class Pointer {
+struct Pointer {
 public:
 	COORD coord;
 	int id = 0;
@@ -25,6 +25,8 @@ void GotoXY(int x, int y);
 void InitializeData();
 
 void StartGame();
+
+void StartPlay();
 
 void StartExit();
 

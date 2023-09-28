@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-class Button {
+struct Button {
 public:
 	Button(const wchar_t* btnName) {
 		nameLength = static_cast<int>(wcslen(btnName)); // cast to int type from size_t
@@ -59,7 +59,8 @@ int getColor(color bgColor, color fontColor);
 void changeFontColor(color backgroundColor, color fontColor);
 
 // [Pen simulator]
-class Visualizer {
+struct Visualizer {
+public:
 	const wchar_t* mainLogo[6] = { L"  █████╗ █████╗ ██████╗  ██████╗", L"██╔════╝██╔══██╗██╔══██╗██╔═══██╗", L"██║     ███████║██████╔╝██║   ██║", L"██║     ██╔══██║██╔══██╗██║   ██║",L"╚██████╗██║  ██║██║  ██║╚██████╔╝", L" ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝" };
 	const wchar_t* playButtonSmall[3] = { L"╔══════╗", L"║ Play ║", L"╚══════╝" };
 	const wchar_t* loadButtonSmall[3] = { L"╔══════╗", L"║ Load ║", L"╚══════╝" };
@@ -70,8 +71,7 @@ class Visualizer {
 	const wchar_t* fullBlock = L"█";
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
 	HANDLE hConsoleOutput = GetStdHandle(STD_OUTPUT_HANDLE);
-	
-public:
+
 
 	vector<Button> buttons;
 	Visualizer() {

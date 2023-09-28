@@ -79,6 +79,10 @@ void StartGame() {
 	StartMenu();
 }
 
+void StartPlay() {
+
+}
+
 void StartExit() {
 	exit(0);
 }
