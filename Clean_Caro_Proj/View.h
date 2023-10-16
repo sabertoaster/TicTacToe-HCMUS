@@ -62,6 +62,7 @@ void changeFontColor(color backgroundColor, color fontColor);
 struct Visualizer {
 public:
 	const wchar_t* mainLogo[6] = { L"  █████╗ █████╗ ██████╗  ██████╗", L"██╔════╝██╔══██╗██╔══██╗██╔═══██╗", L"██║     ███████║██████╔╝██║   ██║", L"██║     ██╔══██║██╔══██╗██║   ██║",L"╚██████╗██║  ██║██║  ██║╚██████╔╝", L" ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝" };
+	const wchar_t* aboutLogo[6] = { L" █████╗ ██████╗  ██████╗ ██╗   ██╗████████╗", L"██╔══██╗██╔══██╗██╔═══██╗██║   ██║╚══██╔══╝", L"███████║██████╔╝██║   ██║██║   ██║   ██║   ", L"██╔══██║██╔══██╗██║   ██║██║   ██║   ██║   ", L"██║  ██║██████╔╝╚██████╔╝╚██████╔╝   ██║   ", L"╚═╝  ╚═╝╚═════╝  ╚═════╝  ╚═════╝    ╚═╝   " };
 	const wchar_t* playButtonSmall[3] = { L"╔══════╗", L"║ Play ║", L"╚══════╝" };
 	const wchar_t* loadButtonSmall[3] = { L"╔══════╗", L"║ Load ║", L"╚══════╝" };
 	const wchar_t* helpButtonSmall[3] = { L"╔══════╗", L"║ Help ║", L"╚══════╝" };
@@ -78,11 +79,15 @@ public:
 		GetConsoleScreenBufferInfo(hConsoleOutput, &csbi); // initialize value to csbi when create class instance
 	}
 
-	void printMainLogo();
+	void printLogo(string str);
 	void printBackground(int width, int height);
+	void printMenuBorder();
 	void printBorder();
+	void printPlayerFrame();
 	void printBackgroundAnimation(int index, int coorX, int coorY);
 	void printButton();
+
+	void printBoardCanvas(int numCell);
 };
 
 extern Visualizer visualizer;

@@ -141,10 +141,12 @@
   <ItemGroup>
     <ClCompile Include="Clean_Caro_Proj.cpp" />
     <ClCompile Include="Control.cpp" />
+    <ClCompile Include="Model.cpp" />
     <ClCompile Include="View.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Control.h" />
+    <ClInclude Include="Model.h" />
     <ClInclude Include="View.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

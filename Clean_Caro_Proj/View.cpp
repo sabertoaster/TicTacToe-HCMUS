@@ -15,7 +15,7 @@ void FixConsoleWindow()
 	style = style & ~(WS_MAXIMIZEBOX) & ~(WS_THICKFRAME);
 	SetWindowLong(consoleWindow, GWL_STYLE, style);
 
-	ModifyConsoleSize(120, 40);
+	ModifyConsoleSize(170, 40);
 	// [REMOVE THE SCROLL BAR]
 	// get handle to the console window
 	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -86,20 +86,28 @@ void changeFontColor(color backgroundColor, color fontColor) {
 }
 
 enum objID {
-	mainLogo,
+	main_Logo,
+	about_Logo,
 	button,
 	background,
 	boardCanvas,
+	border,
+	playerFrame,
 	xMark,
 	oMark
 };
 objID string_hash(string const& inString) {
-	if (inString == "Main_Logo") return mainLogo;
+	if (inString == "Main_Logo") return main_Logo;
+	if (inString == "About_Logo") return about_Logo;
 	if (inString == "Button") return button;
 	if (inString == "Background") return background;
+	if (inString == "Border") return border;
+	if (inString == "BoardCanvas") return boardCanvas;
+	if (inString == "PlayerFrame") return playerFrame;
 }
 
 void Button::printButton() {
+	_setmode(_fileno(stdout), _O_U16TEXT);
 	/*top layer*/
 	GotoXY(coord.X, coord.Y);
 	wcout << L"╔═";
@@ -121,6 +129,7 @@ void Button::printButton() {
 		wcout << L"═";
 	}
 	wcout << L"═╝";
+	_setmode(_fileno(stdout), _O_TEXT);
 }
 void Button::playScene() {
 	wstring ws(buttonName);
@@ -130,12 +139,26 @@ void Button::playScene() {
 
 
 // [define visualizer func]
-void Visualizer::printMainLogo() {
+void Visualizer::printLogo(string str) {
 	COORD currentCoord = GetConsoleCursorPosition();
-	for (int i = 0; i < sizeof(mainLogo) / sizeof(mainLogo[0]); i++) {
-		wcout << mainLogo[i];
-		GotoXY(currentCoord.X, currentCoord.Y + 1);
-		currentCoord.Y++; //update the new pointer coordinate
+	switch (string_hash(str))
+	{
+	case main_Logo:
+		for (int i = 0; i < sizeof(mainLogo) / sizeof(mainLogo[0]); i++) {
+			wcout << mainLogo[i];
+			GotoXY(currentCoord.X, currentCoord.Y + 1);
+			currentCoord.Y++; //update the new pointer coordinate
+		}
+		break;
+	case about_Logo:
+		for (int i = 0; i < sizeof(aboutLogo) / sizeof(aboutLogo[0]); i++) {
+			wcout << aboutLogo[i];
+			GotoXY(currentCoord.X, currentCoord.Y + 1);
+			currentCoord.Y++; //update the new pointer coordinate
+		}
+		break;
+	default:
+		break;
 	}
 }
 void Visualizer::printBackground(int width, int height) {
@@ -148,19 +171,20 @@ void Visualizer::printBackground(int width, int height) {
 		}
 	}
 	SetConsoleTextAttribute(hConsoleOutput, 240); // 240 for black font white background
-	printBorder();
+
 }
-void Visualizer::printBorder() {//hard-code [saber]
+void Visualizer::printMenuBorder() {//hard-code [saber]
+	_setmode(_fileno(stdout), _O_U16TEXT);
 	GotoXY(0, 0);
 	wcout << L"╔";
-	for (int i = 1; i <= 41; i++) {
+	for (int i = 1; i <= 66; i++) {
 		GotoXY(i, 0);
 		wcout << L"═";
 	}
 	wcout << L"╗";
-	GotoXY(76, 0);
+	GotoXY(101, 0);
 	wcout << L"╔";
-	for (int i = 77; i <= 118; i++) {
+	for (int i = 102; i <= 168; i++) {
 		GotoXY(i, 0);
 		wcout << L"═";
 	}
@@ -168,68 +192,97 @@ void Visualizer::printBorder() {//hard-code [saber]
 
 	GotoXY(0, 1);
 	wcout << L"║";
-	GotoXY(41, 1);
+	GotoXY(66, 1);
 	wcout << L"╔";
-	GotoXY(42, 1);
+	GotoXY(67, 1);
 	wcout << L"╝";
-	GotoXY(76, 1);
+	GotoXY(101, 1);
 	wcout << L"╚";
-	GotoXY(77, 1);
+	GotoXY(102, 1);
 	wcout << L"╗";
-	GotoXY(119, 1);
+	GotoXY(169, 1);
 	wcout << L"║";
 
 	for (int i = 2; i <= 5; i++) {
 		GotoXY(0, i);
 		wcout << L"║";
-		GotoXY(41, i);
+		GotoXY(66, i);
 		wcout << L"║";
-		GotoXY(77, i);
+		GotoXY(102, i);
 		wcout << L"║";
-		GotoXY(119, i);
+		GotoXY(169, i);
 		wcout << L"║";
 	}
 
 	GotoXY(0, 6);
 	wcout << L"║";
-	GotoXY(41, 6);
+	GotoXY(66, 6);
 	wcout << L"╚";
-	GotoXY(42, 6);
+	GotoXY(67, 6);
 	wcout << L"╗";
-	GotoXY(76, 6);
+	GotoXY(101, 6);
 	wcout << L"╔";
-	GotoXY(77, 6);
+	GotoXY(102, 6);
 	wcout << L"╝";
-	GotoXY(119, 6);
+	GotoXY(169, 6);
 	wcout << L"║";
 
 	GotoXY(0, 7);
 	wcout << L"║";
-	GotoXY(42, 7);
+	GotoXY(67, 7);
 	wcout << L"╚";
-	for (int i = 43; i <= 75; i++) {
+	for (int i = 68; i <= 100; i++) {
 		GotoXY(i, 7);
 		wcout << L"═";
 	}
-	GotoXY(76, 7);
+	GotoXY(101, 7);
 	wcout << L"╝";
-	GotoXY(119, 7);
+	GotoXY(169, 7);
 	wcout << L"║";
 
 	for (int i = 8; i <= 38; i++) {
 		GotoXY(0, i);
 		wcout << L"║";
-		GotoXY(119, i);
+		GotoXY(169, i);
 		wcout << L"║";
 	}
 
 	GotoXY(0, 39);
 	wcout << L"╚";
-	for (int i = 1; i <= 118; i++) {
+	for (int i = 1; i <= 168; i++) {
 		GotoXY(i, 39);
 		wcout << L"═";
 	}
 	wcout << L"╝";
+	_setmode(_fileno(stdout), _O_TEXT);
+}
+void Visualizer::printBorder() {
+	GotoXY(0, 0);
+	wcout << L"╔";
+	for (int i = 1; i <= 168; i++) {
+		GotoXY(i, 0);
+		wcout << L"═";
+	}
+	wcout << L"╗";
+	for (int i = 1; i <= 38; i++) {
+		GotoXY(0, i);
+		wcout << L"║";
+		GotoXY(169, i);
+		wcout << L"║";
+	}
+
+	GotoXY(0, 39);
+	wcout << L"╚";
+	for (int i = 1; i <= 168; i++) {
+		GotoXY(i, 39);
+		wcout << L"═";
+	}
+	wcout << L"╝";
+}
+void Visualizer::printPlayerFrame() {
+	_setmode(_fileno(stdout), _O_U16TEXT);
+	wcout << L"┏";
+	_setmode(_fileno(stdout), _O_TEXT);
 }
 void Visualizer::printBackgroundAnimation(int index, int coorX, int coorY) {
 	GotoXY(coorX, coorY);
@@ -248,20 +301,64 @@ void Visualizer::printButton() { //[saber]
 	}
 }
 
+void Visualizer::printBoardCanvas(int numCell) {
+
+	COORD currentCoord = GetConsoleCursorPosition();
+	_setmode(_fileno(stdout), _O_U16TEXT); // Chuyển sang UTF-16 để có khả năng in ra kí hiệu unicode
+	GotoXY(currentCoord.X, currentCoord.Y); wcout << L"╔";
+	GotoXY(currentCoord.X + 4 * numCell, currentCoord.Y); wcout << L"╗";
+	GotoXY(currentCoord.X, currentCoord.Y + 2 * numCell); wcout << L"╚";
+	GotoXY(currentCoord.X + 4 * numCell, currentCoord.Y + 2 * numCell); wcout << L"╝";
+	for (int i = 0; i <= numCell - 1; i++) {
+		for (int j = 0; j <= numCell; j++) {
+			GotoXY(currentCoord.X + 1 + 4 * i, currentCoord.Y + 2 * j); wcout << L"═══";
+		}
+	}
+	for (int i = 0; i <= numCell; i++) {
+		for (int j = 0; j <= numCell - 1; j++) {
+			GotoXY(currentCoord.X + 4 * i, currentCoord.Y + 1 + 2 * j); wcout << L"║";
+		}
+	}
+	for (int i = 0; i < numCell - 1; i++) {
+		for (int j = 1; j < numCell; j++) {
+			GotoXY(currentCoord.X + 4 + 4 * i, currentCoord.Y + 2 * j); wcout << L"╬";
+		}
+	}
+	for (int i = 1; i < numCell; i++) {
+		GotoXY(currentCoord.X + 4 * i, currentCoord.Y + 2 * numCell); wcout << L"╩";
+		GotoXY(currentCoord.X + 4 * i, currentCoord.Y); wcout << L"╦";
+		GotoXY(currentCoord.X, currentCoord.Y + 2 * i); wcout << L"╠";
+		GotoXY(currentCoord.X + 4 * numCell, currentCoord.Y + 2 * i); wcout << L"╣";
+	}
+	_setmode(_fileno(stdout), _O_TEXT);
+}
+
 Visualizer visualizer;
 
 void DrawObject(string objName) {
 	_setmode(_fileno(stdout), _O_U16TEXT);//set to UTF16 text cout
 	switch (string_hash(objName))
 	{
-	case mainLogo:
-		visualizer.printMainLogo();
+	case main_Logo:
+		visualizer.printLogo("Main_Logo");
+		break;
+	case about_Logo:
+		visualizer.printLogo("About_Logo");
 		break;
 	case button:
 		visualizer.printButton();
 		break;
 	case background:
-		visualizer.printBackground(120, 40);
+		visualizer.printBackground(170, 40);
+		break;
+	case boardCanvas:
+		visualizer.printBoardCanvas(16);
+		break;
+	case border:
+		visualizer.printBorder();
+		break;
+	case playerFrame:
+		visualizer.printPlayerFrame();
 		break;
 	default:
 		break;
@@ -279,24 +376,39 @@ void DrawObject(string objName) {
 void SceneHandle(string sceneName) {
 	if (sceneName == "MAIN MENU") {
 		StartMenu();
+		return;
 	}
 	if (sceneName == "PLAY") {
 		StartPlay();
+		return;
 	}
 	if (sceneName == "LOAD") {
 		StartMenu();
+		return;
 	}
 	if (sceneName == "OPTIONS") {
 		StartMenu();
+		return;
 	}
 	if (sceneName == "HELP") {
-		StartMenu();
+		StartHelp();
+		return;
 	}
 	if (sceneName == "ABOUT") {
-		StartMenu();
+		StartAbout();
+		return;
 	}
 	if (sceneName == "EXIT") {
 		StartExit();
+		return;
+	}
+	if (sceneName == "PLAYER VERSUS COMPUTER") {
+		StartMatchScene("PVE");
+		return;
+	}
+	if (sceneName == "PLAYER VERSUS PLAYER") {
+		StartMatchScene("PVP");
+		return;
 	}
 }
 

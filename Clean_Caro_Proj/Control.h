@@ -13,9 +13,9 @@ public:
 	COORD coord;
 	int id = 0;
 	vector<Button> ptrBtnList; // [Main menu buttons list]
-	void startMenu(string cmd);
-	void initPtrBtnList();
-	void checkEnter();
+	vector<Button> ptrChoosePlayer; // [Choose CPU/ Player buttons list]
+	void startIndexing(string cmd, vector<Button> ptrTemp);
+	void checkEnter(string str);
 }; 
 
 
@@ -30,4 +30,10 @@ void StartPlay();
 
 void StartExit();
 
+void StartMatchScene(string typeMatch);
+
 void StartMenu();
+
+void StartHelp();
+
+void StartAbout();
