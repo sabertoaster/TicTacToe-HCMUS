@@ -12,8 +12,8 @@ struct Pointer {
 public:
 	COORD coord;
 	int id = 0;
-	vector<Button> ptrBtnList; // [Main menu buttons list]
-	vector<Button> ptrChoosePlayer; // [Choose CPU/ Player buttons list]
+	vector<Button> ptrChoosePlayer = {}; // [Choose CPU/ Player buttons list]
+	vector<Button> ptrBtnList = {}; // [Main menu buttons list]
 	void startIndexing(string cmd, vector<Button> ptrTemp);
 	void checkEnter(string str);
 }; 

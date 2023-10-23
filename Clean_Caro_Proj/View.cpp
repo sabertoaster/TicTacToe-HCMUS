@@ -96,6 +96,8 @@ enum objID {
 	xMark,
 	oMark
 };
+
+
 objID string_hash(string const& inString) {
 	if (inString == "Main_Logo") return main_Logo;
 	if (inString == "About_Logo") return about_Logo;

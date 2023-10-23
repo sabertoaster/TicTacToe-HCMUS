@@ -44,6 +44,7 @@ public:
 	//next scene operations [saber]
 };
 
+
 #include "Control.h"
 
 using namespace std;
@@ -63,10 +64,6 @@ struct Visualizer {
 public:
 	const wchar_t* mainLogo[6] = { L"  █████╗ █████╗ ██████╗  ██████╗", L"██╔════╝██╔══██╗██╔══██╗██╔═══██╗", L"██║     ███████║██████╔╝██║   ██║", L"██║     ██╔══██║██╔══██╗██║   ██║",L"╚██████╗██║  ██║██║  ██║╚██████╔╝", L" ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝" };
 	const wchar_t* aboutLogo[6] = { L" █████╗ ██████╗  ██████╗ ██╗   ██╗████████╗", L"██╔══██╗██╔══██╗██╔═══██╗██║   ██║╚══██╔══╝", L"███████║██████╔╝██║   ██║██║   ██║   ██║   ", L"██╔══██║██╔══██╗██║   ██║██║   ██║   ██║   ", L"██║  ██║██████╔╝╚██████╔╝╚██████╔╝   ██║   ", L"╚═╝  ╚═╝╚═════╝  ╚═════╝  ╚═════╝    ╚═╝   " };
-	const wchar_t* playButtonSmall[3] = { L"╔══════╗", L"║ Play ║", L"╚══════╝" };
-	const wchar_t* loadButtonSmall[3] = { L"╔══════╗", L"║ Load ║", L"╚══════╝" };
-	const wchar_t* helpButtonSmall[3] = { L"╔══════╗", L"║ Help ║", L"╚══════╝" };
-	const wchar_t* exitButtonSmall[3] = { L"╔══════╗", L"║ Exit ║", L"╚══════╝" };
 	const wchar_t* big_x[5] = { L"O))   O))", L"  O) O)) ", L"   O)    ", L" O)  O)) ", L"O))   O))" };
 	const wchar_t* big_o[5] = { L"   O))    ", L" O))  O)) ", L"O))    O))", L" O))  O)) ", L"   O))    " };
 	const wchar_t* fullBlock = L"█";

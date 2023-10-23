@@ -53,42 +53,40 @@ void InitializeData() {
 	Button exitBtn(L"EXIT");
 	playBtn.coord.X = 80;
 	playBtn.coord.Y = 10;
-	visualizer.buttons = { playBtn, loadBtn, optionBtn, helpBtn, aboutBtn, exitBtn };
-	for (int i = 0; i < visualizer.buttons.size(); i++) {
-		visualizer.buttons[i].id = i;
-		if (i == visualizer.buttons.size() - 1) {
-			visualizer.buttons[i].coord.X = visualizer.buttons[i - 1].coord.X;
-			visualizer.buttons[i].coord.Y = visualizer.buttons[i - 1].coord.Y + 5;
-			visualizer.buttons[i].nextBtn = &(visualizer.buttons[0]);
-			visualizer.buttons[i].prevBtn = &(visualizer.buttons[i - 1]);
-			continue;
-		}
-		if (i == 0) {
-			visualizer.buttons[i].nextBtn = &(visualizer.buttons[i + 1]);
-			visualizer.buttons[i].prevBtn = &(visualizer.buttons[visualizer.buttons.size() - 1]);
-			continue;
-		}
-		visualizer.buttons[i].coord.X = visualizer.buttons[i - 1].coord.X;
-		visualizer.buttons[i].coord.Y = visualizer.buttons[i - 1].coord.Y + 5; // offset for visualizer.buttons
-		visualizer.buttons[i].prevBtn = &(visualizer.buttons[i - 1]);
-		visualizer.buttons[i].nextBtn = &(visualizer.buttons[i + 1]);
+	int offset = 5;
+	vector<Button> temp = { playBtn, loadBtn, optionBtn, helpBtn, aboutBtn, exitBtn };
+	for (int i = 0; i < temp.size(); i++) { // [FIXED REMOVE BUTTONS FROM VISUALIZER
+		temp[i].id = i;
+
+		int nextIndex = (i + 1) % temp.size();
+
+		temp[i].coord.X = temp[0].coord.X;
+		temp[i].coord.Y = temp[0].coord.Y + offset * i;
+
+		temp[i].nextBtn = &(temp[nextIndex]);
+		temp[nextIndex].prevBtn = &(temp[i]);
 	}
-	pointer.ptrBtnList = visualizer.buttons; // initialize buttons for main menu
+	pointer.ptrBtnList = temp; // initialize buttons for main menu
 
-
+	temp.clear();
 	Button chooseCPUBtn(L"PLAYER VERSUS COMPUTER"); // define buttons for choose CPU/ player scene
 	Button choosePlayerBtn(L"PLAYER VERSUS PLAYER");
 	chooseCPUBtn.coord.X = 80;
 	chooseCPUBtn.coord.Y = 10;
-	chooseCPUBtn.nextBtn = &(choosePlayerBtn);
-	chooseCPUBtn.prevBtn = &(choosePlayerBtn);
-	chooseCPUBtn.id = 0;
-	choosePlayerBtn.nextBtn = &(chooseCPUBtn);
-	choosePlayerBtn.prevBtn = &(chooseCPUBtn);
-	choosePlayerBtn.coord.X = chooseCPUBtn.coord.X;
-	choosePlayerBtn.coord.Y = chooseCPUBtn.coord.Y + 12;
-	choosePlayerBtn.id = 1;
-	pointer.ptrChoosePlayer = { chooseCPUBtn, choosePlayerBtn };
+	offset = 15;
+	temp = { chooseCPUBtn, choosePlayerBtn };
+	for (int i = 0; i < temp.size(); i++) { // [FIXED REMOVE BUTTONS FROM VISUALIZER
+		temp[i].id = i;
+
+		int nextIndex = (i + 1) % temp.size();
+
+		temp[i].coord.X = temp[0].coord.X;
+		temp[i].coord.Y = temp[0].coord.Y + offset * i;
+
+		temp[i].nextBtn = &(temp[nextIndex]);
+		temp[nextIndex].prevBtn = &(temp[i]);
+	}
+	pointer.ptrChoosePlayer = temp;
 }
 
 void StartGame() {
@@ -107,8 +105,7 @@ void StartPlay() {
 	for (auto i : pointer.ptrChoosePlayer) { //Visualize Btn;
 		i.printButton();
 	}
-	pointer.ptrChoosePlayer[0].nextBtn = pointer.ptrChoosePlayer[0].prevBtn = &(pointer.ptrChoosePlayer[1]);
-	pointer.ptrChoosePlayer[1].nextBtn = pointer.ptrChoosePlayer[1].prevBtn = &(pointer.ptrChoosePlayer[0]);
+	
 	pointer.startIndexing("", pointer.ptrChoosePlayer);
 	bool _checkNotEnter = true;
 	while (_checkNotEnter)
@@ -119,14 +116,10 @@ void StartPlay() {
 			switch (_getch())
 			{
 			case 'a':
-				pointer.startIndexing("prev", pointer.ptrChoosePlayer);
-				break;
 			case 'w':
 				pointer.startIndexing("prev", pointer.ptrChoosePlayer);
 				break;
 			case 's':
-				pointer.startIndexing("next", pointer.ptrChoosePlayer);
-				break;
 			case 'd':
 				pointer.startIndexing("next", pointer.ptrChoosePlayer);
 				break;
@@ -161,7 +154,12 @@ void StartMenu() {
 	visualizer.printMenuBorder(); // [temporary]
 	GotoXY(68, 1);
 	DrawObject("Main_Logo");
-	DrawObject("Button");
+
+	for (auto i : pointer.ptrBtnList) { //Visualize Btn;
+		i.printButton();
+	}
+	pointer.ptrChoosePlayer[0].nextBtn = pointer.ptrChoosePlayer[0].prevBtn = &(pointer.ptrChoosePlayer[1]);
+	pointer.ptrChoosePlayer[1].nextBtn = pointer.ptrChoosePlayer[1].prevBtn = &(pointer.ptrChoosePlayer[0]);
 	pointer.startIndexing("", pointer.ptrBtnList);
 	bool _checkNotEnter = true;
 	while (_checkNotEnter)
@@ -185,18 +183,14 @@ void StartMenu() {
 
 		if (_kbhit())
 		{
-			COORD currentCoord = GetConsoleCursorPosition(); // get current (x,y)
+			COORD currentCoord = GetConsoleCursorPosition(); // get current (x,y) [delete]
 			switch (_getch())
 			{
 			case 'a':
-				pointer.startIndexing("prev", pointer.ptrBtnList);
-				break;
 			case 'w':
 				pointer.startIndexing("prev", pointer.ptrBtnList);
 				break;
 			case 's':
-				pointer.startIndexing("next", pointer.ptrBtnList);
-				break;
 			case 'd':
 				pointer.startIndexing("next", pointer.ptrBtnList);
 				break;
@@ -261,13 +255,13 @@ void StartAbout() {
 	tableCoord.Y = 10;
 	GotoXY(tableCoord.X, tableCoord.Y);
 	cout << "Bring to you by the 2nd group 23TNT1 - Advisor: Truong Toan Thinh" << endl;
-	GotoXY(tableCoord.X, tableCoord.Y+1);
+	GotoXY(tableCoord.X, tableCoord.Y + 1);
 	cout << "23122008 - Mai Duc Minh Huy" << endl;
-	GotoXY(tableCoord.X, tableCoord.Y+2);
+	GotoXY(tableCoord.X, tableCoord.Y + 2);
 	cout << "23122033 - Mai Duc Minh Huy" << endl;
-	GotoXY(tableCoord.X, tableCoord.Y+3);
+	GotoXY(tableCoord.X, tableCoord.Y + 3);
 	cout << "23122036 - Mai Duc Minh Huy" << endl;
-	GotoXY(tableCoord.X, tableCoord.Y+4);
+	GotoXY(tableCoord.X, tableCoord.Y + 4);
 	cout << "23122039 - Mai Duc Minh Huy" << endl;
 
 	bool _checkNotEnter = true;
