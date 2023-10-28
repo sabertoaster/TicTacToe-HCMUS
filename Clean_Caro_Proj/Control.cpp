@@ -29,9 +29,13 @@ void Pointer::checkEnter(string str) {
 		_getch();
 		return;
 	}
+	if (str == "AfterPlay") {
+		ptrAfterPlay[id].playScene();
+		_getch();
+		return;
+	}
 }
 Pointer pointer;
-
 void GotoXY(int x, int y)
 {
 	COORD coord;
@@ -45,6 +49,7 @@ void InitializeData() {
 	// initialize data for things like buttons, save games, about text, help documention, options
 
 	// [initialize buttons]
+	Button menuBtn(L"MAIN MENU");
 	Button playBtn(L"PLAY");
 	Button loadBtn(L"LOAD");
 	Button optionBtn(L"OPTIONS");
@@ -54,46 +59,59 @@ void InitializeData() {
 	playBtn.coord.X = 80;
 	playBtn.coord.Y = 10;
 	int offset = 5;
-	vector<Button> temp = { playBtn, loadBtn, optionBtn, helpBtn, aboutBtn, exitBtn };
-	for (int i = 0; i < temp.size(); i++) { // [FIXED REMOVE BUTTONS FROM VISUALIZER
-		temp[i].id = i;
+	pointer.ptrBtnList = { playBtn, loadBtn, optionBtn, helpBtn, aboutBtn, exitBtn };
+	for (int i = 0; i < pointer.ptrBtnList.size(); i++) { // [FIXED REMOVE BUTTONS FROM VISUALIZER
+		pointer.ptrBtnList[i].id = i;
 
-		int nextIndex = (i + 1) % temp.size();
+		int nextIndex = (i + 1) % pointer.ptrBtnList.size();
 
-		temp[i].coord.X = temp[0].coord.X;
-		temp[i].coord.Y = temp[0].coord.Y + offset * i;
+		pointer.ptrBtnList[i].coord.X = pointer.ptrBtnList[0].coord.X;
+		pointer.ptrBtnList[i].coord.Y = pointer.ptrBtnList[0].coord.Y + offset * i;
 
-		temp[i].nextBtn = &(temp[nextIndex]);
-		temp[nextIndex].prevBtn = &(temp[i]);
+		pointer.ptrBtnList[i].nextBtn = &(pointer.ptrBtnList[nextIndex]);
+		pointer.ptrBtnList[nextIndex].prevBtn = &(pointer.ptrBtnList[i]);
 	}
-	pointer.ptrBtnList = temp; // initialize buttons for main menu
 
-	temp.clear();
 	Button chooseCPUBtn(L"PLAYER VERSUS COMPUTER"); // define buttons for choose CPU/ player scene
 	Button choosePlayerBtn(L"PLAYER VERSUS PLAYER");
 	chooseCPUBtn.coord.X = 80;
 	chooseCPUBtn.coord.Y = 10;
 	offset = 15;
-	temp = { chooseCPUBtn, choosePlayerBtn };
-	for (int i = 0; i < temp.size(); i++) { // [FIXED REMOVE BUTTONS FROM VISUALIZER
-		temp[i].id = i;
+	pointer.ptrChoosePlayer = { chooseCPUBtn, choosePlayerBtn }; // initialize buttons for main menu
+	for (int i = 0; i < pointer.ptrChoosePlayer.size(); i++) { // [FIXED REMOVE BUTTONS FROM VISUALIZER
+		pointer.ptrChoosePlayer[i].id = i;
 
-		int nextIndex = (i + 1) % temp.size();
+		int nextIndex = (i + 1) % pointer.ptrChoosePlayer.size();
 
-		temp[i].coord.X = temp[0].coord.X;
-		temp[i].coord.Y = temp[0].coord.Y + offset * i;
+		pointer.ptrChoosePlayer[i].coord.X = pointer.ptrChoosePlayer[0].coord.X;
+		pointer.ptrChoosePlayer[i].coord.Y = pointer.ptrChoosePlayer[0].coord.Y + offset * i;
 
-		temp[i].nextBtn = &(temp[nextIndex]);
-		temp[nextIndex].prevBtn = &(temp[i]);
+		pointer.ptrChoosePlayer[i].nextBtn = &(pointer.ptrChoosePlayer[nextIndex]);
+		pointer.ptrChoosePlayer[nextIndex].prevBtn = &(pointer.ptrChoosePlayer[i]);
 	}
-	pointer.ptrChoosePlayer = temp;
+
+
+	playBtn.coord.X = 80;
+	playBtn.coord.Y = 20;
+	offset = 3;
+	pointer.ptrAfterPlay = { playBtn, menuBtn, exitBtn };
+	for (int i = 0; i < pointer.ptrAfterPlay.size(); i++) { // [FIXED REMOVE BUTTONS FROM VISUALIZER
+		pointer.ptrAfterPlay[i].id = i;
+
+		int nextIndex = (i + 1) % pointer.ptrAfterPlay.size();
+
+		pointer.ptrAfterPlay[i].coord.X = pointer.ptrAfterPlay[0].coord.X;
+		pointer.ptrAfterPlay[i].coord.Y = pointer.ptrAfterPlay[0].coord.Y + offset * i;
+
+		pointer.ptrAfterPlay[i].nextBtn = &(pointer.ptrAfterPlay[nextIndex]);
+		pointer.ptrAfterPlay[nextIndex].prevBtn = &(pointer.ptrAfterPlay[i]);
+	}
 }
 
 void StartGame() {
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	system("cls");
 	FixConsoleWindow();
-	ShowConsoleCursor(false);
 	InitializeData();
 	StartMenu();
 }
@@ -105,7 +123,7 @@ void StartPlay() {
 	for (auto i : pointer.ptrChoosePlayer) { //Visualize Btn;
 		i.printButton();
 	}
-	
+
 	pointer.startIndexing("", pointer.ptrChoosePlayer);
 	bool _checkNotEnter = true;
 	while (_checkNotEnter)
@@ -134,22 +152,89 @@ void StartPlay() {
 	pointer.checkEnter("PlayScene"); // redirect to pve or pvp
 }
 
+void StartMatchScene(string matchType) {
+	DrawObject("Background");
+	DrawObject("Border");
+	DrawObject("PlayerFrame"); // built-in coor for player frame
+	GotoXY(52, 3);
+	DrawObject("BoardCanvas");
+	ShowConsoleCursor(true);
+	Player playerManager(52 + 2, 3 + 1, 16, 1, 1);
+	if (matchType == "PVE") {
+		playerManager.AI = 1;
+	}
+	playerManager.play();
+
+}
+
+void StartWinScene(char player) {
+	ShowConsoleCursor(false);
+	DrawObject("Background");
+	DrawObject("Border");
+	for (auto i : pointer.ptrAfterPlay) { //Visualize Btn;
+		i.printButton();
+	}
+	pointer.startIndexing("", pointer.ptrAfterPlay);
+	COORD animPivot = { 8, 5 }; // animPivot [hard-code]
+	int waveWidth = 25, initNumChar = 0;
+	bool _checkNotEnter = true;
+	while (_checkNotEnter) {
+		initNumChar += 2;
+		if (initNumChar % 20 == 0) {
+			initNumChar = 0;
+		}
+
+		switch (player) {
+		case 'X':
+			visualizer.printWinAnimation('X', waveWidth, initNumChar, animPivot);
+			/*DrawObject("WinAnimation_X");*/
+			break;
+		case 'O':
+			visualizer.printWinAnimation('O', waveWidth, initNumChar, animPivot);
+			/*DrawObject("WinAnimation_O");*/
+			break;
+		default:
+			break;
+		}
+
+		if (_kbhit())
+		{
+			switch (_getch()) {
+			case 'a':
+			case 'w':
+				pointer.startIndexing("prev", pointer.ptrAfterPlay);
+				break;
+			case 's':
+			case 'd':
+				pointer.startIndexing("next", pointer.ptrAfterPlay);
+				break;
+			case 13:
+				_checkNotEnter = false;
+				break;
+			default:
+				break;
+			}
+		}
+
+	}
+	pointer.checkEnter("AfterPlay");
+
+	//SceneHandle("MAIN MENU");
+}
+
 void StartExit() {
 	exit(0);
 }
 
 
-void StartMatchScene(string matchType) {
-	DrawObject("Background");
-	DrawObject("Border");
-	GotoXY(4, 4);
-	DrawObject("PlayerFrame");
-	GotoXY(52, 1);
-	DrawObject("BoardCanvas");
 
+void PlayMusic() {
+	PlaySound(TEXT("SOUND GAME CARO\\music\\nhacnen.wav"), NULL, SND_LOOP | SND_ASYNC);
 }
 
 void StartMenu() {
+	ShowConsoleCursor(false);
+	PlayMusic();
 	DrawObject("Background");
 	visualizer.printMenuBorder(); // [temporary]
 	GotoXY(68, 1);
@@ -158,12 +243,13 @@ void StartMenu() {
 	for (auto i : pointer.ptrBtnList) { //Visualize Btn;
 		i.printButton();
 	}
-	pointer.ptrChoosePlayer[0].nextBtn = pointer.ptrChoosePlayer[0].prevBtn = &(pointer.ptrChoosePlayer[1]);
-	pointer.ptrChoosePlayer[1].nextBtn = pointer.ptrChoosePlayer[1].prevBtn = &(pointer.ptrChoosePlayer[0]);
+	//pointer.ptrChoosePlayer[0].nextBtn = pointer.ptrChoosePlayer[0].prevBtn = &(pointer.ptrChoosePlayer[1]);
+	//pointer.ptrChoosePlayer[1].nextBtn = pointer.ptrChoosePlayer[1].prevBtn = &(pointer.ptrChoosePlayer[0]);
 	pointer.startIndexing("", pointer.ptrBtnList);
 	bool _checkNotEnter = true;
 	while (_checkNotEnter)
 	{
+		// play music in loop background
 		// visualize animations
 		static int index[10] = { 0, 8, 6, 3, 0, 0, 3, 6, 8, 0 }, coorX[10] = { 4, 17, 30, 43, 56, 103, 116, 129, 142, 155 }, coorY = 1;
 		const int animationCol = 10;
@@ -258,11 +344,11 @@ void StartAbout() {
 	GotoXY(tableCoord.X, tableCoord.Y + 1);
 	cout << "23122008 - Mai Duc Minh Huy" << endl;
 	GotoXY(tableCoord.X, tableCoord.Y + 2);
-	cout << "23122033 - Mai Duc Minh Huy" << endl;
+	cout << "23122033 - Le Hoang Minh Huy" << endl;
 	GotoXY(tableCoord.X, tableCoord.Y + 3);
-	cout << "23122036 - Mai Duc Minh Huy" << endl;
+	cout << "23122036 - Huynh Trung Kiet" << endl;
 	GotoXY(tableCoord.X, tableCoord.Y + 4);
-	cout << "23122039 - Mai Duc Minh Huy" << endl;
+	cout << "23122039 - Nguyen Ngoc Khoa" << endl;
 
 	bool _checkNotEnter = true;
 	while (_checkNotEnter)

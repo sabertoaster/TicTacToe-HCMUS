@@ -3,9 +3,10 @@
 #include <iostream>
 #include <windows.h>
 #include <conio.h>
-
+#include <playsoundapi.h>
 #include "View.h"
 #include "Control.h"
+
 
 using namespace std;
 
@@ -29,7 +30,7 @@ int main()
 
 	// [calucuting color]
 
-	//// you can loop k higher to see more color choices
+	// you can loop k higher to see more color choices
 	//HANDLE hConsoleOutput = GetStdHandle(STD_OUTPUT_HANDLE);
 	//int count = 1;
 	//for (int k = 0; k < 300; k++, count++)

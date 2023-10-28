@@ -94,7 +94,9 @@ enum objID {
 	border,
 	playerFrame,
 	xMark,
-	oMark
+	oMark,
+	animation_x,
+	animation_o
 };
 
 
@@ -106,6 +108,8 @@ objID string_hash(string const& inString) {
 	if (inString == "Border") return border;
 	if (inString == "BoardCanvas") return boardCanvas;
 	if (inString == "PlayerFrame") return playerFrame;
+	if (inString == "WinAnimation_X") return animation_x;
+	if (inString == "WinAnimation_O") return animation_o;
 }
 
 void Button::printButton() {
@@ -281,11 +285,100 @@ void Visualizer::printBorder() {
 	}
 	wcout << L"╝";
 }
-void Visualizer::printPlayerFrame() {
+void Visualizer::printPlayerFrame(char str) {
 	_setmode(_fileno(stdout), _O_U16TEXT);
+	SetConsoleTextAttribute(hConsoleOutput, 240);
+	COORD currentPos = GetConsoleCursorPosition();
+	int width = 40, height = 31; // ┏━┓ -> width = 1;
+
+	GotoXY(currentPos.X, currentPos.Y); // top left
 	wcout << L"┏";
+	for (int i = 1; i <= width; i++) { // print column
+		GotoXY(currentPos.X + i, currentPos.Y);
+		wcout << L"━";
+		GotoXY(currentPos.X + i, currentPos.Y + height + 1);
+		wcout << L"━";
+	}
+	GotoXY(currentPos.X + width + 1, currentPos.Y); // top right
+	wcout << L"┓";
+	for (int i = 1; i <= height; i++) { // print column
+		GotoXY(currentPos.X, currentPos.Y + i);
+		wcout << L"┃";
+		GotoXY(currentPos.X + width + 1, currentPos.Y + i);
+		wcout << L"┃";
+	}
+	GotoXY(currentPos.X, currentPos.Y + height + 1); // bottom left
+	wcout << L"┗";
+	GotoXY(currentPos.X + width + 1, currentPos.Y + height + 1); // bottom left
+	wcout << L"┛";
+
+	switch (str)
+	{
+	case 'X':
+		avtXCoor.X = currentPos.X + (width + 1) / 2 - 6;
+		avtXCoor.Y = currentPos.Y + 1;
+		GotoXY(avtXCoor.X, avtXCoor.Y);
+		printAvatar('X', 1);
+		break;
+	case 'O':
+		avtOCoor.X = currentPos.X + (width + 1) / 2 - 7;
+		avtOCoor.Y = currentPos.Y + 1;
+		GotoXY(avtOCoor.X, avtOCoor.Y);
+		printAvatar('O', 0);
+	default:
+		break;
+	}
+
 	_setmode(_fileno(stdout), _O_TEXT);
 }
+
+void Visualizer::printAvatar(char str, int color) {
+	_setmode(_fileno(stdout), _O_U16TEXT);
+	COORD currentPos;
+	switch (str) {
+	case 'X':
+		currentPos = avtXCoor;
+		break;
+	case 'O':
+		currentPos = avtOCoor;
+		break;
+	defaut:
+		break;
+	}
+	int colorX, colorO;
+	if (color == 0) {
+		// define line color here
+		colorX = colorO = 248;
+	}
+	else {
+		// define bright color here
+		colorX = 244;
+		colorO = 241;
+	}
+
+	switch (str)
+	{
+	case 'X':
+		SetConsoleTextAttribute(hConsoleOutput, colorX);
+		for (int i = 0; i < 8; i++) { // [hard-code]
+			GotoXY(currentPos.X, currentPos.Y + i);
+			wcout << avt_x[i];
+		}
+		break;
+	case 'O':
+		SetConsoleTextAttribute(hConsoleOutput, colorO);
+		for (int i = 0; i < 7; i++) { // [hard-code]
+			GotoXY(currentPos.X, currentPos.Y + i);
+			wcout << avt_o[i];
+		}
+		break;
+	default:
+		break;
+	}
+	_setmode(_fileno(stdout), _O_TEXT);
+}
+
+
 void Visualizer::printBackgroundAnimation(int index, int coorX, int coorY) {
 	GotoXY(coorX, coorY);
 	if (index / 5 == 0) {
@@ -297,6 +390,90 @@ void Visualizer::printBackgroundAnimation(int index, int coorX, int coorY) {
 		wcout << big_o[index % 5] << L"\n";
 	}
 }
+
+void Visualizer::printWinAnimation(char avt, int waveWidth, int initNumChar, COORD animPivot) {
+	_setmode(_fileno(stdout), _O_U16TEXT);
+	int vtcShift = 0, hrztShift = 0; // verticalShift
+	switch (avt) {
+	case 'X':
+			initNumChar += 2;
+			if (initNumChar % 20 == 0) {
+				initNumChar = 0;
+			}
+			SetConsoleTextAttribute(hConsoleOutput, 240);
+			/*GotoXY(animPivot.X, animPivot.Y);
+			for (int j = 0; j < 8; j++) {
+				GotoXY(animPivot.X, animPivot.Y + j);
+				for (int i = 0; i < 160; i++) {
+					wcout << L" ";
+				}
+			}*/
+			GotoXY(animPivot.X, animPivot.Y);
+			for (int j = 0; j < 157; j++) {
+				wcout << L" ";
+			}
+			GotoXY(animPivot.X, animPivot.Y + 8);
+			for (int j = 0; j < 157; j++) {
+				wcout << L" ";
+			}
+
+
+			GotoXY(animPivot.X, animPivot.Y);
+			for (int i = 0; i < 8; i++) {// [hard-code]
+				SetConsoleTextAttribute(hConsoleOutput, colorArr[(i + initNumChar) % 8]);
+				GotoXY(animPivot.X, animPivot.Y + i);
+				hrztShift = vtcShift;
+				for (int j = 0; j < 157; j++) {// [hard-code]
+					if ((j + abs(waveWidth - initNumChar)) % waveWidth == 0) {
+						hrztShift = 1 - hrztShift;
+						COORD currentPos = GetConsoleCursorPosition();
+						GotoXY(currentPos.X, animPivot.Y + i + hrztShift);
+					}
+					wcout << winnerXBanner[i][j];
+				}
+			}
+
+			Sleep(100);
+		break;
+	case 'O':
+			initNumChar += 2;
+			if (initNumChar % 20 == 0) {
+				initNumChar = 0;
+			}
+			SetConsoleTextAttribute(hConsoleOutput, 240);
+			GotoXY(animPivot.X, animPivot.Y);
+			for (int j = 0; j < 150; j++) {
+				wcout << L" ";
+			}
+			GotoXY(animPivot.X, animPivot.Y + 8);
+			for (int j = 0; j < 150; j++) {
+				wcout << L" ";
+			}
+			GotoXY(animPivot.X, animPivot.Y);
+			for (int i = 0; i < 8; i++) {// [hard-code]
+				SetConsoleTextAttribute(hConsoleOutput, colorArr[(i + initNumChar) % 8]);
+				GotoXY(animPivot.X, animPivot.Y + i);
+				hrztShift = vtcShift;
+				for (int j = 0; j < 146; j++) {// [hard-code]
+					if ((j + (waveWidth - initNumChar)) % waveWidth == 0) {
+						hrztShift = 1 - hrztShift;
+						COORD currentPos = GetConsoleCursorPosition();
+						GotoXY(currentPos.X, animPivot.Y + i + hrztShift);
+					}
+					wcout << winnerOBanner[i][j];
+				}
+			}
+
+			Sleep(100);
+		break;
+	default:
+		break;
+	}
+
+
+	_setmode(_fileno(stdout), _O_TEXT);
+}
+
 void Visualizer::printButton() { //[saber]
 	for (auto i : buttons) {
 		i.printButton();
@@ -304,8 +481,19 @@ void Visualizer::printButton() { //[saber]
 }
 
 void Visualizer::printBoardCanvas(int numCell) {
-
+	SetConsoleTextAttribute(hConsoleOutput, 240);
 	COORD currentCoord = GetConsoleCursorPosition();
+	_setmode(_fileno(stdout), _O_TEXT);
+	for (int i = 0; i < numCell; i++) { // deploy horizontal label
+		GotoXY((currentCoord.X + 2) + i * 4, currentCoord.Y - 1);
+		cout << to_string(i + 1);
+	}
+
+	for (int i = 0; i < numCell; i++) { // deploy vertical label
+		GotoXY(currentCoord.X - 2, (currentCoord.Y + 1) + i * 2);
+		cout << to_string(i + 1);
+	}
+
 	_setmode(_fileno(stdout), _O_U16TEXT); // Chuyển sang UTF-16 để có khả năng in ra kí hiệu unicode
 	GotoXY(currentCoord.X, currentCoord.Y); wcout << L"╔";
 	GotoXY(currentCoord.X + 4 * numCell, currentCoord.Y); wcout << L"╗";
@@ -360,8 +548,12 @@ void DrawObject(string objName) {
 		visualizer.printBorder();
 		break;
 	case playerFrame:
-		visualizer.printPlayerFrame();
+		GotoXY(5, 3);
+		visualizer.printPlayerFrame('X');
+		GotoXY(120, 3);
+		visualizer.printPlayerFrame('O');
 		break;
+	
 	default:
 		break;
 	}
@@ -410,6 +602,14 @@ void SceneHandle(string sceneName) {
 	}
 	if (sceneName == "PLAYER VERSUS PLAYER") {
 		StartMatchScene("PVP");
+		return;
+	}
+	if (sceneName == "WinScene_X") {
+		StartWinScene('X');
+		return;
+	}
+	if (sceneName == "WinScene_O") {
+		StartWinScene('O');
 		return;
 	}
 }
