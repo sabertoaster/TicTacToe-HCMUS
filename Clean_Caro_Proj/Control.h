@@ -46,3 +46,5 @@ void StartMenu();
 void StartHelp();
 
 void StartAbout();
+
+void StartLoad();

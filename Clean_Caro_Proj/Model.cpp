@@ -1,5 +1,5 @@
 #include "Model.h"
-
+#include<fstream>
 
 int check_play_ai = 0, save_I, save_J;
 Player::Player(int x, int y, int inputnumcell, int j, int i) {
@@ -132,7 +132,7 @@ int Player::solve(int x, int y, int k)
 }
 void Player::move()
 {
-	int check_up = 0, check_down = 0, check_right = 0, check_left = 0, check_enter = 0, cnt = 1, win = 1;
+	int check_up = 0, check_down = 0, check_right = 0, check_left = 0, check_enter = 0, cnt = 1, win = 1 ,check_undo=0,check_reundo=0;
 	if (_kbhit())
 	{
 		char ch = _getch();
@@ -159,6 +159,101 @@ void Player::move()
 			check_right = 1;
 		else if (ch == 'a')
 			check_left = 1;
+		else if (ch == 'z')
+			check_undo = 1;
+		else if (ch == 'y')
+			check_reundo = 1;
+	}
+	if (check_undo)
+	{
+		if (history.size() > 0)
+		{
+			if (AI == 0)
+			{
+				pair<int, int>his_xy = history.back();
+				re_history.push_back(his_xy);
+				history.pop_back();
+				a[his_xy.first][his_xy.second] = 0;
+				current_player = 1 - current_player;
+				GotoXY(initCoor.X + (his_xy.second - 1) * offSetX, initCoor.Y + (his_xy.first - 1) * offSetY);
+				changeFontColor(white, white);
+				cout << " ";
+				if (current_player == 1)
+				{
+					printPlayerTurn('X');
+					visualizer.printAvatar('X', 1); // Visualize O's turn
+					visualizer.printAvatar('O', 0);
+				}
+				else
+				{
+					printPlayerTurn('O');
+					visualizer.printAvatar('X', 0); // Visualize X's turn
+					visualizer.printAvatar('O', 1);
+				}
+				//GotoXY(initCoor.X + (j - 1) * offSetX, initCoor.Y + (i - 1) * offSetY);
+			}
+			else
+			{
+				pair<int, int>his_xy = history.back();
+				re_history.push_back(his_xy);
+				a[his_xy.first][his_xy.second] = 0;
+				history.pop_back();
+				GotoXY(initCoor.X + (his_xy.second - 1) * offSetX, initCoor.Y + (his_xy.first - 1) * offSetY);
+				changeFontColor(white, white);
+				cout << " ";
+				his_xy = history.back();
+				re_history.push_back(his_xy);
+				a[his_xy.first][his_xy.second] = 0;
+				history.pop_back();
+				GotoXY(initCoor.X + (his_xy.second - 1) * offSetX, initCoor.Y + (his_xy.first - 1) * offSetY);
+				changeFontColor(white, white);
+				cout << " ";
+				/*GotoXY(initCoor.X + (j - 1) * offSetX, initCoor.Y + (i - 1) * offSetY);*/
+			}
+			check_undo = 0;
+		}
+	}
+	if (check_reundo)
+	{
+		if (re_history.size() > 0)
+		{
+			if (AI == 0)
+			{
+				pair<int, int>his_xy = re_history.back();
+				history.push_back(his_xy);
+				re_history.pop_back();
+				GotoXY(initCoor.X + (his_xy.second - 1) * offSetX, initCoor.Y + (his_xy.first - 1) * offSetY);
+				if (current_player == 1)
+				{
+					a[his_xy.first][his_xy.second] = 1;
+					draw_x();
+				}
+				else
+				{
+					a[his_xy.first][his_xy.second] = 2;
+					draw_o();
+				}
+				current_player = 1 - current_player;
+			}
+			else
+			{
+				pair<int, int>his_xy = re_history.back();
+				history.push_back(his_xy);
+				re_history.pop_back();
+				GotoXY(initCoor.X + (his_xy.second - 1) * offSetX, initCoor.Y + (his_xy.first - 1) * offSetY);
+				a[his_xy.first][his_xy.second] = 1;
+				draw_x();
+
+				his_xy = re_history.back();
+				history.push_back(his_xy);
+				re_history.pop_back();
+				GotoXY(initCoor.X + (his_xy.second - 1) * offSetX, initCoor.Y + (his_xy.first - 1) * offSetY);
+				a[his_xy.first][his_xy.second] = 2;
+				draw_o();
+				
+			}
+			check_reundo = 0;
+		}
 	}
 	if (check_up || check_down || check_right || check_left)
 	{
@@ -207,6 +302,7 @@ void Player::move()
 		j--;
 		check_left = 0;
 	}
+
 	GotoXY(initCoor.X + (j - 1) * offSetX, initCoor.Y + (i - 1) * offSetY);
 	if (AI == 0)
 	{
@@ -234,6 +330,7 @@ void Player::move()
 			}
 			current_player = 1 - current_player;
 			check_enter = 0;
+			history.push_back({ i,j });
 		}
 	}
 	if (AI == 1)
@@ -251,6 +348,7 @@ void Player::move()
 				playerX_Move.push_back(temp);
 				current_player = 1 - current_player;
 				check_enter = 0;
+				history.push_back({ i,j });
 			}
 		}
 		else
@@ -325,6 +423,7 @@ void Player::move()
 			save_I = i; save_J = j;
 			i = tmpi; j = tmpj;
 			check_play_ai = 1;
+			history.push_back({ i,j });
 		}
 	}
 
@@ -774,10 +873,131 @@ void Player::selectWinStreak() {
 		winningCoord.push_back(save);
 	}
 }
+void Player::load_board()
+{
+	for (int i = 1; i <= numcell; i++)
+	{
+		for (int j = 1; j <= numcell; j++)
+		{
+			if (a[i][j] == 1)
+			{
+				GotoXY(initCoor.X + (j - 1) * offSetX, initCoor.Y + (i - 1) * offSetY);
+				draw_x();
+			}
+			else if (a[i][j] == 2)
+			{
+				GotoXY(initCoor.X + (j - 1) * offSetX, initCoor.Y + (i - 1) * offSetY);
+				draw_o();
+			}
+		}
+	}
+}
+void scene_demo_savegame()
+{
 
+	changeFontColor(white, white);
+	for (int i = 0; i <= 40; i++)
+	{
+		for (int j = 0; j <= 170; j++)
+		{
+			cout << " ";
+		}
+	}
+	changeFontColor(white, black);
+}
+void Player::load_game()
+{
+	scene_demo_savegame();
+	int xconsole = 50, yconsole = 10;
+	GotoXY(xconsole, yconsole);
+	ifstream fi("name_saveload.txt");
+	string name_saveload[100];
+	int count_name = 1;
+	while (getline(fi, name_saveload[count_name]))
+	{
+		count_name++;
+	}
+	for (int i = 1; i < count_name; i++)
+	{
+		GotoXY(xconsole, yconsole + offSetY * i);
+		cout << i << " " << name_saveload[i];
+	}
+	int number_name;
+	do
+	{
+		GotoXY(xconsole, yconsole + offSetY * count_name);
+		cout << "Nhap so : ";
+		cin >> number_name;
+		if (number_name <= 0 || number_name >= count_name)
+		{
+			GotoXY(xconsole, yconsole + offSetY * count_name);
+			cout << string(10 + (int)log10(number_name) + 1, ' ');
+		}
+	} while (number_name <= 0 || number_name >= count_name);
+	string name_game = name_saveload[number_name];
+	ifstream ci(name_game);
+	ci >> current_player;
+	for (int i = 1; i <= numcell; i++)
+		for (int j = 1; j < numcell; j++)
+			ci >> a[i][j];
+	scene_demo_savegame();
+	ci.close();
+}
+void Player::save_game()
+{
+	scene_demo_savegame();
+	int xconsole = 50, yconsole = 10;
+	GotoXY(xconsole,yconsole);
+	ifstream fi("name_saveload.txt");
+	string name_saveload[100];
+	int count_name = 1;
+	while (getline(fi, name_saveload[count_name]))
+	{
+		count_name++;
+	}
+	for (int i = 1; i < count_name; i++)
+	{
+		GotoXY(xconsole, yconsole + offSetY * i);
+		cout << name_saveload[i];
+	}
+	fi.close();
+	int check_name = 0;
+	string name_save;
+	do
+	{
+		check_name = 0;
+		GotoXY(xconsole, yconsole + offSetY * count_name);
+		cout << "Nhap ten: ";
+		cin >> name_save;
+		for(int i=1;i<count_name;i++)
+			if (name_saveload[i] == name_save)
+			{
+				GotoXY(xconsole, yconsole + offSetY * count_name);
+				cout << string(10 + (int)name_save.size(), ' ');
+				check_name = 1;
+				break;
+			}
+
+	} while (check_name);
+
+	ofstream fo (name_save);
+	fo << current_player << "\n";
+	for (int i = 1; i <= numcell; i++)
+	{
+		for (int j = 1; j <= numcell; j++)
+			fo << a[i][j] << " ";
+		fo << "\n";
+	}
+	fo.close();
+	ofstream fo_nsave("name_saveload.txt");
+	name_saveload[count_name] = name_save;
+	for (int i = 1; i <= count_name; i++)
+		fo_nsave << name_saveload[i] << "\n";
+	fo_nsave.close();
+	
+}
 void Player::play()
 {
-	khoitao();// cho tat ca a = 0
 	int type;
 
 	/*
@@ -808,6 +1028,7 @@ void Player::play()
 	}
 	else if (type == 1)
 	{
+		save_game();
 		selectWinStreak();
 
 		//GotoXY(0, 0); [Kiet - Vector victory _ animate]

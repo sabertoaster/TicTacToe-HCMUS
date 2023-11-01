@@ -163,6 +163,7 @@ void StartMatchScene(string matchType) {
 	if (matchType == "PVE") {
 		playerManager.AI = 1;
 	}
+	playerManager.khoitao();
 	playerManager.play();
 
 }
@@ -346,9 +347,9 @@ void StartAbout() {
 	GotoXY(tableCoord.X, tableCoord.Y + 2);
 	cout << "23122033 - Le Hoang Minh Huy" << endl;
 	GotoXY(tableCoord.X, tableCoord.Y + 3);
-	cout << "23122036 - Huynh Trung Kiet" << endl;
+	cout << "23122036 - Nguyen Ngoc Khoa" << endl;
 	GotoXY(tableCoord.X, tableCoord.Y + 4);
-	cout << "23122039 - Nguyen Ngoc Khoa" << endl;
+	cout << "23122039 - Huynh Trung Kiet" << endl; 
 
 	bool _checkNotEnter = true;
 	while (_checkNotEnter)
@@ -369,4 +370,18 @@ void StartAbout() {
 	}
 
 	SceneHandle("MAIN MENU");
+}
+void StartLoad()
+{
+	Player playerManager(52 + 2, 3 + 1, 16, 1, 1);
+	playerManager.khoitao();
+	playerManager.load_game();
+	DrawObject("Background");
+	DrawObject("Border");
+	DrawObject("PlayerFrame"); // built-in coor for player frame
+	GotoXY(52, 3);
+	DrawObject("BoardCanvas");
+	playerManager.load_board();
+	ShowConsoleCursor(true);
+	playerManager.play();
 }

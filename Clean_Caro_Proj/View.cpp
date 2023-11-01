@@ -577,7 +577,7 @@ void SceneHandle(string sceneName) {
 		return;
 	}
 	if (sceneName == "LOAD") {
-		StartMenu();
+		StartLoad();
 		return;
 	}
 	if (sceneName == "OPTIONS") {

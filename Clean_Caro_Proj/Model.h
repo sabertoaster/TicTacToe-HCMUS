@@ -37,6 +37,11 @@ struct Player
     vector<COORD> winningCoord ;    
     vector<COORD> playerX_Move = {};
     vector<COORD> playerO_Move = {};
+    vector<pair<int, int>>history;
+    vector<pair<int, int> >re_history;
+    void load_board();
+    void save_game();
+    void load_game();
     int winner = 0;
     void selectWinStreak();
 
