@@ -967,7 +967,7 @@ void Player::load_game()
 	int so_tmp = stoi(number_name);
 	string name_game = name_saveload[so_tmp];
 	ifstream ci(name_game);
-	ci >> type >> current_player;
+	ci >> AI >> type >> current_player;
 	for (int i = 1; i <= numcell; i++)
 		for (int j = 1; j <= numcell; j++)
 			ci >> a[i][j];
@@ -1014,7 +1014,7 @@ void Player::save_game()
 	} while (check_name);
 
 	ofstream fo (name_save);
-	fo << type<<" "<<current_player << "\n";
+	fo << AI << " " << type << " " << current_player << "\n";
 	for (int i = 1; i <= numcell; i++)
 	{
 		for (int j = 1; j <= numcell; j++)
