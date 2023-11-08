@@ -1,7 +1,7 @@
 #include "Model.h"
 #include<fstream>
 
-int check_play_ai = 0, save_I, save_J;
+int check_play_ai = 0, save_I, save_J, check_save=0;
 Player::Player(int x, int y, int inputnumcell, int j, int i) {
 	// x,y la toa do console // i tuong ung voi y // j tuong ung voi x
 	initCoor.X = x;
@@ -163,6 +163,11 @@ void Player::move()
 			check_undo = 1;
 		else if (ch == 'y')
 			check_reundo = 1;
+		else if (ch == 'p')
+		{
+			check_save = 1;
+			return;
+		}
 	}
 	if (check_undo)
 	{
@@ -905,9 +910,20 @@ void scene_demo_savegame()
 	}
 	changeFontColor(white, black);
 }
+int kt_number(string number)
+{
+	for (int i = 0; i < number.size(); i++)
+	{
+		if (number[i] > '9' || number[i] < '0')
+			return 0;
+	}
+	return 1;
+}
 void Player::load_game()
 {
 	scene_demo_savegame();
+	DrawObject("Background");
+	DrawObject("Border");
 	int xconsole = 50, yconsole = 10;
 	GotoXY(xconsole, yconsole);
 	ifstream fi("name_saveload.txt");
@@ -922,23 +938,38 @@ void Player::load_game()
 		GotoXY(xconsole, yconsole + offSetY * i);
 		cout << i << " " << name_saveload[i];
 	}
-	int number_name;
+	string number_name;
+	int check_ok_number = 1;
 	do
 	{
+		check_ok_number = 1;
 		GotoXY(xconsole, yconsole + offSetY * count_name);
 		cout << "Nhap so : ";
 		cin >> number_name;
-		if (number_name <= 0 || number_name >= count_name)
+		if (kt_number(number_name) == 1)
 		{
-			GotoXY(xconsole, yconsole + offSetY * count_name);
-			cout << string(10 + (int)log10(number_name) + 1, ' ');
+			int tmp = stoi(number_name);
+			if (tmp <= 0 || tmp >= count_name)
+			{
+				GotoXY(xconsole, yconsole + offSetY * count_name);
+				cout << string(10 + (int)log10(tmp) + 1, ' ');
+				check_ok_number = 0;
+			}
 		}
-	} while (number_name <= 0 || number_name >= count_name);
-	string name_game = name_saveload[number_name];
+		else
+		{
+			check_ok_number = 0;
+			GotoXY(xconsole, yconsole + offSetY * count_name);
+			cout << string(10 + (int)number_name.size(), ' ');
+		}
+
+	} while (check_ok_number == 0);
+	int so_tmp = stoi(number_name);
+	string name_game = name_saveload[so_tmp];
 	ifstream ci(name_game);
-	ci >> current_player;
+	ci >> type >> current_player;
 	for (int i = 1; i <= numcell; i++)
-		for (int j = 1; j < numcell; j++)
+		for (int j = 1; j <= numcell; j++)
 			ci >> a[i][j];
 	scene_demo_savegame();
 	ci.close();
@@ -946,6 +977,8 @@ void Player::load_game()
 void Player::save_game()
 {
 	scene_demo_savegame();
+	DrawObject("Background");
+	DrawObject("Border");
 	int xconsole = 50, yconsole = 10;
 	GotoXY(xconsole,yconsole);
 	ifstream fi("name_saveload.txt");
@@ -981,7 +1014,7 @@ void Player::save_game()
 	} while (check_name);
 
 	ofstream fo (name_save);
-	fo << current_player << "\n";
+	fo << type<<" "<<current_player << "\n";
 	for (int i = 1; i <= numcell; i++)
 	{
 		for (int j = 1; j <= numcell; j++)
@@ -998,7 +1031,6 @@ void Player::save_game()
 }
 void Player::play()
 {
-	int type;
 
 	/*
 	y tuong:
@@ -1013,6 +1045,10 @@ void Player::play()
 		type = check_win(); // check : type==0 choi tiep | type==1 player x hoac o da win | type == 2 hoa
 		if (type) // neu 1 nguoi choi da thang hoac hoa thi thoat
 			break;
+		if (check_save == 1)
+		{
+			break;
+		}
 		if (check_play_ai == 1)
 		{
 			i = save_I;
@@ -1021,6 +1057,12 @@ void Player::play()
 		}
 
 	}
+	if (check_save == 1)
+	{
+		check_save = 0;
+		save_game();
+		SceneHandle("MAIN MENU");
+	}
 	if (type == 2)
 	{
 		// tran dau hoa
@@ -1028,7 +1070,6 @@ void Player::play()
 	}
 	else if (type == 1)
 	{
-		save_game();
 		selectWinStreak();
 
 		//GotoXY(0, 0); [Kiet - Vector victory _ animate]

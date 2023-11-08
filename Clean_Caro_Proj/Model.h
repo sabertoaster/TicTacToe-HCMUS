@@ -7,6 +7,7 @@
 #include <playsoundapi.h>
 #include <vector>
 #include "View.h"
+#include "Control.h"
 using namespace std;
 
 
@@ -14,7 +15,7 @@ using namespace std;
 struct Player
 {
     COORD initCoor;
-    int i, j, a[100][100], current_player = 1, AI = 0, offSetX = 4, offSetY = 2, numcell;
+    int i, j, a[100][100], current_player = 1, AI = 0, offSetX = 4, offSetY = 2, numcell, type=0;
     // initX y la vi tri con tro tren console
     // i j la vi tri tren bang a
     // player la luot cua nguoi choi x hoac o
