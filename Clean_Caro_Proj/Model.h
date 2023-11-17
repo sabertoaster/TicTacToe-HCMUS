@@ -16,6 +16,8 @@ struct Player
 {
     COORD initCoor;
     int i, j, a[100][100], current_player = 1, AI = 0, offSetX = 4, offSetY = 2, numcell, type=0;
+    int check_saveload = 0;
+    string ten_ban_dau = "";
     // initX y la vi tri con tro tren console
     // i j la vi tri tren bang a
     // player la luot cua nguoi choi x hoac o
@@ -43,6 +45,7 @@ struct Player
     void load_board();
     void save_game();
     void load_game();
+    void update_namegame();
     int winner = 0;
     void selectWinStreak();
 

@@ -383,8 +383,10 @@ void StartLoad()
 	DrawObject("BoardCanvas");
 	playerManager.load_board();
 	ShowConsoleCursor(true);
+	playerManager.check_saveload = 1;
 	if (playerManager.type == 0)
 	{
 		playerManager.play();
 	}
+	playerManager.check_saveload = 0;
 }

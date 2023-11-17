@@ -933,6 +933,7 @@ void Player::load_game()
 	{
 		count_name++;
 	}
+
 	for (int i = 1; i < count_name; i++)
 	{
 		GotoXY(xconsole, yconsole + offSetY * i);
@@ -972,7 +973,26 @@ void Player::load_game()
 		for (int j = 1; j <= numcell; j++)
 			ci >> a[i][j];
 	scene_demo_savegame();
+	ten_ban_dau = name_game;
 	ci.close();
+}
+void Player::update_namegame()
+{
+	ifstream fi("name_saveload.txt");
+	string name_saveload[100];
+	int count_name = 1;
+	while (getline(fi, name_saveload[count_name]))
+	{
+		count_name++;
+	}
+	fi.close();
+	ofstream fo_nsave("name_saveload.txt");
+	for (int i = 1; i <= count_name; i++)
+	{
+		if(name_saveload[i]!=ten_ban_dau&&name_saveload[i].size()!=0)
+			fo_nsave << name_saveload[i] << "\n";
+	}
+	fo_nsave.close();
 }
 void Player::save_game()
 {
@@ -996,23 +1016,29 @@ void Player::save_game()
 	fi.close();
 	int check_name = 0;
 	string name_save;
-	do
+	if (check_saveload == 1)
 	{
-		check_name = 0;
-		GotoXY(xconsole, yconsole + offSetY * count_name);
-		cout << "Nhap ten: ";
-		cin >> name_save;
-		for(int i=1;i<count_name;i++)
-			if (name_saveload[i] == name_save)
-			{
-				GotoXY(xconsole, yconsole + offSetY * count_name);
-				cout << string(10 + (int)name_save.size(), ' ');
-				check_name = 1;
-				break;
-			}
+		name_save = ten_ban_dau;
+	}
+	else
+	{
+		do
+		{
+			check_name = 0;
+			GotoXY(xconsole, yconsole + offSetY * count_name);
+			cout << "Nhap ten: ";
+			cin >> name_save;
+			for (int i = 1; i < count_name; i++)
+				if (name_saveload[i] == name_save)
+				{
+					GotoXY(xconsole, yconsole + offSetY * count_name);
+					cout << string(10 + (int)name_save.size(), ' ');
+					check_name = 1;
+					break;
+				}
 
-	} while (check_name);
-
+		} while (check_name);
+	}
 	ofstream fo (name_save);
 	fo << AI << " " << type << " " << current_player << "\n";
 	for (int i = 1; i <= numcell; i++)
@@ -1024,8 +1050,22 @@ void Player::save_game()
 	fo.close();
 	ofstream fo_nsave("name_saveload.txt");
 	name_saveload[count_name] = name_save;
-	for (int i = 1; i <= count_name; i++)
-		fo_nsave << name_saveload[i] << "\n";
+
+	if (check_saveload == 1)
+	{
+		for (int i = 1; i < count_name; i++)
+		{
+			fo_nsave << name_saveload[i] << "\n";
+		}
+	}
+	else
+	{
+		for (int i = 1; i <= count_name; i++)
+		{
+			fo_nsave << name_saveload[i] << "\n";
+		}
+	}
+
 	fo_nsave.close();
 	
 }
@@ -1070,6 +1110,7 @@ void Player::play()
 	}
 	else if (type == 1)
 	{
+		update_namegame();
 		selectWinStreak();
 
 		//GotoXY(0, 0); [Kiet - Vector victory _ animate]
@@ -1082,8 +1123,7 @@ void Player::play()
 		// tran dau da co nguoi win => di kiem tra a[i][j]
 		// neu a[i][j] == 1 thi x win
 		// a[i][j] == 2 thi o win 
-
-
+		
 		if (a[i][j] == 1)
 		{
 			/*draw_x_win();*/

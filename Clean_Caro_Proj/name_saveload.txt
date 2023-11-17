@@ -1,4 +1,1 @@
 game1.txt
-game2.txt
-game3.txt
-AI.txt
