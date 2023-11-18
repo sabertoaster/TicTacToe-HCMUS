@@ -1,6 +1,8 @@
 #include "Model.h"
-#include<fstream>
-#include<cstdio>
+#include <filesystem>
+#include <fstream>
+#define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
+#include <experimental/filesystem>
 int check_play_ai = 0, save_I, save_J, check_save=0;
 Player::Player(int x, int y, int inputnumcell, int j, int i) {
 	// x,y la toa do console // i tuong ung voi y // j tuong ung voi x
@@ -995,7 +997,7 @@ void Player::load_game()
 	} while (check_ok_number == 0);
 	int so_tmp = string_to_number(number_name);
 	string name_game = name_saveload[so_tmp];
-	ifstream ci(name_game);
+	ifstream ci("file_game/"+name_game);
 	ci >> AI >> type >> current_player;
 	for (int i = 1; i <= numcell; i++)
 		for (int j = 1; j <= numcell; j++)
@@ -1021,6 +1023,7 @@ void Player::update_namegame()
 			fo_nsave << name_saveload[i] << "\n";
 	}
 	fo_nsave.close();
+	std::filesystem::remove("file_game/"+ten_ban_dau);
 }
 void Player::save_game()
 {
@@ -1071,7 +1074,7 @@ void Player::save_game()
 
 		} while (check_name);
 	}
-	ofstream fo (name_save);
+	ofstream fo ("file_game/"+name_save);
 	fo << AI << " " << type << " " << current_player << "\n";
 	for (int i = 1; i <= numcell; i++)
 	{
