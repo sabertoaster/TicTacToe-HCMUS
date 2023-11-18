@@ -1,6 +1,6 @@
 #include "Model.h"
 #include<fstream>
-
+#include<cstdio>
 int check_play_ai = 0, save_I, save_J, check_save=0;
 Player::Player(int x, int y, int inputnumcell, int j, int i) {
 	// x,y la toa do console // i tuong ung voi y // j tuong ung voi x
@@ -919,6 +919,13 @@ int kt_number(string number)
 	}
 	return 1;
 }
+long long string_to_number(string s)
+{
+	long long ans = 0;
+	for (int i = 0; i < s.size(); i++)
+		ans = ans * 10 + (s[i] - 48);
+	return ans;
+}
 void Player::load_game()
 {
 	scene_demo_savegame();
@@ -949,23 +956,44 @@ void Player::load_game()
 		cin >> number_name;
 		if (kt_number(number_name) == 1)
 		{
-			int tmp = stoi(number_name);
-			if (tmp <= 0 || tmp >= count_name)
+			if (number_name.size() >= 9)
 			{
+				GotoXY(xconsole, yconsole + offSetY * (count_name + 1));
+				changeFontColor(white, red);
+				cout << "Vui long nhap so tu 1 den " << count_name - 1;
+				changeFontColor(white, black);
 				GotoXY(xconsole, yconsole + offSetY * count_name);
-				cout << string(10 + (int)log10(tmp) + 1, ' ');
+				cout << string(10 + (int)number_name.size(), ' ');
 				check_ok_number = 0;
+			}
+			else
+			{
+				long long tmp = string_to_number(number_name);
+				if (tmp ==  0 || tmp >= count_name)
+				{
+					GotoXY(xconsole, yconsole + offSetY * (count_name + 1));
+					changeFontColor(white, red);
+					cout << "Vui long nhap so tu 1 den " << count_name - 1;
+					changeFontColor(white, black);
+					GotoXY(xconsole, yconsole + offSetY * count_name);
+					cout << string(10 + (int)log10(tmp+(tmp==0)) + 20, ' ');
+					check_ok_number = 0;
+				}
 			}
 		}
 		else
 		{
+			GotoXY(xconsole, yconsole + offSetY * (count_name + 1));
+			changeFontColor(white, red);
+			cout << "Vui long nhap so tu 1 den " << count_name - 1;
+			changeFontColor(white, black);
 			check_ok_number = 0;
 			GotoXY(xconsole, yconsole + offSetY * count_name);
 			cout << string(10 + (int)number_name.size(), ' ');
 		}
 
 	} while (check_ok_number == 0);
-	int so_tmp = stoi(number_name);
+	int so_tmp = string_to_number(number_name);
 	string name_game = name_saveload[so_tmp];
 	ifstream ci(name_game);
 	ci >> AI >> type >> current_player;
@@ -1031,6 +1059,10 @@ void Player::save_game()
 			for (int i = 1; i < count_name; i++)
 				if (name_saveload[i] == name_save)
 				{
+					GotoXY(xconsole, yconsole + offSetY * (count_name+1));
+					changeFontColor(white, red);
+					cout << "!Ten bi trung";
+					changeFontColor(white, black);
 					GotoXY(xconsole, yconsole + offSetY * count_name);
 					cout << string(10 + (int)name_save.size(), ' ');
 					check_name = 1;
