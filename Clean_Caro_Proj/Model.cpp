@@ -933,7 +933,7 @@ void Player::load_game()
 	DrawObject("Border");
 	int xconsole = 50, yconsole = 10;
 	GotoXY(xconsole, yconsole);
-	ifstream fi("name_saveload.txt");
+	ifstream fi("file_game/name_saveload.txt");
 	string name_saveload[100];
 	int count_name = 1;
 	while (getline(fi, name_saveload[count_name]))
@@ -1006,7 +1006,7 @@ void Player::load_game()
 }
 void Player::update_namegame()
 {
-	ifstream fi("name_saveload.txt");
+	ifstream fi("file_game/name_saveload.txt");
 	string name_saveload[100];
 	int count_name = 1;
 	while (getline(fi, name_saveload[count_name]))
@@ -1014,7 +1014,7 @@ void Player::update_namegame()
 		count_name++;
 	}
 	fi.close();
-	ofstream fo_nsave("name_saveload.txt");
+	ofstream fo_nsave("file_game/name_saveload.txt");
 	for (int i = 1; i <= count_name; i++)
 	{
 		if(name_saveload[i]!=ten_ban_dau&&name_saveload[i].size()!=0)
@@ -1029,7 +1029,7 @@ void Player::save_game()
 	DrawObject("Border");
 	int xconsole = 50, yconsole = 10;
 	GotoXY(xconsole,yconsole);
-	ifstream fi("name_saveload.txt");
+	ifstream fi("file_game/name_saveload.txt");
 	string name_saveload[100];
 	int count_name = 1;
 	while (getline(fi, name_saveload[count_name]))
@@ -1080,7 +1080,7 @@ void Player::save_game()
 		fo << "\n";
 	}
 	fo.close();
-	ofstream fo_nsave("name_saveload.txt");
+	ofstream fo_nsave("file_game/name_saveload.txt");
 	name_saveload[count_name] = name_save;
 
 	if (check_saveload == 1)
