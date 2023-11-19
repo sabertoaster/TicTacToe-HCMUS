@@ -49,7 +49,7 @@ struct Player
     void update_namegame();
     int winner = 0;
     void selectWinStreak();
-
+    void print_display_loadgame(string[], int);
     //graphics
     // phan nay de tam trong day cho de debug
     // nho xoa phan nay

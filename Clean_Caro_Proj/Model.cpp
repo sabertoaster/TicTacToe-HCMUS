@@ -928,6 +928,27 @@ long long string_to_number(string s)
 		ans = ans * 10 + (s[i] - 48);
 	return ans;
 }
+
+void Player::print_display_loadgame(string name_saveload[],int count_name)
+{
+	scene_demo_savegame();
+	DrawObject("Background");
+	DrawObject("Border");
+	int xconsole = 50, yconsole = 10;
+	GotoXY(xconsole, yconsole);
+	for (int i = 1; i < count_name; i++)
+	{
+		GotoXY(xconsole, yconsole + offSetY * i);
+		cout << i << " " << name_saveload[i];
+	}
+	GotoXY(xconsole, yconsole + offSetY * (count_name + 1));
+	changeFontColor(white, red);
+	if (count_name == 1)
+		cout << "Khong co file luu game nao [ Vui long nhan ESC de thoat ]";
+	else 
+		cout << "Vui long nhap so tu 1 den " << count_name - 1;
+	changeFontColor(white, black);
+}
 void Player::load_game()
 {
 	scene_demo_savegame();
@@ -942,11 +963,17 @@ void Player::load_game()
 	{
 		count_name++;
 	}
-
 	for (int i = 1; i < count_name; i++)
 	{
 		GotoXY(xconsole, yconsole + offSetY * i);
 		cout << i << " " << name_saveload[i];
+	}
+	if (count_name == 1)
+	{
+		GotoXY(xconsole, yconsole + offSetY * (count_name + 1));
+		changeFontColor(white, red);
+			cout << "Khong co file luu game nao [ Nhan ESC de thoat ]";
+		changeFontColor(white, black);
 	}
 	string number_name;
 	int check_ok_number = 1;
@@ -955,17 +982,17 @@ void Player::load_game()
 		check_ok_number = 1;
 		GotoXY(xconsole, yconsole + offSetY * count_name);
 		cout << "Nhap so : ";
-		cin >> number_name;
+		char ch = _getch();
+		if (ch == 27)
+		{
+			StartMenu();
+		}
+		getline(cin, number_name);
 		if (kt_number(number_name) == 1)
 		{
 			if (number_name.size() >= 9)
 			{
-				GotoXY(xconsole, yconsole + offSetY * (count_name + 1));
-				changeFontColor(white, red);
-				cout << "Vui long nhap so tu 1 den " << count_name - 1;
-				changeFontColor(white, black);
-				GotoXY(xconsole, yconsole + offSetY * count_name);
-				cout << string(10 + (int)number_name.size(), ' ');
+				print_display_loadgame(name_saveload,count_name);
 				check_ok_number = 0;
 			}
 			else
@@ -973,25 +1000,15 @@ void Player::load_game()
 				long long tmp = string_to_number(number_name);
 				if (tmp ==  0 || tmp >= count_name)
 				{
-					GotoXY(xconsole, yconsole + offSetY * (count_name + 1));
-					changeFontColor(white, red);
-					cout << "Vui long nhap so tu 1 den " << count_name - 1;
-					changeFontColor(white, black);
-					GotoXY(xconsole, yconsole + offSetY * count_name);
-					cout << string(10 + (int)log10(tmp+(tmp==0)) + 20, ' ');
+					print_display_loadgame(name_saveload, count_name);
 					check_ok_number = 0;
 				}
 			}
 		}
 		else
 		{
-			GotoXY(xconsole, yconsole + offSetY * (count_name + 1));
-			changeFontColor(white, red);
-			cout << "Vui long nhap so tu 1 den " << count_name - 1;
-			changeFontColor(white, black);
+			print_display_loadgame(name_saveload, count_name);
 			check_ok_number = 0;
-			GotoXY(xconsole, yconsole + offSetY * count_name);
-			cout << string(10 + (int)number_name.size(), ' ');
 		}
 
 	} while (check_ok_number == 0);
@@ -1105,9 +1122,21 @@ void Player::save_game()
 	fo_nsave.close();
 	
 }
+const string directoryPath = "./file_game";
+
+void create_saved_games_folder() {
+	if (!std::filesystem::exists(directoryPath)) {
+		std::filesystem::create_directory(directoryPath);
+		return;
+	}
+	else {
+		return;
+	}
+}
 void Player::play()
 {
 
+	create_saved_games_folder();
 	/*
 	y tuong:
 	 dung ham move de vua di chuyen va danh
