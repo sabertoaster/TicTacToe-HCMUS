@@ -884,7 +884,9 @@ void Player::print_display_loadgame(string name_saveload[],int count_name)
 	GotoXY(xconsole, yconsole + offSetY * (count_name + 1));
 	changeFontColor(white, red);
 	if (count_name == 1)
-		cout << "Khong co file luu game nao [ Vui long nhan ESC de thoat ]";
+		cout << "Khong co file luu game nao [ Vui long nhap so 0 de thoat ]";
+	else if (count_name == 2)
+		cout << "Vui long nhap so 1 ";
 	else 
 		cout << "Vui long nhap so tu 1 den " << count_name - 1;
 	changeFontColor(white, black);
@@ -909,10 +911,7 @@ void Player::load_game()
 	}
 	if (count_name == 1)
 	{
-		GotoXY(xconsole, yconsole + offSetY * (count_name + 1));
-		changeFontColor(white, red);
-			cout << "Khong co file luu game nao [ Nhan ESC de thoat ]";
-		changeFontColor(white, black);
+		print_display_loadgame(name_saveload,count_name);
 	}
 	string number_name;
 	int check_ok_number = 1;
@@ -921,11 +920,6 @@ void Player::load_game()
 		check_ok_number = 1;
 		GotoXY(xconsole, yconsole + offSetY * count_name);
 		cout << "Nhap so : ";
-		char ch = _getch();
-		if (ch == 27)
-		{
-			StartMenu();
-		}
 		getline(cin, number_name);
 		if (kt_number(number_name) == 1)
 		{
@@ -937,7 +931,11 @@ void Player::load_game()
 			else
 			{
 				long long tmp = string_to_number(number_name);
-				if (tmp ==  0 || tmp >= count_name)
+				if (tmp == 0)
+				{
+					StartMenu();
+				}
+				if (tmp >= count_name)
 				{
 					print_display_loadgame(name_saveload, count_name);
 					check_ok_number = 0;
