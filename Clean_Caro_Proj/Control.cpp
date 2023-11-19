@@ -295,28 +295,11 @@ void StartMenu() {
 void StartHelp() {
 	DrawObject("Background");
 	DrawObject("Border");
-	GotoXY(65, 1);
-	DrawObject("Help_Logo");
-
 	COORD helpTextCoor;
 	helpTextCoor.X = 30;
 	helpTextCoor.Y = 10;
-	const char* helpText[18] = { "Player Movement: ","'W': Go up","'S': Go down","'A': Go left","'D': Go right","'Enter': Mark","", "Command Key:","'P': Save game","'Z': Undo the last move", "'Esc': Halt the game","" ,"Caro is the game using the X and O symbols to represent players and followed by a set of rules: ", "3. Two players play against each other on 15 x 15 or 19 x 19 grid.", "4. \"X\" player gets to take the first turn followed by \"O\" player.", "5. Players take turns placing their symbol on an open intersection on the board.", "6. The player that manages to create five in a row first wins the round.", "   The row can be horizontal, vertical, or diagonal as long as it is continuous." };
-
-	/*
-	Player Movement:
-	'W': Go up
-	'S': Go down
-	'A': Go left
-	'D': Go right
-	'Enter': Mark
-
-	Command Key:
-	'P': Save game
-	'Z': Undo the last move
-	'Esc': Halt the game
-
-	1. Caro is played using the Xand O symbol.
+	const char* helpText[6] = { "1. Caro is played using the Xand O symbol.", "2. Two players play against each other on 15 x 15 or 19 x 19 grid.", "3. The player representing the \"X\" symbol gets to take the first turn followed by the player representing the \"O\" symbol.", "4. Players take turns placing their symbol on an open intersection on the board.", "5. The player that manages to create five in a row first wins the round.The row can be horizontal, vertical, or diagonal as long as it is unbroken.", "6. Once a player places a symbol on the board, the symbol cannot be moved or changed." };
+	/*1. Caro is played using the Xand O symbol.
 	2. Two players play against each other on 15 x 15 or 19 x 19 grid.
 	3. The player representing the “X” symbol gets to take the first turn followed by the player representing the “O” symbol.
 	4. Players take turns placing their symbol on an open intersetion on the board.
@@ -366,7 +349,7 @@ void StartAbout() {
 	GotoXY(tableCoord.X, tableCoord.Y + 3);
 	cout << "23122036 - Nguyen Ngoc Khoa" << endl;
 	GotoXY(tableCoord.X, tableCoord.Y + 4);
-	cout << "23122039 - Huynh Trung Kiet" << endl;
+	cout << "23122039 - Huynh Trung Kiet" << endl; 
 
 	bool _checkNotEnter = true;
 	while (_checkNotEnter)
@@ -390,14 +373,14 @@ void StartAbout() {
 }
 void StartLoad()
 {
+	Player playerManager(52 + 2, 3 + 1, 16, 1, 1);
+	playerManager.khoitao();
+	playerManager.load_game();
 	DrawObject("Background");
 	DrawObject("Border");
 	DrawObject("PlayerFrame"); // built-in coor for player frame
 	GotoXY(52, 3);
 	DrawObject("BoardCanvas");
-	Player playerManager(52 + 2, 3 + 1, 16, 1, 1);
-	playerManager.khoitao();
-	playerManager.load_game();
 	playerManager.load_board();
 	ShowConsoleCursor(true);
 	playerManager.check_saveload = 1;
