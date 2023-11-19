@@ -9,6 +9,7 @@
 #include "View.h"
 #include "Control.h"
 #include<stdio.h>
+
 using namespace std;
 
 
@@ -39,8 +40,6 @@ struct Player
     vector<pair<int, int>> huong3();
     vector<pair<int, int>> huong4();
     vector<COORD> winningCoord ;    
-    vector<COORD> playerX_Move = {};
-    vector<COORD> playerO_Move = {};
     vector<pair<int, int>>history;
     vector<pair<int, int> >re_history;
     void load_board();
@@ -86,7 +85,7 @@ struct Player
         SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
     }
 
-    void printPlayerTurn(char player);
+  
 
     void draw_board()
     {
