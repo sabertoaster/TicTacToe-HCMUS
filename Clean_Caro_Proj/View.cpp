@@ -88,6 +88,7 @@ void changeFontColor(color backgroundColor, color fontColor) {
 enum objID {
 	main_Logo,
 	about_Logo,
+	help_Logo,
 	button,
 	background,
 	boardCanvas,
@@ -103,6 +104,7 @@ enum objID {
 objID string_hash(string const& inString) {
 	if (inString == "Main_Logo") return main_Logo;
 	if (inString == "About_Logo") return about_Logo;
+	if (inString == "Help_Logo") return help_Logo;
 	if (inString == "Button") return button;
 	if (inString == "Background") return background;
 	if (inString == "Border") return border;
@@ -163,6 +165,14 @@ void Visualizer::printLogo(string str) {
 			currentCoord.Y++; //update the new pointer coordinate
 		}
 		break;
+	case help_Logo:
+		for (int i = 0; i < sizeof(aboutLogo) / sizeof(helpLogo[0]); i++) {
+			wcout << helpLogo[i];
+			GotoXY(currentCoord.X, currentCoord.Y + 1);
+			currentCoord.Y++; //update the new pointer coordinate
+		}
+		break;
+
 	default:
 		break;
 	}
@@ -534,6 +544,9 @@ void DrawObject(string objName) {
 		break;
 	case about_Logo:
 		visualizer.printLogo("About_Logo");
+		break;
+	case help_Logo:
+		visualizer.printLogo("Help_Logo");
 		break;
 	case button:
 		visualizer.printButton();
