@@ -185,13 +185,11 @@ void Player::move()
 				cout << " ";
 				if (current_player == 1)
 				{
-					printPlayerTurn('X');
 					visualizer.printAvatar('X', 1); // Visualize O's turn
 					visualizer.printAvatar('O', 0);
 				}
 				else
 				{
-					printPlayerTurn('O');
 					visualizer.printAvatar('X', 0); // Visualize X's turn
 					visualizer.printAvatar('O', 1);
 				}
@@ -316,22 +314,16 @@ void Player::move()
 			if (current_player == 1)
 			{
 				draw_x();
-				printPlayerTurn('O');
 				visualizer.printAvatar('X', 0); // Visualize X's turn
 				visualizer.printAvatar('O', 1);
 				a[i][j] = 1;
-				COORD temp = { j, i };
-				playerX_Move.push_back(temp);
 			}
 			else
 			{
 				draw_o();
-				printPlayerTurn('X');
 				visualizer.printAvatar('X', 1); // Visualize O's turn
 				visualizer.printAvatar('O', 0);
 				a[i][j] = 2;
-				COORD temp = { j, i };
-				playerO_Move.push_back(temp);
 			}
 			current_player = 1 - current_player;
 			check_enter = 0;
@@ -345,12 +337,9 @@ void Player::move()
 			if (a[i][j] == 0 && check_enter && !check_up && !check_down && !check_right && !check_left)
 			{
 				draw_x();
-				printPlayerTurn('O');
 				visualizer.printAvatar('X', 0); // Visualize X's turn
 				visualizer.printAvatar('O', 1);
 				a[i][j] = 1;
-				COORD temp = { j, i };
-				playerX_Move.push_back(temp);
 				current_player = 1 - current_player;
 				check_enter = 0;
 				history.push_back({ i,j });
@@ -402,8 +391,6 @@ void Player::move()
 
 
 			a[tmpi][tmpj] = 2;
-			COORD temp = { tmpj, tmpi };
-			playerO_Move.push_back(temp);
 			//debug AI
 		   //i = tmpi; j = tmpj;
 		   /*SetColor_2(7, 0);
@@ -418,7 +405,6 @@ void Player::move()
 		   }*/
 			GotoXY(initCoor.X + (tmpj - 1) * offSetX, initCoor.Y + (tmpi - 1) * offSetY);
 			draw_o();
-			printPlayerTurn('X');
 			visualizer.printAvatar('X', 1); // Visualize O's turn
 			visualizer.printAvatar('O', 0);
 
@@ -560,60 +546,6 @@ void Player::draw_o()
 	cout << "O";
 }
 
-void Player::printPlayerTurn(char player) {
-	COORD targetCoor;
-	int offset1 = 10, offset2 = 13, moveDispPadding = 3, recentMove = 3, listNum; //offset1 is to display whose turn, offset2 is to display recent moves
-	switch (player) {
-	case 'X':
-		targetCoor = visualizer.avtOCoor;
-		GotoXY(visualizer.avtXCoor.X + 2, visualizer.avtXCoor.Y + offset1);
-		cout << "X's TURN";
-		GotoXY(targetCoor.X + 2, targetCoor.Y + offset1);
-		cout << "        ";
-
-		listNum = min(playerO_Move.size(), recentMove);
-
-		if (listNum >= playerO_Move.size()) {
-			for (int i = listNum - 1; i >= 0; i--) {
-				GotoXY(targetCoor.X, targetCoor.Y + offset2 + moveDispPadding * (listNum - 1 - i));
-				cout << "(" << playerO_Move[i].X << ", " << playerO_Move[i].Y << ")";
-			}
-		}
-		else {
-			for (int i = playerO_Move.size() - 1; i >= playerO_Move.size() - listNum; i--) {
-				GotoXY(targetCoor.X, targetCoor.Y + offset2 + moveDispPadding * (playerO_Move.size() - 1 - i));
-				cout << "(" << playerO_Move[i].X << ", " << playerO_Move[i].Y << ")";
-			}
-		}
-		break;
-	case 'O':
-		targetCoor = visualizer.avtXCoor;
-		GotoXY(visualizer.avtOCoor.X + 2, visualizer.avtOCoor.Y + offset1);
-		cout << "O's TURN";
-		GotoXY(targetCoor.X + 2, targetCoor.Y + offset1);
-		cout << "        ";
-
-		listNum = min(playerX_Move.size(), recentMove);
-
-		if (listNum >= playerX_Move.size()) {
-			for (int i = listNum - 1; i >= 0; i--) {
-				GotoXY(targetCoor.X, targetCoor.Y + offset2 + moveDispPadding * (listNum - 1 - i));
-				cout << "(" << playerX_Move[i].X << ", " << playerX_Move[i].Y << ")";
-			}
-		}
-		else {
-			for (int i = playerX_Move.size() - 1; i >= playerX_Move.size() - listNum; i--) {
-				GotoXY(targetCoor.X, targetCoor.Y + offset2 + moveDispPadding * (playerX_Move.size() - 1 - i));
-				cout << "(" << playerX_Move[i].X << ", " << playerX_Move[i].Y << ")";
-			}
-		}
-		break;
-	default:
-		listNum = 0;
-		break;
-	}
-
-}
 
 int Player::check_huong()
 {

@@ -1,1 +1,3 @@
-game1.txt
+Huy
+Saber
+1
