@@ -8,6 +8,7 @@
 #include <vector>
 #include "View.h"
 #include "Control.h"
+#include<stdio.h>
 using namespace std;
 
 
