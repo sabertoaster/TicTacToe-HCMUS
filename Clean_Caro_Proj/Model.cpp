@@ -1008,6 +1008,7 @@ void Player::load_game()
 }
 void Player::update_namegame()
 {
+
 	ifstream fi("file_game/name_saveload.txt");
 	string name_saveload[100];
 	int count_name = 1;
@@ -1145,7 +1146,8 @@ void Player::play()
 	}
 	else if (type == 1)
 	{
-		update_namegame();
+		if(check_saveload==1)
+			update_namegame();
 		selectWinStreak();
 
 		//GotoXY(0, 0); [Kiet - Vector victory _ animate]
