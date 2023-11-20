@@ -350,48 +350,48 @@ void Player::move()
 		else
 		{
 			// duyet het cac o trong bang 16x16 luu lai o co nuoc di toi uu
-			int  tmpi = 0, tmpj = 0; // tmpi , tmpj = i,j
-			int ans = -1;   //tmpx, tmp initCoor.Y =initCoor.X,initCoor.Y;
-			for (int _i = 1; _i <= 16; _i++)
-			{
-				for (int _j = 1; _j <= 16; _j++)
-				{
-					if (a[_i][_j] != 0)
-					{
-						continue;
-					}
-					int tmp1 = solve(_i, _j, 1);
-					int tmp2 = solve(_i, _j, 2);
-					int tmp = tmp1 + tmp2;
-					if (tmp2 >= cal(5))
-					{
-						tmp += cal(7);
-					}
-					if (tmp1 >= cal(4) && tmp2 < cal(5))
-					{
-						tmp += cal(6);
-					}
-					if (tmp1 >= cal(3) && tmp1 < cal(4) && tmp2 < cal(4))
-					{
-						tmp = cal(4) - 1;
-					}
-					if (ans < tmp)
-					{
-						ans = tmp;
-						tmpi = _i, tmpj = _j;
-					}
-					else if (ans == tmp)
-					{
-						if (tmp1 > tmp2)
-						{
-							ans = tmp;
-							tmpi = _i, tmpj = _j;
-						}
-					}
-				}
-			}
-
-
+			//int  tmpi = 0, tmpj = 0; // tmpi , tmpj = i,j
+			//int ans = -1;   //tmpx, tmp initCoor.Y =initCoor.X,initCoor.Y;
+			//for (int _i = 1; _i <= 16; _i++)
+			//{
+			//	for (int _j = 1; _j <= 16; _j++)
+			//	{
+			//		if (a[_i][_j] != 0)
+			//		{
+			//			continue;
+			//		}
+			//		int tmp1 = solve(_i, _j, 1);
+			//		int tmp2 = solve(_i, _j, 2);
+			//		int tmp = tmp1 + tmp2;
+			//		if (tmp2 >= cal(5))
+			//		{
+			//			tmp += cal(7);
+			//		}
+			//		if (tmp1 >= cal(4) && tmp2 < cal(5))
+			//		{
+			//			tmp += cal(6);
+			//		}
+			//		if (tmp1 >= cal(3) && tmp1 < cal(4) && tmp2 < cal(4))
+			//		{
+			//			tmp = cal(4) - 1;
+			//		}
+			//		if (ans < tmp)
+			//		{
+			//			ans = tmp;
+			//			tmpi = _i, tmpj = _j;
+			//		}
+			//		else if (ans == tmp)
+			//		{
+			//			if (tmp1 > tmp2)
+			//			{
+			//				ans = tmp;
+			//				tmpi = _i, tmpj = _j;
+			//			}
+			//		}
+			//	}
+			//}
+			pair<int, int>tmp = find_best_move();
+			int tmpi = tmp.first, tmpj = tmp.second;
 			a[tmpi][tmpj] = 2;
 			//debug AI
 		   //i = tmpi; j = tmpj;
@@ -862,7 +862,6 @@ long long string_to_number(string s)
 }
 void Player::load_game()
 {
-	scene_demo_savegame();
 	DrawObject("Background");
 	DrawObject("Border");
 	int xconsole = 50, yconsole = 10;
@@ -959,7 +958,6 @@ void Player::update_namegame()
 }
 void Player::save_game()
 {
-	scene_demo_savegame();
 	DrawObject("Background");
 	DrawObject("Border");
 	int xconsole = 50, yconsole = 10;
@@ -1036,6 +1034,843 @@ void Player::save_game()
 	fo_nsave.close();
 	
 }
+/// <summary>
+/// minimax erea
+/// </summary>
+
+int AttackPoint_List[] = { 0,16,670,11000,200000,200000 ,200000 ,200000 };
+int DefendPoint_List[] = { 0,5,210,2700,45000,45000 ,45000 ,45000 };
+int BlockedAttackPoint_List[] = { 0,1,50,440,200000,200000 ,200000 ,200000 };
+int BlockedDefendPoint_List[] = { 0,1,5,290,45000,45000,45000 ,45000 };
+
+vector<pair<int, int> > Player::erea(int ex)
+{
+	vector<pair<int, int>>list_erea;
+	int d[100][100];
+	memset(d, 0, sizeof(d));
+	for (pair<int, int>tmp : history)
+	{
+		int l1 = tmp.first - ex;
+		int r1 = tmp.second - ex;
+		int l2 = tmp.first + ex;
+		int r2 = tmp.second + ex;
+		if (l1 < 1)
+			l1 = 1;
+		if (r1 < 1)
+			r1 = 1;
+		if (l2 > numcell)
+			l2 = numcell;
+		if (r2 > numcell)
+			r2 = numcell;
+	
+		for (int i = l1; i <= l2; i++)
+		{
+			for (int j = r1; j <= r2; j++)
+			{
+				if (a[i][j] == 0 && d[i][j] == 0)
+				{
+					list_erea.push_back({ i,j });
+					d[i][j] = 1;
+				}
+			}
+		}
+	}
+	return list_erea;
+}
+
+int Player::AttackPoint_Horizontal(int nline,int ncolumn,int player)
+{
+	int res = 0;
+	int phe_minh = 0;
+	int phe_dich = 0;
+	int tmp = 0;
+	for (int cnt = 1; cnt < 7 && nline + cnt <= numcell + 1; cnt++)
+	{
+		if (a[nline + cnt][ncolumn] == player)
+		{
+			phe_minh++;
+		}
+		else if (nline+cnt==numcell+1)
+		{
+			phe_dich++;
+			break;
+		}
+		else if (a[nline + cnt][ncolumn] == 0)
+		{
+			if (cnt == 1)
+			{
+				tmp++;
+				continue;
+			}
+			break;
+		}
+		else
+		{
+			phe_dich++;
+			break;
+		}
+	}
+	// nguoc lai
+	for (int cnt = 1; cnt < 7 && nline - cnt >=  0; cnt++)
+	{
+		if (a[nline - cnt][ncolumn] == player)
+		{
+			phe_minh++;
+		}
+		else if (nline - cnt == 0)
+		{
+			phe_dich++;
+			break;
+		}
+		else if (a[nline - cnt][ncolumn] == 0)
+		{
+			if (cnt == 1)
+			{
+				tmp++;
+				continue;
+			}
+			break;
+		}
+		else
+		{
+			phe_dich++;
+			break;
+		}
+	}
+	if (phe_dich == 2 && (phe_minh < 4 || tmp == 0))
+		return 0;
+	if (phe_dich == 1)
+	{
+		res += BlockedAttackPoint_List[phe_minh];
+		if (phe_minh == 4 && tmp == 2)
+			return res / 2;
+	}
+	else
+	{
+		res += AttackPoint_List[phe_minh];
+		if (phe_minh == 4 || tmp == 2)
+			return res / 2;
+		if (phe_minh == 3 || tmp == 2)
+			return res / 2;
+	}
+	return res;
+}
+int Player::AttackPoint_Vertical(int nline, int ncolumn, int player)
+{
+	int res = 0;
+	int phe_minh = 0;
+	int phe_dich = 0;
+	int tmp = 0;
+	for (int cnt = 1; cnt < 7 && nline + cnt <= numcell + 1; cnt++)
+	{
+		if (a[nline ][ncolumn + cnt] == player)
+		{
+			phe_minh++;
+		}
+		else if (ncolumn + cnt == numcell + 1)
+		{
+			phe_dich++;
+			break;
+		}
+		else if (a[nline][ncolumn + cnt] == 0)
+		{
+			if (cnt == 1)
+			{
+				tmp++;
+				continue;
+			}
+			break;
+		}
+		else
+		{
+			phe_dich++;
+			break;
+		}
+	}
+	// nguoc lai
+	for (int cnt = 1; cnt < 7 && nline - cnt >= 0; cnt++)
+	{
+		if (a[nline][ncolumn - cnt] == player)
+		{
+			phe_minh++;
+		}
+		else if (ncolumn - cnt == 0)
+		{
+			phe_dich++;
+			break;
+		}
+		else if (a[nline][ncolumn - cnt] == 0)
+		{
+			if (cnt == 1)
+			{
+				tmp++;
+				continue;
+			}
+			break;
+		}
+		else
+		{
+			phe_dich++;
+			break;
+		}
+	}
+	if (phe_dich == 2 && (phe_minh < 4 || tmp == 0))
+		return 0;
+	if (phe_dich == 1)
+	{
+		res += BlockedAttackPoint_List[phe_minh];
+		if (phe_minh == 4 && tmp == 2)
+			return res / 2;
+	}
+	else
+	{
+		res += AttackPoint_List[phe_minh];
+		if (phe_minh == 4 || tmp == 2)
+			return res / 2;
+		if (phe_minh == 3 || tmp == 2)
+			return res / 2;
+	}
+	return res;
+}
+int Player::AttackPoint_Diagonal1(int nline, int ncolumn, int player)
+{
+	int res = 0;
+	int phe_minh = 0;
+	int phe_dich = 0;
+	int tmp = 0;
+	for (int cnt = 1; cnt < 7 && nline + cnt <= numcell + 1; cnt++)
+	{
+		if (a[nline - cnt][ncolumn + cnt] == player)
+		{
+			phe_minh++;
+		}
+		else if (ncolumn + cnt == numcell + 1 || nline - cnt == 0)
+		{
+			phe_dich++;
+			break;
+		}
+		else if (a[nline - cnt][ncolumn + cnt] == 0)
+		{
+			if (cnt == 1)
+			{
+				tmp++;
+				continue;
+			}
+			break;
+		}
+		else
+		{
+			phe_dich++;
+			break;
+		}
+	}
+	// nguoc lai
+	for (int cnt = 1; cnt < 7 && nline - cnt >= 0; cnt++)
+	{
+		if (a[nline +  cnt][ncolumn - cnt] == player)
+		{
+			phe_minh++;
+		}
+		else if (ncolumn - cnt == 0 || nline + cnt == numcell+1)
+		{
+			phe_dich++;
+			break;
+		}
+		else if (a[nline + cnt ][ncolumn - cnt] == 0)
+		{
+			if (cnt == 1)
+			{
+				tmp++;
+				continue;
+			}
+			break;
+		}
+		else
+		{
+			phe_dich++;
+			break;
+		}
+	}
+	if (phe_dich == 2 && (phe_minh < 4 || tmp == 0))
+		return 0;
+	if (phe_dich == 1)
+	{
+		res += BlockedAttackPoint_List[phe_minh];
+		if (phe_minh == 4 && tmp == 2)
+			return res / 2;
+	}
+	else
+	{
+		res += AttackPoint_List[phe_minh];
+		if (phe_minh == 4 || tmp == 2)
+			return res / 2;
+		if (phe_minh == 3 || tmp == 2)
+			return res / 2;
+	}
+	return res;
+}
+int Player::AttackPoint_Diagonal2(int nline, int ncolumn, int player)
+{
+	int res = 0;
+	int phe_minh = 0;
+	int phe_dich = 0;
+	int tmp = 0;
+	for (int cnt = 1; cnt < 7 && nline + cnt <= numcell + 1; cnt++)
+	{
+		if (a[nline - cnt][ncolumn - cnt] == player)
+		{
+			phe_minh++;
+		}
+		else if (ncolumn - cnt == 0 || nline - cnt == 0)
+		{
+			phe_dich++;
+			break;
+		}
+		else if (a[nline - cnt][ncolumn - cnt] == 0)
+		{
+			if (cnt == 1)
+			{
+				tmp++;
+				continue;
+			}
+			break;
+		}
+		else
+		{
+			phe_dich++;
+			break;
+		}
+	}
+	// nguoc lai
+	for (int cnt = 1; cnt < 7 && nline - cnt >= 0; cnt++)
+	{
+		if (a[nline + cnt][ncolumn + cnt] == player)
+		{
+			phe_minh++;
+		}
+		else if (ncolumn + cnt == numcell + 1 || nline + cnt == numcell + 1)
+		{
+			phe_dich++;
+			break;
+		}
+		else if (a[nline + cnt][ncolumn + cnt] == 0)
+		{
+			if (cnt == 1)
+			{
+				tmp++;
+				continue;
+			}
+			break;
+		}
+		else
+		{
+			phe_dich++;
+			break;
+		}
+	}
+	if (phe_dich == 2 && (phe_minh < 4 || tmp == 0))
+		return 0;
+	if (phe_dich == 1)
+	{
+		res += BlockedAttackPoint_List[phe_minh];
+		if (phe_minh == 4 && tmp == 2)
+			return res / 2;
+	}
+	else
+	{
+		res += AttackPoint_List[phe_minh];
+		if (phe_minh == 4 || tmp == 2)
+			return res / 2;
+		if (phe_minh == 3 || tmp == 2)
+			return res / 2;
+	}
+	return res;
+}
+int Player::DefendPoint_Horizontal(int nline,int ncolumn,int player)
+{
+	int res = 0;
+	int phe_minh = 0;
+	int phe_dich = 0;
+	int tmp = 0;
+	for (int cnt = 1; cnt < 7 && nline + cnt <= numcell + 1; cnt++)
+	{
+		if (a[nline + cnt][ncolumn] == player)
+		{
+			phe_minh++;
+			break;
+		}
+		else if (nline + cnt == numcell + 1)
+		{
+			phe_minh++;
+			break;
+		}
+		else if (a[nline + cnt][ncolumn] == 0)
+		{
+			if (cnt == 1)
+			{
+				tmp++;
+				continue;
+			}
+			break;
+		}
+		else
+		{
+			phe_dich++;
+		}
+	}
+	// nguoc lai
+	for (int cnt = 1; cnt < 7 && nline - cnt >= 0; cnt++)
+	{
+		if (a[nline - cnt][ncolumn] == player)
+		{
+			phe_minh++;
+			break;
+		}
+		else if (nline - cnt == 0)
+		{
+			phe_minh++;
+			break;
+		}
+		else if (a[nline - cnt][ncolumn] == 0)
+		{
+			if (cnt == 1)
+			{
+				tmp++;
+				continue;
+			}
+			break;
+		}
+		else
+		{
+			phe_dich++;
+		}
+	}
+	if (phe_minh == 2 && (phe_dich < 4 || tmp == 0))
+		return 0;
+	if (phe_minh == 1)
+	{
+		res += BlockedAttackPoint_List[phe_dich];
+		if (phe_dich == 4 && tmp == 2)
+			return res / 2;
+	}
+	else
+	{
+		res += AttackPoint_List[phe_dich];
+		if (phe_dich == 4 || tmp == 2)
+			return res / 2;
+		if (phe_dich == 3 || tmp == 2)
+			return res / 2;
+	}
+	return res;
+}
+int Player::DefendPoint_Vertical(int nline, int ncolumn, int player)
+{
+	int res = 0;
+	int phe_minh = 0;
+	int phe_dich = 0;
+	int tmp = 0;
+	for (int cnt = 1; cnt < 7 && nline + cnt <= numcell + 1; cnt++)
+	{
+		if (a[nline][ncolumn + cnt] == player)
+		{
+			phe_minh++;
+			break;
+		}
+		else if (ncolumn + cnt == numcell + 1)
+		{
+			phe_minh++;
+			break;
+		}
+		else if (a[nline][ncolumn + cnt ] == 0)
+		{
+			if (cnt == 1)
+			{
+				tmp++;
+				continue;
+			}
+			break;
+		}
+		else
+		{
+			phe_dich++;
+		}
+	}
+	// nguoc lai
+	for (int cnt = 1; cnt < 7 && nline - cnt >= 0; cnt++)
+	{
+		if (a[nline][ncolumn - cnt] == player)
+		{
+			phe_minh++;
+			break;
+		}
+		else if (ncolumn - cnt == 0)
+		{
+			phe_minh++;
+			break;
+		}
+		else if (a[nline][ncolumn - cnt ] == 0)
+		{
+			if (cnt == 1)
+			{
+				tmp++;
+				continue;
+			}
+			break;
+		}
+		else
+		{
+			phe_dich++;
+		}
+	}
+	if (phe_minh == 2 && (phe_dich < 4 || tmp == 0))
+		return 0;
+	if (phe_minh == 1)
+	{
+		res += BlockedAttackPoint_List[phe_dich];
+		if (phe_dich == 4 && tmp == 2)
+			return res / 2;
+	}
+	else
+	{
+		res += AttackPoint_List[phe_dich];
+		if (phe_dich == 4 || tmp == 2)
+			return res / 2;
+		if (phe_dich == 3 || tmp == 2)
+			return res / 2;
+	}
+	return res;
+}
+int Player::DefendPoint_Diagonal1(int nline, int ncolumn, int player)
+{
+	int res = 0;
+	int phe_minh = 0;
+	int phe_dich = 0;
+	int tmp = 0;
+	for (int cnt = 1; cnt < 7 && nline + cnt <= numcell + 1; cnt++)
+	{
+		if (a[nline - cnt ][ncolumn + cnt] == player)
+		{
+			phe_minh++;
+			break;
+		}
+		else if (ncolumn + cnt == numcell + 1 || nline - cnt == 0)
+		{
+			phe_minh++;
+			break;
+		}
+		else if (a[nline - cnt ][ncolumn + cnt] == 0)
+		{
+			if (cnt == 1)
+			{
+				tmp++;
+				continue;
+			}
+			break;
+		}
+		else
+		{
+			phe_dich++;
+		}
+	}
+	// nguoc lai
+	for (int cnt = 1; cnt < 7 && nline - cnt >= 0; cnt++)
+	{
+		if (a[nline + cnt ][ncolumn - cnt] == player)
+		{
+			phe_minh++;
+			break;
+		}
+		else if (ncolumn - cnt == 0 || ncolumn + cnt == numcell +1 )
+		{
+			phe_minh++;
+			break;
+		}
+		else if (a[nline + cnt ][ncolumn - cnt] == 0)
+		{
+			if (cnt == 1)
+			{
+				tmp++;
+				continue;
+			}
+			break;
+		}
+		else
+		{
+			phe_dich++;
+		}
+	}
+	if (phe_minh == 2 && (phe_dich < 4 || tmp == 0))
+		return 0;
+	if (phe_minh == 1)
+	{
+		res += BlockedAttackPoint_List[phe_dich];
+		if (phe_dich == 4 && tmp == 2)
+			return res / 2;
+	}
+	else
+	{
+		res += AttackPoint_List[phe_dich];
+		if (phe_dich == 4 || tmp == 2)
+			return res / 2;
+		if (phe_dich == 3 || tmp == 2)
+			return res / 2;
+	}
+	return res;
+}
+int Player::DefendPoint_Diagonal2(int nline, int ncolumn, int player)
+{
+	int res = 0;
+	int phe_minh = 0;
+	int phe_dich = 0;
+	int tmp = 0;
+	for (int cnt = 1; cnt < 7 && nline + cnt <= numcell + 1; cnt++)
+	{
+		if (a[nline + cnt][ncolumn + cnt] == player)
+		{
+			phe_minh++;
+			break;
+		}
+		else if (ncolumn + cnt == numcell + 1 || nline + cnt == numcell)
+		{
+			phe_minh++;
+			break;
+		}
+		else if (a[nline + cnt][ncolumn + cnt] == 0)
+		{
+			if (cnt == 1)
+			{
+				tmp++;
+				continue;
+			}
+			break;
+		}
+		else
+		{
+			phe_dich++;
+		}
+	}
+	// nguoc lai
+	for (int cnt = 1; cnt < 7 && nline - cnt >= 0; cnt++)
+	{
+		if (a[nline - cnt][ncolumn - cnt] == player)
+		{
+			phe_minh++;
+			break;
+		}
+		else if (ncolumn - cnt == 0 || ncolumn - cnt == 0)
+		{
+			phe_minh++;
+			break;
+		}
+		else if (a[nline - cnt][ncolumn - cnt] == 0)
+		{
+			if (cnt == 1)
+			{
+				tmp++;
+				continue;
+			}
+			break;
+		}
+		else
+		{
+			phe_dich++;
+		}
+	}
+	if (phe_minh == 2 && (phe_dich < 4 || tmp == 0))
+		return 0;
+	if (phe_minh == 1)
+	{
+		res += BlockedAttackPoint_List[phe_dich];
+		if (phe_dich == 4 && tmp == 2)
+			return res / 2;
+	}
+	else
+	{
+		res += AttackPoint_List[phe_dich];
+		if (phe_dich == 4 || tmp == 2)
+			return res / 2;
+		if (phe_dich == 3 || tmp == 2)
+			return res / 2;
+	}
+	return res;
+}
+
+int Player::check_4_huong(int i,int j)
+{
+	int x = i, y = j;
+	int k = a[i][j];
+	//check 1
+	int tmp1 = x, tmp2 = y, cnt = 1;
+	for (int i = 1; i <= 6; i++)
+	{
+		x++;
+		y--;
+		if (a[x][y] == k)
+			cnt++;
+		else
+			break;
+	}
+	x = tmp1, y = tmp2;
+	for (int i = 1; i <= 6; i++)
+	{
+		x--;
+		y++;
+		if (a[x][y] == k)
+			cnt++;
+		else
+			break;
+	}
+	if (cnt >= 5)
+		return 1;
+	// check 2
+	x = tmp1, y = tmp2, cnt = 1;
+	for (int i = 1; i <= 6; i++)
+	{
+		x--;
+		y--;
+		if (a[x][y] == k)
+			cnt++;
+		else
+			break;
+	}
+	x = tmp1, y = tmp2;
+	for (int i = 1; i <= 6; i++)
+	{
+		x++;
+		y++;
+		if (a[x][y] == k)
+			cnt++;
+		else
+			break;
+	}
+	if (cnt >= 5)
+		return 2;
+	//check 3
+	x = tmp1, y = tmp2, cnt = 1;
+	for (int i = 1; i <= 6; i++)
+	{
+		x--;
+		//y--;
+		if (a[x][y] == k)
+			cnt++;
+		else
+			break;
+	}
+	x = tmp1, y = tmp2;
+	for (int i = 1; i <= 6; i++)
+	{
+		x++;
+		//y++;
+		if (a[x][y] == k)
+			cnt++;
+		else
+			break;
+	}
+	if (cnt >= 5)
+		return 3;
+	// check 4;
+	x = tmp1, y = tmp2, cnt = 1;
+	for (int i = 1; i <= 6; i++)
+	{
+		//x--;
+		y--;
+		if (a[x][y] == k)
+			cnt++;
+		else
+			break;
+	}
+	x = tmp1, y = tmp2;
+	for (int i = 1; i <= 6; i++)
+	{
+		//x++;
+		y++;
+		if (a[x][y] == k)
+			cnt++;
+		else
+			break;
+	}
+	if (cnt >= 5)
+		return 4;
+	return 0;
+}
+
+int Player::cal_mark(int nline, int ncolumn,int player)
+{
+	int attack_point = AttackPoint_Horizontal(nline, ncolumn, player) + AttackPoint_Vertical(nline, ncolumn, player);
+	attack_point = attack_point + AttackPoint_Diagonal1(nline, ncolumn, player) + AttackPoint_Diagonal2(nline, ncolumn, player);
+	int defend_point = DefendPoint_Horizontal(nline, ncolumn, player) + DefendPoint_Vertical(nline, ncolumn, player);
+	defend_point = defend_point + DefendPoint_Diagonal1(nline, ncolumn, player) + DefendPoint_Diagonal2(nline, ncolumn, player);
+	return attack_point+defend_point;
+}
+int Player::minimax(int depth, int alpha, int beta, int minimax_player,int vt_x,int vt_o)
+{
+	//cout << depth << ' ' << alpha << " " << beta << " " << minimax_player << " "<<eval()<<'\n';
+	if (depth == 0 || check_4_huong(vt_x,vt_o) !=0)
+	{
+		if (minimax_player == 1)
+			return cal_mark(vt_x, vt_o, 2);
+		else
+			return cal_mark(vt_x, vt_o, 1);
+	}
+	if (minimax_player == 1)
+	{
+		vector<pair<int, int>>erea_list = erea(2);
+		for (int k=0;k<erea_list.size();k++)
+		{
+			int i = erea_list[k].first;
+			int j = erea_list[k].second;
+
+			if (a[i][j] != 0)
+				continue;
+			a[i][j] = 2;
+			alpha = max(alpha, minimax(depth - 1, alpha, beta, 0, i, j));
+			a[i][j] = 0;
+			if (alpha >= beta)
+				return alpha;
+			
+		}
+		return alpha;
+	}
+	else
+	{
+		vector<pair<int, int>>erea_list = erea(2);
+		for (int k = 0; k < erea_list.size(); k++)
+		{
+				if (a[i][j] != 0)
+					continue;
+				a[i][j] = 1;
+				beta = min(beta, minimax(depth - 1, alpha, beta, 1, i, j));
+				a[i][j] = 0;
+				if (alpha >= beta)
+					return beta;
+		}
+		return beta;
+	}
+}
+
+pair<int, int> Player::find_best_move()
+{
+	int ans = -1e9;
+	pair<int, int>best_move;
+	vector<pair<int, int>>erea_list = erea(2);
+	for (int k = 0; k < erea_list.size(); k++)
+	{
+		int i = erea_list[k].first;
+		int j = erea_list[k].second;
+		if (a[i][j] == 0)
+		{
+			a[i][j] = 2;
+			int tmp = minimax(2, -1e9, 1e9, 0, i, j);
+			a[i][j] = 0;
+			if (tmp > ans)
+			{
+				ans = tmp;
+				best_move = { i,j };
+			}
+		}
+	}
+	return best_move;
+}
 void Player::play()
 {
 
@@ -1077,7 +1912,8 @@ void Player::play()
 	}
 	else if (type == 1)
 	{
-		update_namegame();
+		if(check_saveload==1)
+			update_namegame();
 		selectWinStreak();
 
 		//GotoXY(0, 0); [Kiet - Vector victory _ animate]

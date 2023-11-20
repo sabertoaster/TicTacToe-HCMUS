@@ -34,6 +34,7 @@ struct Player
     int cal(int); // ham ho tro cho solve
     Player(int initx, int inity, int numcell, int relaX, int relaY);
     int check_huong();
+    int check_4_huong(int ,int );
     vector<pair<int, int>> huong1();
     vector<pair<int, int>> huong2();
     vector<pair<int, int>> huong3();
@@ -41,6 +42,18 @@ struct Player
     vector<COORD> winningCoord ;    
     vector<pair<int, int>>history;
     vector<pair<int, int> >re_history;
+    vector<pair<int, int>>erea(int);
+    pair<int, int>find_best_move();
+    int AttackPoint_Horizontal(int nline, int ncolumn, int player);
+    int AttackPoint_Vertical(int nline, int ncolumn, int player);
+    int AttackPoint_Diagonal1(int nline, int ncolumn, int player);
+    int AttackPoint_Diagonal2(int nline, int ncolumn, int player);
+    int DefendPoint_Horizontal(int nline, int ncolumn, int player);
+    int DefendPoint_Vertical(int nline, int ncolumn, int player);
+    int DefendPoint_Diagonal1(int nline, int ncolumn, int player);
+    int DefendPoint_Diagonal2(int nline, int ncolumn, int player);
+    int minimax(int, int, int , int ,int ,int );
+    int cal_mark(int nline, int ncolumn,int player);
     void load_board();
     void save_game();
     void load_game();
