@@ -1,4 +1,4 @@
-#include "Model.h"
+﻿#include "Model.h"
 #include <filesystem>
 #include <fstream>
 #define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
@@ -1039,9 +1039,9 @@ void Player::save_game()
 /// </summary>
 
 int AttackPoint_List[] = { 0,16,670,11000,200000,200000 ,200000 ,200000 };
-int DefendPoint_List[] = { 0,5,210,2700,45000,45000 ,45000 ,45000 };
-int BlockedAttackPoint_List[] = { 0,1,50,440,200000,200000 ,200000 ,200000 };
-int BlockedDefendPoint_List[] = { 0,1,5,290,45000,45000,45000 ,45000 };
+int DefendPoint_List[] = { 0,5,210,2700,45000,45000 ,45000 ,45000 };//
+int BlockedAttackPoint_List[] = { 0,1,50, 440,200000,200000 ,200000 ,200000 }; //
+int BlockedDefendPoint_List[] = { 0,1,5,290,45000,45000,45000 ,45000 };//,
 
 vector<pair<int, int> > Player::erea(int ex)
 {
@@ -1077,11 +1077,59 @@ vector<pair<int, int> > Player::erea(int ex)
 	}
 	return list_erea;
 }
+int winScore = 1000000000;
+int getConsecutiveSetScore(int count, int blocks, bool currentTurn) {
 
+	currentTurn = 0;
+	int winGuarantee = 1000000;
+	if (blocks == 2 && count <= 5) return 0;
+	switch (count) {
+		// Ăn 5 -> Cho điểm cao nhất
+	case 5: {
+		return winScore;
+	}
+	case 4: {
+		// Đang 4 -> Tuỳ theo lược và bị chặn: winGuarantee, winGuarantee/4, 200
+		if (currentTurn) return winGuarantee;
+		else {
+			if (blocks == 0) return winGuarantee / 4;
+			else return 200;
+		}
+	}
+	case 3: {
+		// Đang 3: Block = 0
+		if (blocks == 0) {
+			// Nếu lược của currentTurn thì ăn 3 + 1 = 4 (không bị block) -> 50000 -> Khả năng thắng cao. 
+			// Ngược lại không phải lược của currentTurn thì khả năng bị blocks cao
+			if (currentTurn) return 50000;
+			else return 200;
+		}
+		else {
+			// Block == 1 hoặc Blocks == 2
+			if (currentTurn) return 10;
+			else return 5;
+		}
+	}
+	case 2: {
+		// Tương tự với 2
+		if (blocks == 0) {
+			if (currentTurn) return 7;
+			else return 5;
+		}
+		else {
+			return 3;
+		}
+	}
+	case 1: {
+		return 1;
+	}
+	}
+	return winScore * 2;
+}
 int Player::AttackPoint_Horizontal(int nline,int ncolumn,int player)
 {
 	int res = 0;
-	int phe_minh = 0;
+	int phe_minh = 1;
 	int phe_dich = 0;
 	int tmp = 0;
 	for (int cnt = 1; cnt < 7 && nline + cnt <= numcell + 1; cnt++)
@@ -1137,28 +1185,23 @@ int Player::AttackPoint_Horizontal(int nline,int ncolumn,int player)
 			break;
 		}
 	}
-	if (phe_dich == 2 && (phe_minh < 4 || tmp == 0))
+
+	if (phe_dich == 2)
 		return 0;
 	if (phe_dich == 1)
 	{
 		res += BlockedAttackPoint_List[phe_minh];
-		if (phe_minh == 4 && tmp == 2)
-			return res / 2;
 	}
 	else
 	{
 		res += AttackPoint_List[phe_minh];
-		if (phe_minh == 4 || tmp == 2)
-			return res / 2;
-		if (phe_minh == 3 || tmp == 2)
-			return res / 2;
 	}
 	return res;
 }
 int Player::AttackPoint_Vertical(int nline, int ncolumn, int player)
 {
 	int res = 0;
-	int phe_minh = 0;
+	int phe_minh = 1;
 	int phe_dich = 0;
 	int tmp = 0;
 	for (int cnt = 1; cnt < 7 && nline + cnt <= numcell + 1; cnt++)
@@ -1214,28 +1257,22 @@ int Player::AttackPoint_Vertical(int nline, int ncolumn, int player)
 			break;
 		}
 	}
-	if (phe_dich == 2 && (phe_minh < 4 || tmp == 0))
+	if (phe_dich == 2)
 		return 0;
 	if (phe_dich == 1)
 	{
 		res += BlockedAttackPoint_List[phe_minh];
-		if (phe_minh == 4 && tmp == 2)
-			return res / 2;
 	}
 	else
 	{
 		res += AttackPoint_List[phe_minh];
-		if (phe_minh == 4 || tmp == 2)
-			return res / 2;
-		if (phe_minh == 3 || tmp == 2)
-			return res / 2;
 	}
 	return res;
 }
 int Player::AttackPoint_Diagonal1(int nline, int ncolumn, int player)
 {
 	int res = 0;
-	int phe_minh = 0;
+	int phe_minh = 1;
 	int phe_dich = 0;
 	int tmp = 0;
 	for (int cnt = 1; cnt < 7 && nline + cnt <= numcell + 1; cnt++)
@@ -1291,28 +1328,22 @@ int Player::AttackPoint_Diagonal1(int nline, int ncolumn, int player)
 			break;
 		}
 	}
-	if (phe_dich == 2 && (phe_minh < 4 || tmp == 0))
+	if (phe_dich == 2)
 		return 0;
 	if (phe_dich == 1)
 	{
 		res += BlockedAttackPoint_List[phe_minh];
-		if (phe_minh == 4 && tmp == 2)
-			return res / 2;
 	}
 	else
 	{
 		res += AttackPoint_List[phe_minh];
-		if (phe_minh == 4 || tmp == 2)
-			return res / 2;
-		if (phe_minh == 3 || tmp == 2)
-			return res / 2;
 	}
 	return res;
 }
 int Player::AttackPoint_Diagonal2(int nline, int ncolumn, int player)
 {
 	int res = 0;
-	int phe_minh = 0;
+	int phe_minh = 1;
 	int phe_dich = 0;
 	int tmp = 0;
 	for (int cnt = 1; cnt < 7 && nline + cnt <= numcell + 1; cnt++)
@@ -1368,21 +1399,15 @@ int Player::AttackPoint_Diagonal2(int nline, int ncolumn, int player)
 			break;
 		}
 	}
-	if (phe_dich == 2 && (phe_minh < 4 || tmp == 0))
+	if (phe_dich == 2)
 		return 0;
 	if (phe_dich == 1)
 	{
 		res += BlockedAttackPoint_List[phe_minh];
-		if (phe_minh == 4 && tmp == 2)
-			return res / 2;
 	}
 	else
 	{
 		res += AttackPoint_List[phe_minh];
-		if (phe_minh == 4 || tmp == 2)
-			return res / 2;
-		if (phe_minh == 3 || tmp == 2)
-			return res / 2;
 	}
 	return res;
 }
@@ -1390,7 +1415,7 @@ int Player::DefendPoint_Horizontal(int nline,int ncolumn,int player)
 {
 	int res = 0;
 	int phe_minh = 0;
-	int phe_dich = 0;
+	int phe_dich = 1;
 	int tmp = 0;
 	for (int cnt = 1; cnt < 7 && nline + cnt <= numcell + 1; cnt++)
 	{
@@ -1445,21 +1470,15 @@ int Player::DefendPoint_Horizontal(int nline,int ncolumn,int player)
 			phe_dich++;
 		}
 	}
-	if (phe_minh == 2 && (phe_dich < 4 || tmp == 0))
+	if (phe_minh == 2)
 		return 0;
 	if (phe_minh == 1)
 	{
-		res += BlockedAttackPoint_List[phe_dich];
-		if (phe_dich == 4 && tmp == 2)
-			return res / 2;
+		res +=BlockedDefendPoint_List[phe_dich];
 	}
 	else
 	{
-		res += AttackPoint_List[phe_dich];
-		if (phe_dich == 4 || tmp == 2)
-			return res / 2;
-		if (phe_dich == 3 || tmp == 2)
-			return res / 2;
+		res += DefendPoint_List[phe_dich];
 	}
 	return res;
 }
@@ -1467,7 +1486,7 @@ int Player::DefendPoint_Vertical(int nline, int ncolumn, int player)
 {
 	int res = 0;
 	int phe_minh = 0;
-	int phe_dich = 0;
+	int phe_dich = 1;
 	int tmp = 0;
 	for (int cnt = 1; cnt < 7 && nline + cnt <= numcell + 1; cnt++)
 	{
@@ -1522,21 +1541,15 @@ int Player::DefendPoint_Vertical(int nline, int ncolumn, int player)
 			phe_dich++;
 		}
 	}
-	if (phe_minh == 2 && (phe_dich < 4 || tmp == 0))
+	if (phe_minh == 2)
 		return 0;
 	if (phe_minh == 1)
 	{
-		res += BlockedAttackPoint_List[phe_dich];
-		if (phe_dich == 4 && tmp == 2)
-			return res / 2;
+		res += BlockedDefendPoint_List[phe_dich];
 	}
 	else
 	{
-		res += AttackPoint_List[phe_dich];
-		if (phe_dich == 4 || tmp == 2)
-			return res / 2;
-		if (phe_dich == 3 || tmp == 2)
-			return res / 2;
+		res += DefendPoint_List[phe_dich];
 	}
 	return res;
 }
@@ -1544,7 +1557,7 @@ int Player::DefendPoint_Diagonal1(int nline, int ncolumn, int player)
 {
 	int res = 0;
 	int phe_minh = 0;
-	int phe_dich = 0;
+	int phe_dich = 1;
 	int tmp = 0;
 	for (int cnt = 1; cnt < 7 && nline + cnt <= numcell + 1; cnt++)
 	{
@@ -1599,21 +1612,15 @@ int Player::DefendPoint_Diagonal1(int nline, int ncolumn, int player)
 			phe_dich++;
 		}
 	}
-	if (phe_minh == 2 && (phe_dich < 4 || tmp == 0))
+	if (phe_minh == 2)
 		return 0;
 	if (phe_minh == 1)
 	{
-		res += BlockedAttackPoint_List[phe_dich];
-		if (phe_dich == 4 && tmp == 2)
-			return res / 2;
+		res += BlockedDefendPoint_List[phe_dich];
 	}
 	else
 	{
-		res += AttackPoint_List[phe_dich];
-		if (phe_dich == 4 || tmp == 2)
-			return res / 2;
-		if (phe_dich == 3 || tmp == 2)
-			return res / 2;
+		res += DefendPoint_List[phe_dich];
 	}
 	return res;
 }
@@ -1621,7 +1628,7 @@ int Player::DefendPoint_Diagonal2(int nline, int ncolumn, int player)
 {
 	int res = 0;
 	int phe_minh = 0;
-	int phe_dich = 0;
+	int phe_dich = 1;
 	int tmp = 0;
 	for (int cnt = 1; cnt < 7 && nline + cnt <= numcell + 1; cnt++)
 	{
@@ -1676,21 +1683,15 @@ int Player::DefendPoint_Diagonal2(int nline, int ncolumn, int player)
 			phe_dich++;
 		}
 	}
-	if (phe_minh == 2 && (phe_dich < 4 || tmp == 0))
+	if (phe_minh == 2)
 		return 0;
 	if (phe_minh == 1)
 	{
-		res += BlockedAttackPoint_List[phe_dich];
-		if (phe_dich == 4 && tmp == 2)
-			return res / 2;
+		res += BlockedDefendPoint_List[phe_dich];
 	}
 	else
 	{
-		res += AttackPoint_List[phe_dich];
-		if (phe_dich == 4 || tmp == 2)
-			return res / 2;
-		if (phe_dich == 3 || tmp == 2)
-			return res / 2;
+		res += DefendPoint_List[phe_dich];
 	}
 	return res;
 }
@@ -1802,18 +1803,46 @@ int Player::cal_mark(int nline, int ncolumn,int player)
 	defend_point = defend_point + DefendPoint_Diagonal1(nline, ncolumn, player) + DefendPoint_Diagonal2(nline, ncolumn, player);
 	return attack_point+defend_point;
 }
-int Player::minimax(int depth, int alpha, int beta, int minimax_player,int vt_x,int vt_o)
+
+int Player::cal_mark2()
 {
-	//cout << depth << ' ' << alpha << " " << beta << " " << minimax_player << " "<<eval()<<'\n';
-	if (depth == 0 || check_4_huong(vt_x,vt_o) !=0)
+	int ans = 0;
+	for (pair<int, int>tmp : history)
 	{
-		if (minimax_player == 1)
-			return cal_mark(vt_x, vt_o, 2);
-		else
-			return cal_mark(vt_x, vt_o, 1);
+		int attack = 0;
+		attack = attack + AttackPoint_Diagonal1(tmp.first, tmp.second, a[tmp.first][tmp.second]);
+		attack = attack + AttackPoint_Diagonal2(tmp.first, tmp.second, a[tmp.first][tmp.second]);
+		attack = attack + AttackPoint_Horizontal(tmp.first, tmp.second, a[tmp.first][tmp.second]);
+		attack = attack + AttackPoint_Vertical(tmp.first, tmp.second, a[tmp.first][tmp.second]);
+		int defend = 0; 
+		defend = defend + DefendPoint_Diagonal1(tmp.first, tmp.second, a[tmp.first][tmp.second]);
+		defend = defend + DefendPoint_Diagonal2(tmp.first, tmp.second, a[tmp.first][tmp.second]);
+		defend = defend + DefendPoint_Horizontal(tmp.first, tmp.second, a[tmp.first][tmp.second]);
+		defend = defend + DefendPoint_Vertical(tmp.first, tmp.second, a[tmp.first][tmp.second]);
+		ans += max(attack, defend);
+	}
+	return ans;
+}
+
+int Player::kt_win()
+{
+	for (pair<int, int>tmp : history)
+	{
+		if (check_4_huong(tmp.first, tmp.second))
+			return 1;
+	}
+	return 0;
+}
+
+int Player::minimax(int depth, int alpha, int beta, int minimax_player)
+{
+	if (depth == 0||kt_win())
+	{
+		return cal_mark2();
 	}
 	if (minimax_player == 1)
 	{
+		int maxEval = INT_MIN;
 		vector<pair<int, int>>erea_list = erea(2);
 		for (int k=0;k<erea_list.size();k++)
 		{
@@ -1823,34 +1852,45 @@ int Player::minimax(int depth, int alpha, int beta, int minimax_player,int vt_x,
 			if (a[i][j] != 0)
 				continue;
 			a[i][j] = 2;
-			alpha = max(alpha, minimax(depth - 1, alpha, beta, 0, i, j));
+			history.push_back({ i,j });
+			int eval = minimax(depth - 1, alpha, beta, 0);
+			maxEval = max(maxEval, eval);
+			alpha = max(alpha, eval);
+			history.pop_back();
 			a[i][j] = 0;
 			if (alpha >= beta)
-				return alpha;
+				break;
 			
 		}
-		return alpha;
+		return maxEval;
 	}
 	else
 	{
+		int minEval = INT_MAX;
 		vector<pair<int, int>>erea_list = erea(2);
 		for (int k = 0; k < erea_list.size(); k++)
 		{
+			int i = erea_list[k].first;
+			int j = erea_list[k].second;
 				if (a[i][j] != 0)
 					continue;
 				a[i][j] = 1;
-				beta = min(beta, minimax(depth - 1, alpha, beta, 1, i, j));
+				history.push_back({ i,j });
+				int eval = minimax(depth - 1, alpha, beta, 1);
+				minEval = min(minEval, eval);
+				beta = min(beta, eval);
+				history.pop_back();
 				a[i][j] = 0;
 				if (alpha >= beta)
-					return beta;
+					break;
 		}
-		return beta;
+		return minEval;
 	}
 }
 
 pair<int, int> Player::find_best_move()
 {
-	int ans = -1e9;
+	int ans = INT_MIN;
 	pair<int, int>best_move;
 	vector<pair<int, int>>erea_list = erea(2);
 	for (int k = 0; k < erea_list.size(); k++)
@@ -1860,7 +1900,9 @@ pair<int, int> Player::find_best_move()
 		if (a[i][j] == 0)
 		{
 			a[i][j] = 2;
-			int tmp = minimax(2, -1e9, 1e9, 0, i, j);
+			history.push_back({ i,j });
+			int tmp = minimax(3, INT_MIN, INT_MAX, 0);
+			history.pop_back();
 			a[i][j] = 0;
 			if (tmp > ans)
 			{
@@ -1871,6 +1913,7 @@ pair<int, int> Player::find_best_move()
 	}
 	return best_move;
 }
+
 void Player::play()
 {
 

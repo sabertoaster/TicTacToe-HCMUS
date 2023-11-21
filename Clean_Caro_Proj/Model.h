@@ -52,8 +52,10 @@ struct Player
     int DefendPoint_Vertical(int nline, int ncolumn, int player);
     int DefendPoint_Diagonal1(int nline, int ncolumn, int player);
     int DefendPoint_Diagonal2(int nline, int ncolumn, int player);
-    int minimax(int, int, int , int ,int ,int );
+    int minimax(int, int, int , int);
     int cal_mark(int nline, int ncolumn,int player);
+    int cal_mark2();
+    int kt_win();
     void load_board();
     void save_game();
     void load_game();
