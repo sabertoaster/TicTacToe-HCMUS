@@ -187,13 +187,13 @@ void Player::move()
 				cout << " ";
 				if (current_player == 1)
 				{
-					
+					printPlayerTurn('X');
 					visualizer.printAvatar('X', 1); // Visualize O's turn
 					visualizer.printAvatar('O', 0);
 				}
 				else
 				{
-					
+					printPlayerTurn('O');
 					visualizer.printAvatar('X', 0); // Visualize X's turn
 					visualizer.printAvatar('O', 1);
 				}
@@ -318,7 +318,7 @@ void Player::move()
 			if (current_player == 1)
 			{
 				draw_x();
-	
+				printPlayerTurn('O');
 				visualizer.printAvatar('X', 0); // Visualize X's turn
 				visualizer.printAvatar('O', 1);
 				a[i][j] = 1;
@@ -326,11 +326,11 @@ void Player::move()
 			else
 			{
 				draw_o();
-			
+				printPlayerTurn('X');
 				visualizer.printAvatar('X', 1); // Visualize O's turn
 				visualizer.printAvatar('O', 0);
 				a[i][j] = 2;
-	
+				COORD temp = { j, i };
 			}
 			current_player = 1 - current_player;
 			check_enter = 0;
@@ -344,11 +344,11 @@ void Player::move()
 			if (a[i][j] == 0 && check_enter && !check_up && !check_down && !check_right && !check_left)
 			{
 				draw_x();
-			
+				printPlayerTurn('O');
 				visualizer.printAvatar('X', 0); // Visualize X's turn
 				visualizer.printAvatar('O', 1);
 				a[i][j] = 1;
-		
+				COORD temp = { j, i };
 				current_player = 1 - current_player;
 				check_enter = 0;
 				history.push_back({ i,j });
@@ -400,7 +400,7 @@ void Player::move()
 
 
 			a[tmpi][tmpj] = 2;
-		
+			COORD temp = { tmpj, tmpi };
 			//debug AI
 		   //i = tmpi; j = tmpj;
 		   /*SetColor_2(7, 0);
@@ -415,7 +415,7 @@ void Player::move()
 		   }*/
 			GotoXY(initCoor.X + (tmpj - 1) * offSetX, initCoor.Y + (tmpi - 1) * offSetY);
 			draw_o();
-		
+			printPlayerTurn('X');
 			visualizer.printAvatar('X', 1); // Visualize O's turn
 			visualizer.printAvatar('O', 0);
 
@@ -557,6 +557,30 @@ void Player::draw_o()
 	cout << "O";
 }
 
+void Player::printPlayerTurn(char player) {
+	COORD targetCoor;
+	int offset1 = 10, offset2 = 13, moveDispPadding = 3, recentMove = 3, listNum; //offset1 is to display whose turn, offset2 is to display recent moves
+	switch (player) {
+	case 'X':
+		targetCoor = visualizer.avtOCoor;
+		GotoXY(visualizer.avtXCoor.X + 2, visualizer.avtXCoor.Y + offset1);
+		cout << "X's TURN";
+		GotoXY(targetCoor.X + 2, targetCoor.Y + offset1);
+		cout << "        ";
+		break;
+	case 'O':
+		targetCoor = visualizer.avtXCoor;
+		GotoXY(visualizer.avtOCoor.X + 2, visualizer.avtOCoor.Y + offset1);
+		cout << "O's TURN";
+		GotoXY(targetCoor.X + 2, targetCoor.Y + offset1);
+		cout << "        ";
+		break;
+	default:
+		listNum = 0;
+		break;
+	}
+
+}
 
 int Player::check_huong()
 {

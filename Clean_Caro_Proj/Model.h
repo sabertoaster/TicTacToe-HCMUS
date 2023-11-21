@@ -85,7 +85,7 @@ struct Player
         SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
     }
 
-  
+    void printPlayerTurn(char player);
 
     void draw_board()
     {
