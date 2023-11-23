@@ -1035,15 +1035,16 @@ void Player::save_game()
 	
 }
 /// <summary>
-/// minimax erea
+/// minimax area
 /// </summary>
 
+int winScore = 1000000000;
 int AttackPoint_List[] = { 0,16,670,11000,200000,200000 ,200000 ,200000 };
 int DefendPoint_List[] = { 0,5,210,2700,45000,45000 ,45000 ,45000 };//
 int BlockedAttackPoint_List[] = { 0,1,50, 440,200000,200000 ,200000 ,200000 }; //
 int BlockedDefendPoint_List[] = { 0,1,5,290,45000,45000,45000 ,45000 };//,
 
-vector<pair<int, int> > Player::erea(int ex)
+vector<pair<int, int> > Player::area(int ex)
 {
 	vector<pair<int, int>>list_erea;
 	int d[100][100];
@@ -1077,7 +1078,6 @@ vector<pair<int, int> > Player::erea(int ex)
 	}
 	return list_erea;
 }
-int winScore = 1000000000;
 int getConsecutiveSetScore(int count, int blocks, bool currentTurn) {
 
 	currentTurn = 0;
@@ -1809,17 +1809,43 @@ int Player::cal_mark2()
 	int ans = 0;
 	for (pair<int, int>tmp : history)
 	{
-		int attack = 0;
+		int attack = 0, defend = 0;
+		//if (a[tmp.first][tmp.second] != a[tmp.first -1 ][tmp.second + 1])
+		//{
+		//	attack = attack + AttackPoint_Diagonal1(tmp.first, tmp.second, a[tmp.first][tmp.second]);
+		//	defend = defend + DefendPoint_Diagonal1(tmp.first, tmp.second, a[tmp.first][tmp.second]);
+		//}
+		//	
+		//if (a[tmp.first][tmp.second] != a[tmp.first - 1][tmp.second - 1])
+		//{
+		//	attack = attack + AttackPoint_Diagonal2(tmp.first, tmp.second, a[tmp.first][tmp.second]);
+		//	defend = defend + DefendPoint_Diagonal2(tmp.first, tmp.second, a[tmp.first][tmp.second]);
+		//}
+		//	
+		//if (a[tmp.first][tmp.second] != a[tmp.first - 1][tmp.second])
+		//{
+		//	attack = attack + AttackPoint_Horizontal(tmp.first, tmp.second, a[tmp.first][tmp.second]);
+		//	defend = defend + DefendPoint_Horizontal(tmp.first, tmp.second, a[tmp.first][tmp.second]);
+		//}
+			
+		//if (a[tmp.first][tmp.second] != a[tmp.first][tmp.second - 1])
+		//{
+		//	attack = attack + AttackPoint_Vertical(tmp.first, tmp.second, a[tmp.first][tmp.second]);
+		//	defend = defend + DefendPoint_Vertical(tmp.first, tmp.second, a[tmp.first][tmp.second]);
+		//}
 		attack = attack + AttackPoint_Diagonal1(tmp.first, tmp.second, a[tmp.first][tmp.second]);
-		attack = attack + AttackPoint_Diagonal2(tmp.first, tmp.second, a[tmp.first][tmp.second]);
-		attack = attack + AttackPoint_Horizontal(tmp.first, tmp.second, a[tmp.first][tmp.second]);
-		attack = attack + AttackPoint_Vertical(tmp.first, tmp.second, a[tmp.first][tmp.second]);
-		int defend = 0; 
 		defend = defend + DefendPoint_Diagonal1(tmp.first, tmp.second, a[tmp.first][tmp.second]);
+		attack = attack + AttackPoint_Diagonal2(tmp.first, tmp.second, a[tmp.first][tmp.second]);
 		defend = defend + DefendPoint_Diagonal2(tmp.first, tmp.second, a[tmp.first][tmp.second]);
+		attack = attack + AttackPoint_Horizontal(tmp.first, tmp.second, a[tmp.first][tmp.second]);
 		defend = defend + DefendPoint_Horizontal(tmp.first, tmp.second, a[tmp.first][tmp.second]);
+		attack = attack + AttackPoint_Vertical(tmp.first, tmp.second, a[tmp.first][tmp.second]);
 		defend = defend + DefendPoint_Vertical(tmp.first, tmp.second, a[tmp.first][tmp.second]);
-		ans += max(attack, defend);
+
+		if(a[tmp.first][tmp.second]==2)
+			ans += max(attack, defend);
+		else
+			ans -=	max(attack , defend);
 	}
 	return ans;
 }
@@ -1836,18 +1862,25 @@ int Player::kt_win()
 
 int Player::minimax(int depth, int alpha, int beta, int minimax_player)
 {
-	if (depth == 0||kt_win())
+	if (kt_win())
+	{
+		if (minimax_player == 2)
+			return -winScore;
+		else
+			return winScore;
+	}
+	if (depth == 0)
 	{
 		return cal_mark2();
 	}
 	if (minimax_player == 1)
 	{
 		int maxEval = INT_MIN;
-		vector<pair<int, int>>erea_list = erea(2);
-		for (int k=0;k<erea_list.size();k++)
+		vector<pair<int, int>>area_list = area(1);
+		for (int k=0;k<area_list.size();k++)
 		{
-			int i = erea_list[k].first;
-			int j = erea_list[k].second;
+			int i = area_list[k].first;
+			int j = area_list[k].second;
 
 			if (a[i][j] != 0)
 				continue;
@@ -1867,11 +1900,11 @@ int Player::minimax(int depth, int alpha, int beta, int minimax_player)
 	else
 	{
 		int minEval = INT_MAX;
-		vector<pair<int, int>>erea_list = erea(2);
-		for (int k = 0; k < erea_list.size(); k++)
+		vector<pair<int, int>>area_list = area(1);
+		for (int k = 0; k < area_list.size(); k++)
 		{
-			int i = erea_list[k].first;
-			int j = erea_list[k].second;
+			int i = area_list[k].first;
+			int j = area_list[k].second;
 				if (a[i][j] != 0)
 					continue;
 				a[i][j] = 1;
@@ -1892,11 +1925,11 @@ pair<int, int> Player::find_best_move()
 {
 	int ans = INT_MIN;
 	pair<int, int>best_move;
-	vector<pair<int, int>>erea_list = erea(2);
-	for (int k = 0; k < erea_list.size(); k++)
+	vector<pair<int, int>>area_list = area(1);
+	for (int k = 0; k < area_list.size(); k++)
 	{
-		int i = erea_list[k].first;
-		int j = erea_list[k].second;
+		int i = area_list[k].first;
+		int j = area_list[k].second;
 		if (a[i][j] == 0)
 		{
 			a[i][j] = 2;

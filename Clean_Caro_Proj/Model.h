@@ -42,7 +42,7 @@ struct Player
     vector<COORD> winningCoord ;    
     vector<pair<int, int>>history;
     vector<pair<int, int> >re_history;
-    vector<pair<int, int>>erea(int);
+    vector<pair<int, int>>area(int);
     pair<int, int>find_best_move();
     int AttackPoint_Horizontal(int nline, int ncolumn, int player);
     int AttackPoint_Vertical(int nline, int ncolumn, int player);
