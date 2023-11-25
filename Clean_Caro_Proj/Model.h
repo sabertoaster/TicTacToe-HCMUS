@@ -9,6 +9,7 @@
 #include "View.h"
 #include "Control.h"
 #include<stdio.h>
+#include<algorithm>
 using namespace std;
 
 
@@ -63,6 +64,8 @@ struct Player
     int winner = 0;
     void selectWinStreak();
     void print_display_loadgame(string name_saveload[], int count_name);
+    
+    vector<string> list_namesave();
     //graphics
     // phan nay de tam trong day cho de debug
     // nho xoa phan nay

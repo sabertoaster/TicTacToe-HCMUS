@@ -871,6 +871,24 @@ long long string_to_number(string s)
 	return ans;
 }
 
+vector<string> Player::list_namesave()
+{
+	ifstream fi("file_game/name_saveload.txt");
+	string name_saveload[100];
+	int count_name = 1;
+	while (getline(fi, name_saveload[count_name]))
+	{
+		count_name++;
+	}
+	vector<string>res;
+	for (int i = 1; i < count_name; i++)
+	{
+		res.push_back(name_saveload[i]);
+	}
+	reverse(res.begin(), res.end());
+
+	return res;
+}
 void Player::print_display_loadgame(string name_saveload[], int count_name)
 {
 	DrawObject("Background");
@@ -1045,8 +1063,10 @@ void Player::save_game()
 	{
 		for (int i = 1; i < count_name; i++)
 		{
-			fo_nsave << name_saveload[i] << "\n";
+			if(name_saveload[i] != ten_ban_dau)
+				fo_nsave << name_saveload[i] << "\n";
 		}
+		fo_nsave << ten_ban_dau << "\n";
 	}
 	else
 	{
