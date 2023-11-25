@@ -953,7 +953,7 @@ void Player::load_game()
 	int so_tmp = string_to_number(number_name);
 	string name_game = name_saveload[so_tmp];
 	ifstream ci("file_game/" + name_game);
-	ci >> BruteForce >> type >> current_player;
+	ci >> BruteForce >> Minimax >> type >> current_player;
 	for (int i = 1; i <= numcell; i++)
 		for (int j = 1; j <= numcell; j++)
 			ci >> a[i][j];
@@ -1030,7 +1030,7 @@ void Player::save_game()
 		} while (check_name);
 	}
 	ofstream fo("file_game/" + name_save);
-	fo << BruteForce << " " << type << " " << current_player << "\n";
+	fo << BruteForce << " " << Minimax << " " << type << " " << current_player << "\n";
 	for (int i = 1; i <= numcell; i++)
 	{
 		for (int j = 1; j <= numcell; j++)
