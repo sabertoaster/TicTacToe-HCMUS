@@ -860,6 +860,28 @@ long long string_to_number(string s)
 		ans = ans * 10 + (s[i] - 48);
 	return ans;
 }
+
+void Player::print_display_loadgame(string name_saveload[], int count_name)
+{
+	DrawObject("Background");
+	DrawObject("Border");
+	int xconsole = 50, yconsole = 10;
+	GotoXY(xconsole, yconsole);
+	for (int i = 1; i < count_name; i++)
+	{
+		GotoXY(xconsole, yconsole + offSetY * i);
+		cout << i << " " << name_saveload[i];
+	}
+	GotoXY(xconsole, yconsole + offSetY * (count_name + 1));
+	changeFontColor(white, red);
+	if (count_name == 1)
+		cout << "Khong co file luu game nao [ Vui long nhap so 0 de thoat ]";
+	else if (count_name == 2)
+		cout << "Vui long nhap so 1 ";
+	else
+		cout << "Vui long nhap so tu 1 den " << count_name - 1;
+	changeFontColor(white, black);
+}
 void Player::load_game()
 {
 	DrawObject("Background");
@@ -873,11 +895,14 @@ void Player::load_game()
 	{
 		count_name++;
 	}
-
 	for (int i = 1; i < count_name; i++)
 	{
 		GotoXY(xconsole, yconsole + offSetY * i);
 		cout << i << " " << name_saveload[i];
+	}
+	if (count_name == 1)
+	{
+		print_display_loadgame(name_saveload, count_name);
 	}
 	string number_name;
 	int check_ok_number = 1;
@@ -886,49 +911,38 @@ void Player::load_game()
 		check_ok_number = 1;
 		GotoXY(xconsole, yconsole + offSetY * count_name);
 		cout << "Nhap so : ";
-		cin >> number_name;
+		getline(cin, number_name);
 		if (kt_number(number_name) == 1)
 		{
 			if (number_name.size() >= 9)
 			{
-				GotoXY(xconsole, yconsole + offSetY * (count_name + 1));
-				changeFontColor(white, red);
-				cout << "Vui long nhap so tu 1 den " << count_name - 1;
-				changeFontColor(white, black);
-				GotoXY(xconsole, yconsole + offSetY * count_name);
-				cout << string(10 + (int)number_name.size(), ' ');
+				print_display_loadgame(name_saveload, count_name);
 				check_ok_number = 0;
 			}
 			else
 			{
 				long long tmp = string_to_number(number_name);
-				if (tmp ==  0 || tmp >= count_name)
+				if (tmp == 0)
 				{
-					GotoXY(xconsole, yconsole + offSetY * (count_name + 1));
-					changeFontColor(white, red);
-					cout << "Vui long nhap so tu 1 den " << count_name - 1;
-					changeFontColor(white, black);
-					GotoXY(xconsole, yconsole + offSetY * count_name);
-					cout << string(10 + (int)log10(tmp+(tmp==0)) + 20, ' ');
+					StartMenu();
+				}
+				if (tmp >= count_name)
+				{
+					print_display_loadgame(name_saveload, count_name);
 					check_ok_number = 0;
 				}
 			}
 		}
 		else
 		{
-			GotoXY(xconsole, yconsole + offSetY * (count_name + 1));
-			changeFontColor(white, red);
-			cout << "Vui long nhap so tu 1 den " << count_name - 1;
-			changeFontColor(white, black);
+			print_display_loadgame(name_saveload, count_name);
 			check_ok_number = 0;
-			GotoXY(xconsole, yconsole + offSetY * count_name);
-			cout << string(10 + (int)number_name.size(), ' ');
 		}
 
 	} while (check_ok_number == 0);
 	int so_tmp = string_to_number(number_name);
 	string name_game = name_saveload[so_tmp];
-	ifstream ci("file_game/"+name_game);
+	ifstream ci("file_game/" + name_game);
 	ci >> AI >> type >> current_player;
 	for (int i = 1; i <= numcell; i++)
 		for (int j = 1; j <= numcell; j++)
@@ -939,6 +953,7 @@ void Player::load_game()
 }
 void Player::update_namegame()
 {
+
 	ifstream fi("file_game/name_saveload.txt");
 	string name_saveload[100];
 	int count_name = 1;
@@ -950,18 +965,18 @@ void Player::update_namegame()
 	ofstream fo_nsave("file_game/name_saveload.txt");
 	for (int i = 1; i <= count_name; i++)
 	{
-		if(name_saveload[i]!=ten_ban_dau&&name_saveload[i].size()!=0)
+		if (name_saveload[i] != ten_ban_dau && name_saveload[i].size() != 0)
 			fo_nsave << name_saveload[i] << "\n";
 	}
 	fo_nsave.close();
-	std::filesystem::remove("file_game/"+ten_ban_dau);
+	std::filesystem::remove("file_game/" + ten_ban_dau);
 }
 void Player::save_game()
 {
 	DrawObject("Background");
 	DrawObject("Border");
 	int xconsole = 50, yconsole = 10;
-	GotoXY(xconsole,yconsole);
+	GotoXY(xconsole, yconsole);
 	ifstream fi("file_game/name_saveload.txt");
 	string name_saveload[100];
 	int count_name = 1;
@@ -992,7 +1007,7 @@ void Player::save_game()
 			for (int i = 1; i < count_name; i++)
 				if (name_saveload[i] == name_save)
 				{
-					GotoXY(xconsole, yconsole + offSetY * (count_name+1));
+					GotoXY(xconsole, yconsole + offSetY * (count_name + 1));
 					changeFontColor(white, red);
 					cout << "!Ten bi trung";
 					changeFontColor(white, black);
@@ -1004,7 +1019,7 @@ void Player::save_game()
 
 		} while (check_name);
 	}
-	ofstream fo ("file_game/"+name_save);
+	ofstream fo("file_game/" + name_save);
 	fo << AI << " " << type << " " << current_player << "\n";
 	for (int i = 1; i <= numcell; i++)
 	{
@@ -1032,7 +1047,18 @@ void Player::save_game()
 	}
 
 	fo_nsave.close();
-	
+
+}
+const string directoryPath = "./file_game";
+
+void create_saved_games_folder() {
+	if (!std::filesystem::exists(directoryPath)) {
+		std::filesystem::create_directory(directoryPath);
+		return;
+	}
+	else {
+		return;
+	}
 }
 /// <summary>
 /// minimax area
