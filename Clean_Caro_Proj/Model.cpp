@@ -417,6 +417,7 @@ void Player::move()
 			i = tmpi; j = tmpj;
 			check_play_ai = 1;
 			history.push_back({ i,j });
+			PlaySound(TEXT("SOUND GAME CARO\\click\\enter.wav"), NULL, SND_ASYNC);
 		}
 	}
 
@@ -846,6 +847,8 @@ void scene_demo_savegame()
 }
 int kt_number(string number)
 {
+	if (number.size() == 0)
+		return 0;
 	for (int i = 0; i < number.size(); i++)
 	{
 		if (number[i] > '9' || number[i] < '0')
@@ -1975,7 +1978,7 @@ pair<int, int> Player::find_best_move()
 
 void Player::play()
 {
-
+	create_saved_games_folder();
 	/*
 	y tuong:
 	 dung ham move de vua di chuyen va danh
