@@ -520,8 +520,8 @@ int Player::check_win()
 	if (cnt >= 5)
 		return 1;
 	cnt = 0;
-	for (int i = 1; i <= 16; i++)
-		for (int j = 1; j <= 16; j++)
+	for (int i = 1; i <= numcell; i++)
+		for (int j = 1; j <= numcell; j++)
 			if (a[i][j] == 0)
 				cnt++;
 	if (cnt == 0)
@@ -1068,7 +1068,7 @@ vector<pair<int, int> > Player::area(int ex)
 		{
 			for (int j = r1; j <= r2; j++)
 			{
-				if (a[i][j] == 0 && d[i][j] == 0)
+				if (i >= 1 && i <= numcell && j >= 1 && j <= numcell && a[i][j] == 0 && d[i][j] == 0)
 				{
 					list_erea.push_back({ i,j });
 					d[i][j] = 1;
@@ -1826,13 +1826,13 @@ int Player::cal_mark2()
 		//{
 		//	attack = attack + AttackPoint_Horizontal(tmp.first, tmp.second, a[tmp.first][tmp.second]);
 		//	defend = defend + DefendPoint_Horizontal(tmp.first, tmp.second, a[tmp.first][tmp.second]);
-		//}
-			
+		//}	
 		//if (a[tmp.first][tmp.second] != a[tmp.first][tmp.second - 1])
 		//{
 		//	attack = attack + AttackPoint_Vertical(tmp.first, tmp.second, a[tmp.first][tmp.second]);
 		//	defend = defend + DefendPoint_Vertical(tmp.first, tmp.second, a[tmp.first][tmp.second]);
 		//}
+
 		attack = attack + AttackPoint_Diagonal1(tmp.first, tmp.second, a[tmp.first][tmp.second]);
 		defend = defend + DefendPoint_Diagonal1(tmp.first, tmp.second, a[tmp.first][tmp.second]);
 		attack = attack + AttackPoint_Diagonal2(tmp.first, tmp.second, a[tmp.first][tmp.second]);
@@ -1864,7 +1864,7 @@ int Player::minimax(int depth, int alpha, int beta, int minimax_player)
 {
 	if (kt_win())
 	{
-		if (minimax_player == 2)
+		if (minimax_player == 1)
 			return -winScore;
 		else
 			return winScore;
