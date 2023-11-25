@@ -16,7 +16,7 @@ using namespace std;
 struct Player
 {
     COORD initCoor;
-    int i, j, a[100][100], current_player = 1, AI = 0, offSetX = 4, offSetY = 2, numcell, type=0;
+    int i, j, a[100][100], current_player = 1, BruteForce = 0, offSetX = 4, offSetY = 2, numcell, type = 0, Minimax = 0;
     int check_saveload = 0;
     string ten_ban_dau = "";
     // initX y la vi tri con tro tren console
@@ -28,7 +28,7 @@ struct Player
     }
     void move(); // vua di chuyen vua phat am thanh
     int check_win(); //
-    void play(); // play    neu su dung AI thi player.AI=1; sau do player.play();
+    void play(); // play    neu su dung BruteForce thi player.BruteForce=1; sau do player.play();
     int solve(int, int, int);  // ham nay dung de tinh diem
     int pow10(int, int); // ham ho tro cho solve
     int cal(int); // ham ho tro cho solve

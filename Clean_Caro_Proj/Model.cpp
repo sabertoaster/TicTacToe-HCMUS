@@ -175,7 +175,7 @@ void Player::move()
 	{
 		if (history.size() > 0)
 		{
-			if (AI == 0)
+			if (BruteForce == 0)
 			{
 				pair<int, int>his_xy = history.back();
 				re_history.push_back(his_xy);
@@ -222,7 +222,7 @@ void Player::move()
 	{
 		if (re_history.size() > 0)
 		{
-			if (AI == 0)
+			if (BruteForce == 0)
 			{
 				pair<int, int>his_xy = re_history.back();
 				history.push_back(his_xy);
@@ -309,7 +309,7 @@ void Player::move()
 	}
 
 	GotoXY(initCoor.X + (j - 1) * offSetX, initCoor.Y + (i - 1) * offSetY);
-	if (AI == 0)
+	if (BruteForce == 0)
 	{
 		if (a[i][j] == 0 && check_enter && !check_up && !check_down && !check_right && !check_left)
 		{
@@ -332,7 +332,7 @@ void Player::move()
 			history.push_back({ i,j });
 		}
 	}
-	if (AI == 1)
+	if (BruteForce == 1 || Minimax == 1) 
 	{
 		if (current_player == 1)
 		{
@@ -347,64 +347,71 @@ void Player::move()
 				history.push_back({ i,j });
 			}
 		}
-		else
+		else if(BruteForce == 1)
 		{
 			// duyet het cac o trong bang 16x16 luu lai o co nuoc di toi uu
-			//int  tmpi = 0, tmpj = 0; // tmpi , tmpj = i,j
-			//int ans = -1;   //tmpx, tmp initCoor.Y =initCoor.X,initCoor.Y;
-			//for (int _i = 1; _i <= 16; _i++)
-			//{
-			//	for (int _j = 1; _j <= 16; _j++)
-			//	{
-			//		if (a[_i][_j] != 0)
-			//		{
-			//			continue;
-			//		}
-			//		int tmp1 = solve(_i, _j, 1);
-			//		int tmp2 = solve(_i, _j, 2);
-			//		int tmp = tmp1 + tmp2;
-			//		if (tmp2 >= cal(5))
-			//		{
-			//			tmp += cal(7);
-			//		}
-			//		if (tmp1 >= cal(4) && tmp2 < cal(5))
-			//		{
-			//			tmp += cal(6);
-			//		}
-			//		if (tmp1 >= cal(3) && tmp1 < cal(4) && tmp2 < cal(4))
-			//		{
-			//			tmp = cal(4) - 1;
-			//		}
-			//		if (ans < tmp)
-			//		{
-			//			ans = tmp;
-			//			tmpi = _i, tmpj = _j;
-			//		}
-			//		else if (ans == tmp)
-			//		{
-			//			if (tmp1 > tmp2)
-			//			{
-			//				ans = tmp;
-			//				tmpi = _i, tmpj = _j;
-			//			}
-			//		}
-			//	}
-			//}
+			int  tmpi = 0, tmpj = 0; // tmpi , tmpj = i,j
+			int ans = -1;   //tmpx, tmp initCoor.Y =initCoor.X,initCoor.Y;
+			for (int _i = 1; _i <= 16; _i++)
+			{
+				for (int _j = 1; _j <= 16; _j++)
+				{
+					if (a[_i][_j] != 0)
+					{
+						continue;
+					}
+					int tmp1 = solve(_i, _j, 1);
+					int tmp2 = solve(_i, _j, 2);
+					int tmp = tmp1 + tmp2;
+					if (tmp2 >= cal(5))
+					{
+						tmp += cal(7);
+					}
+					if (tmp1 >= cal(4) && tmp2 < cal(5))
+					{
+						tmp += cal(6);
+					}
+					if (tmp1 >= cal(3) && tmp1 < cal(4) && tmp2 < cal(4))
+					{
+						tmp = cal(4) - 1;
+					}
+					if (ans < tmp)
+					{
+						ans = tmp;
+						tmpi = _i, tmpj = _j;
+					}
+					else if (ans == tmp)
+					{
+						if (tmp1 > tmp2)
+						{
+							ans = tmp;
+							tmpi = _i, tmpj = _j;
+						}
+					}
+				}
+			}
+
+			a[tmpi][tmpj] = 2;
+
+			GotoXY(initCoor.X + (tmpj - 1) * offSetX, initCoor.Y + (tmpi - 1) * offSetY);
+			draw_o();
+			visualizer.printAvatar('X', 1); // Visualize O's turn
+			visualizer.printAvatar('O', 0);
+
+			current_player = 1 - current_player;
+			check_enter = 0;
+			GotoXY(initCoor.X + (j - 1) * offSetX, initCoor.Y + (i - 1) * offSetY);
+			save_I = i; save_J = j;
+			i = tmpi; j = tmpj;
+			check_play_ai = 1;
+			history.push_back({ i,j });
+			//PlaySound(TEXT("SOUND GAME CARO\\click\\enter.wav"), NULL, SND_ASYNC);
+		}
+		else
+		{
 			pair<int, int>tmp = find_best_move();
 			int tmpi = tmp.first, tmpj = tmp.second;
 			a[tmpi][tmpj] = 2;
-			//debug AI
-		   //i = tmpi; j = tmpj;
-		   /*SetColor_2(7, 0);
-		   GotoXY(135, 25);
-		   cout << ans << "\n";
-		   GotoXY(0, 5);
-		   for (int _i = 1; _i <= 16; _i++)
-		   {
-			   for (int _j = 1; _j <= 16; _j++)
-				   cout << a[_i][_j] << " ";
-			   cout << '\n';
-		   }*/
 			GotoXY(initCoor.X + (tmpj - 1) * offSetX, initCoor.Y + (tmpi - 1) * offSetY);
 			draw_o();
 			visualizer.printAvatar('X', 1); // Visualize O's turn
@@ -946,7 +953,7 @@ void Player::load_game()
 	int so_tmp = string_to_number(number_name);
 	string name_game = name_saveload[so_tmp];
 	ifstream ci("file_game/" + name_game);
-	ci >> AI >> type >> current_player;
+	ci >> BruteForce >> type >> current_player;
 	for (int i = 1; i <= numcell; i++)
 		for (int j = 1; j <= numcell; j++)
 			ci >> a[i][j];
@@ -1023,7 +1030,7 @@ void Player::save_game()
 		} while (check_name);
 	}
 	ofstream fo("file_game/" + name_save);
-	fo << AI << " " << type << " " << current_player << "\n";
+	fo << BruteForce << " " << type << " " << current_player << "\n";
 	for (int i = 1; i <= numcell; i++)
 	{
 		for (int j = 1; j <= numcell; j++)
