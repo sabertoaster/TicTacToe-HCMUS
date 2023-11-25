@@ -43,7 +43,7 @@ void FixConsoleWindow()
 }
 
 void ModifyConsoleSize(int width, int height) {
-	// Create _POINT SMALL_RECT structure to define the new console size
+	// Create a SMALL_RECT structure to define the new console size
 	SMALL_RECT rect;
 	rect.Left = 0;
 	rect.Top = 0;
