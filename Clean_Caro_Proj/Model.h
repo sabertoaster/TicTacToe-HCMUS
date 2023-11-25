@@ -16,15 +16,15 @@ using namespace std;
 struct Player
 {
     COORD initCoor;
-    int i, j, a[100][100], current_player = 1, BruteForce = 0, offSetX = 4, offSetY = 2, numcell, type = 0, Minimax = 0;
+    int i, j, _POINT[100][100], current_player = 1, BruteForce = 0, offSetX = 4, offSetY = 2, numcell, type = 0, Minimax = 0;
     int check_saveload = 0;
     string ten_ban_dau = "";
     // initX y la vi tri con tro tren console
-    // i j la vi tri tren bang a
+    // i j la vi tri tren bang _POINT
     // player la luot cua nguoi choi x hoac o
     void khoitao()
     {
-        memset(a, 0, sizeof(a));
+        memset(_POINT, 0, sizeof(_POINT));
     }
     void move(); // vua di chuyen vua phat am thanh
     int check_win(); //
