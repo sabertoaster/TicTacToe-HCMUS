@@ -97,7 +97,8 @@ enum objID {
 	xMark,
 	oMark,
 	animation_x,
-	animation_o
+	animation_o,
+	cornerEsc
 };
 
 
@@ -112,6 +113,7 @@ objID string_hash(string const& inString) {
 	if (inString == "PlayerFrame") return playerFrame;
 	if (inString == "WinAnimation_X") return animation_x;
 	if (inString == "WinAnimation_O") return animation_o;
+	if (inString == "CornerEsc") return cornerEsc;
 }
 
 void Button::printButton() {
@@ -146,6 +148,53 @@ void Button::playScene() {
 }
 
 
+void OptionButton::playScene() {
+	wstring ws(buttonName);
+	string temp(ws.begin(), ws.end());
+
+	if (temp == DARKMODE_) {
+		opt.darkMode = (opt.darkMode == 0) ? 1 : 0;
+		return;
+	}
+	if (temp == MUSIC_) {
+		opt.soundFlag = (opt.soundFlag == 0) ? opt.muteFlag : 0;
+		PlayMusic("Beep");
+	}
+	if (temp == VFX_) {
+		opt.vfxFlag = (opt.vfxFlag == 0) ? opt.muteFlag : 0;
+		PlayMusic("Beep");
+		return;
+	}
+	return;
+}
+
+void OptionButton::printButton() {
+	_setmode(_fileno(stdout), _O_U16TEXT);
+	/*top layer*/
+	GotoXY(coord.X, coord.Y);
+	wcout << L"┌─";
+	for (int i = 0; i < nameLength; i++) {
+		wcout << L"─";
+	}
+	wcout << L"─┐";
+
+	/*mid layer*/
+	GotoXY(coord.X, coord.Y + 1);
+	wcout << L"│ ";
+	wcout << buttonName;
+	wcout << L" │";
+
+	/*bot layer*/
+	GotoXY(coord.X, coord.Y + 2);
+	wcout << L"└─";
+	for (int i = 0; i < nameLength; i++) {
+		wcout << L"─";
+	}
+	wcout << L"─┘";
+	_setmode(_fileno(stdout), _O_TEXT);
+}
+
+
 // [define visualizer func]
 void Visualizer::printLogo(string str) {
 	COORD currentCoord = GetConsoleCursorPosition();
@@ -177,6 +226,21 @@ void Visualizer::printLogo(string str) {
 		break;
 	}
 }
+
+void Visualizer::printCornerEsc() {
+	_setmode(_fileno(stdout), _O_U16TEXT);
+
+	GotoXY(3, 2);
+	wcout << L"┌─────┐";
+	GotoXY(3, 3);
+	wcout << L"│ Esc │";
+	GotoXY(3, 4);
+	wcout << L"└─────┘";
+
+	_setmode(_fileno(stdout), _O_TEXT);
+}
+
+
 void Visualizer::printBackground(int width, int height) {
 	SetConsoleTextAttribute(hConsoleOutput, 15);
 	//wcout << L"Width" << csbi.dwSize.X << L"Height" << csbi.dwSize.Y << endl; //test width and height of console
@@ -487,13 +551,22 @@ void Visualizer::printWinAnimation(char avt, int waveWidth, int initNumChar, COO
 void Visualizer::printWinStreak(char avt, vector<COORD> winCoord, COORD initCoor) {
 	_setmode(_fileno(stdout), _O_TEXT);
 	ShowConsoleCursor(false);
-	for (int j = 0; j < 25; j++) {
+	int colorArr[2];
+	if (avt == 'X') {
+		colorArr[0] = 65;
+		colorArr[1] = 244;
+	}
+	else {
+		colorArr[0] = 20;
+		colorArr[1] = 241;
+	}
+	for (int j = 0; j < 20; j++) {
 		for (int i = 0; i < winCoord.size(); i++) {
-			GotoXY(initCoor.X + 4 *(winCoord[i].X - 1), initCoor.Y + 2 * (winCoord[i].Y - 1));
-			SetConsoleTextAttribute(hConsoleOutput, colorArr[j % 8] - 50);
+			GotoXY(initCoor.X + 4 * (winCoord[i].X - 1), initCoor.Y + 2 * (winCoord[i].Y - 1));
+			SetConsoleTextAttribute(hConsoleOutput, colorArr[(j % 2)]);
 			cout << avt;
 		}
-		Sleep(300);
+		Sleep(110);
 	}
 	_setmode(_fileno(stdout), _O_TEXT);
 }
@@ -501,6 +574,17 @@ void Visualizer::printButton() { //[saber]
 	for (auto i : buttons) {
 		i.printButton();
 	}
+}
+
+void Visualizer::printRadioBtn(COORD coor, bool status) {
+	_setmode(_fileno(stdout), _O_U16TEXT);
+	GotoXY(coor.X, coor.Y);
+	wcout << L"┌───┐";
+	GotoXY(coor.X, coor.Y + 1);
+	wcout << L"│"; if (status == true) wcout << L" ■ "; else wcout << L"   "; wcout << L"│";
+	GotoXY(coor.X, coor.Y + 2);
+	wcout << L"└───┘";
+	_setmode(_fileno(stdout), _O_TEXT);
 }
 
 void Visualizer::printBoardCanvas(int numCell) {
@@ -579,7 +663,8 @@ void DrawObject(string objName) {
 		GotoXY(120, 3);
 		visualizer.printPlayerFrame('O');
 		break;
-
+	case cornerEsc:
+		visualizer.printCornerEsc();
 	default:
 		break;
 	}
@@ -607,7 +692,7 @@ void SceneHandle(string sceneName) {
 		return;
 	}
 	if (sceneName == "OPTIONS") {
-		StartMenu();
+		StartOption();
 		return;
 	}
 	if (sceneName == "HELP") {

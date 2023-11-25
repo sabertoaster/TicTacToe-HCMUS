@@ -43,6 +43,10 @@ public:
 	//next scene operations [saber]
 };
 
+struct OptionButton : Button {
+	void playScene();
+	void printButton();
+};
 
 #include "Control.h"
 
@@ -86,6 +90,7 @@ public:
 	}
 
 	void printLogo(string str);
+	void printCornerEsc();
 	void printBackground(int width, int height);
 	void printMenuBorder();
 	void printBorder();
@@ -96,6 +101,8 @@ public:
 	void printWinAnimation(char, int, int, COORD);
 	void printWinStreak(char, vector<COORD>, COORD);
 	void printButton();
+
+	void printRadioBtn(COORD, bool state);
 
 	void printBoardCanvas(int numCell);
 };

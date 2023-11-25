@@ -262,11 +262,11 @@ void Player::move()
 	}
 	if (check_up || check_down || check_right || check_left)
 	{
-		PlaySound(TEXT("SOUND GAME CARO\\click\\click1.wav"), NULL, SND_ASYNC);
+		PlaySound(TEXT("SOUND GAME CARO\\click\\click1.wav"), NULL, SND_ASYNC | opt.vfxFlag);
 	}
 	if (check_enter)
 	{
-		PlaySound(TEXT("SOUND GAME CARO\\click\\enter.wav"), NULL, SND_ASYNC);
+		PlaySound(TEXT("SOUND GAME CARO\\click\\enter.wav"), NULL, SND_ASYNC | opt.vfxFlag);
 	}
 	if (check_enter == 1 && _POINT[i][j] != 0)
 		check_enter = 0;
@@ -424,7 +424,7 @@ void Player::move()
 			i = tmpi; j = tmpj;
 			check_play_ai = 1;
 			history.push_back({ i,j });
-			PlaySound(TEXT("SOUND GAME CARO\\click\\enter.wav"), NULL, SND_ASYNC);
+			PlaySound(TEXT("SOUND GAME CARO\\click\\enter.wav"), NULL, SND_ASYNC | opt.vfxFlag);
 		}
 	}
 
@@ -2059,14 +2059,7 @@ void Player::play()
 		{
 			/*draw_x_win();*/
 			winner = 1;// player X = 1
-			GotoXY(56, 2);
-			int i = 0;
-			for (auto x : winningCoord)
-			{
-				GotoXY(56 , 2 + i);
-				i++;
-				cout << x.X << " " << x.Y << '\n';
-			}
+			PlayMusic("Victory");
 			visualizer.printWinStreak('X', winningCoord, initCoor);
 			SceneHandle("WinScene_X");
 		}
@@ -2074,14 +2067,7 @@ void Player::play()
 		{
 			/*draw_o_win();*/
 			winner = 2;// player O = 2
-			GotoXY(56, 2);
-			int i = 0;
-			for (auto x : winningCoord)
-			{
-				GotoXY(56, 2 + i);
-				i++;
-				cout << x.X << " " << x.Y << '\n';
-			}
+			PlayMusic("Victory");
 			visualizer.printWinStreak('O', winningCoord, initCoor);
 			SceneHandle("WinScene_O");
 		}

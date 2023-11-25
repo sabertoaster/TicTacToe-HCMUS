@@ -17,25 +17,47 @@ void Pointer::startIndexing(string cmd, vector<Button> ptrTemp) {
 	cout << ">>";
 }
 
+void Pointer::startIndexingOptions(string cmd, vector<OptionButton> ptrTemp) {
+	GotoXY(ptrTemp[id].coord.X - 9, ptrTemp[id].coord.Y + 1);
+	cout << "  "; // delete the old pointer
+	if (cmd == "") {
+		id = 0;
+	}
+	else if (cmd == "next") {
+		id = ptrTemp[id].nextBtn->id;
+	}
+	else if (cmd == "prev") {
+		id = ptrTemp[id].prevBtn->id;
+	}
+	GotoXY(ptrTemp[id].coord.X - 9, ptrTemp[id].coord.Y + 1);
+	changeFontColor(white, black);
+	cout << ">>";
+}
+
 
 void Pointer::checkEnter(string str) {
 	if (str == "Menu") {
 		ptrBtnList[id].playScene();
-		_getch();
 		return;
 	}
 	if (str == "PlayScene") {
 		ptrChoosePlayer[id].playScene();
-		_getch();
 		return;
 	}
 	if (str == "AfterPlay") {
 		ptrAfterPlay[id].playScene();
-		_getch();
+		return;
+	}
+	if (str == "Options") {
+		ptrOptions[id].playScene();
 		return;
 	}
 }
 Pointer pointer;
+
+Options opt;
+
+
 void GotoXY(int x, int y)
 {
 	COORD coord;
@@ -56,6 +78,11 @@ void InitializeData() {
 	Button helpBtn(L"HELP");
 	Button aboutBtn(L"ABOUT");
 	Button exitBtn(L"EXIT");
+
+	OptionButton darkModeBtn(L"Dark Mode Toggle");
+	OptionButton musicBtn(L"Background Music Toggle");
+	OptionButton vfxBtn(L"Effect Music Toggle");
+
 	playBtn.coord.X = 80;
 	playBtn.coord.Y = 10;
 	int offset = 5;
@@ -106,15 +133,37 @@ void InitializeData() {
 		pointer.ptrAfterPlay[i].nextBtn = &(pointer.ptrAfterPlay[nextIndex]);
 		pointer.ptrAfterPlay[nextIndex].prevBtn = &(pointer.ptrAfterPlay[i]);
 	}
+
+	darkModeBtn.coord.X = 60;
+	darkModeBtn.coord.Y = 8;
+	offset = 8;
+	pointer.ptrOptions = { darkModeBtn, musicBtn, vfxBtn };
+	for (int i = 0; i < pointer.ptrOptions.size(); i++) { // [FIXED REMOVE BUTTONS FROM VISUALIZER
+		pointer.ptrOptions[i].id = i;
+
+		int nextIndex = (i + 1) % pointer.ptrOptions.size();
+
+		pointer.ptrOptions[i].coord.X = pointer.ptrOptions[0].coord.X;
+		pointer.ptrOptions[i].coord.Y = pointer.ptrOptions[0].coord.Y + offset * i;
+
+		pointer.ptrOptions[i].nextBtn = &(pointer.ptrOptions[nextIndex]);
+		pointer.ptrOptions[nextIndex].prevBtn = &(pointer.ptrOptions[i]);
+	}
 }
+
+
 void PlayMusic(string cmd) {
 	if (cmd == "Background") {
-		PlaySound(TEXT("SOUND GAME CARO\\music\\nhacnen.wav"), NULL, SND_LOOP | SND_ASYNC);
+		PlaySound(TEXT("SOUND GAME CARO\\music\\nhacnen.wav"), NULL, SND_LOOP | SND_ASYNC | opt.soundFlag);
 		return;
 	}
 	if (cmd == "Victory") {
-		PlaySound(TEXT("SOUND GAME CARO\\music\\victory.wav"), NULL, SND_ASYNC);
-		PlaySound(TEXT("SOUND GAME CARO\\music\\nhacnen.wav"), NULL, SND_LOOP | SND_ASYNC);
+		PlaySound(TEXT("SOUND GAME CARO\\music\\victory.wav"), NULL, SND_ASYNC | opt.vfxFlag);
+		return;
+	}
+	if (cmd == "Beep") {
+		PlaySound(TEXT("SOUND GAME CARO\\click\\enter1.wav"), NULL, SND_SYNC | opt.vfxFlag);
+		PlaySound(nullptr, nullptr, 0);
 		return;
 	}
 }
@@ -135,7 +184,7 @@ void StartPlay() {
 	}
 
 	pointer.startIndexing("", pointer.ptrChoosePlayer);
-	bool _checkNotEnter = true;
+	bool _checkNotEnter = true, _checkEsc = false;
 	while (_checkNotEnter)
 	{
 		if (_kbhit())
@@ -154,12 +203,18 @@ void StartPlay() {
 			case 13: //Enter ASCII value of enter
 				_checkNotEnter = false;
 				break;
+			case 27:
+				_checkEsc = true;
+				_checkNotEnter = false;
+				break;
 			default:
 				break;
 			};
 		}
 	}
-	pointer.checkEnter("PlayScene"); // redirect to pve or pvp
+	if (!_checkEsc)
+		pointer.checkEnter("PlayScene"); // redirect to pve or pvp
+	else SceneHandle("MAIN MENU");
 }
 
 void StartMatchScene(string matchType) {
@@ -179,6 +234,7 @@ void StartMatchScene(string matchType) {
 }
 
 void StartWinScene(char player) {
+	PlayMusic("Background");
 	ShowConsoleCursor(false);
 	DrawObject("Background");
 	DrawObject("Border");
@@ -301,16 +357,77 @@ void StartMenu() {
 	pointer.checkEnter("Menu");
 }
 
+void StartOption() {
+	DrawObject("Background");
+	DrawObject("Border");
+	DrawObject("CornerEsc");
+	for (auto i : pointer.ptrOptions) { //Visualize Btn;
+		i.printButton();
+		bool state = false;
+		switch (i.id) {
+		case 0:
+			state = opt.darkMode;
+			break;
+		case 1: 
+			state = (opt.soundFlag != opt.muteFlag);
+			break;
+		case 2:
+			state = (opt.vfxFlag != opt.muteFlag);
+		default:
+			break;
+		}
+		COORD temp = i.coord;
+		temp.X -= 6;
+		visualizer.printRadioBtn(temp, state);
+	}
+
+	pointer.startIndexingOptions("", pointer.ptrOptions);
+
+
+
+	bool _checkNotEnter = true, _checkEsc = false;
+	while (_checkNotEnter)
+	{
+		if (_kbhit())
+		{
+			switch (_getch())
+			{
+			case 'a':
+			case 'w':
+				pointer.startIndexingOptions("prev", pointer.ptrOptions);
+				break;
+			case 's':
+			case 'd':
+				pointer.startIndexingOptions("next", pointer.ptrOptions);
+				break;
+			case 13: //Enter ASCII value of enter
+				_checkNotEnter = false;
+				pointer.checkEnter("Options");
+				break;
+			case 27: //ASCII value of escape
+				_checkNotEnter = false;
+				_checkEsc = true;
+			default:
+				break;
+			};
+		}
+	}
+	if (!_checkEsc)
+		SceneHandle("OPTIONS");
+	else SceneHandle("MAIN MENU");
+}
+
 void StartHelp() {
 	DrawObject("Background");
 	DrawObject("Border");
+	DrawObject("CornerEsc");
 	GotoXY(65, 1);
 	DrawObject("Help_Logo");
 
 	COORD helpTextCoor;
 	helpTextCoor.X = 30;
 	helpTextCoor.Y = 10;
-	const char* helpText[18] = { "Player Movement: ","'W': Go up","'S': Go down","'A': Go left","'D': Go right","'Enter': Mark","", "Command Key:","'P': Save game","'Z': Undo the last move", "'Esc': Halt the game","" ,"Caro is the game using the X and O symbols to represent players and followed by a set of rules: ", "1. Two players play against each other on 16 x 16 grid.", "2. \"X\" player gets to take the first turn followed by \"O\" player.", "3. Players take turns placing their symbol on an open intersection on the board.", "4. The player that manages to create five in a row first wins the round.", "   The row can be horizontal, vertical, or diagonal as long as it is continuous." };
+	const char* helpText[18] = { "Player Movement: ","'W': Go up","'S': Go down","'A': Go left","'D': Go right","'Enter': Mark","", "Command Key:","'P': Save game","'Z': Undo the last move", "'Esc': Halt the game/ Return to the previous scene of the game","" ,"Caro is the game using the X and O symbols to represent players and followed by a set of rules: ", "1. Two players play against each other on 16 x 16 grid.", "2. \"X\" player gets to take the first turn followed by \"O\" player.", "3. Players take turns placing their symbol on an open intersection on the board.", "4. The player that manages to create five in a row first wins the round.", "   The row can be horizontal, vertical, or diagonal as long as it is continuous." };
 
 	/*
 	Player Movement:
@@ -362,12 +479,14 @@ void StartAbout() {
 
 	DrawObject("Background");
 	DrawObject("Border");
+	DrawObject("CornerEsc");
 	GotoXY(62, 1);
 	DrawObject("About_Logo");
 	_setmode(_fileno(stdout), _O_U16TEXT);
 	const wchar_t* avtStorage[5] = { L"      ▄▀ ", L" █▀▀▀█▀█ ", L"  ▀▄░▄▀  ", L"    █    ", L"  ▄▄█▄▄  " };
+	const wchar_t* mainAvtStorage[5] = { L"▄   ▄   ▄", L"█  █▀█  █", L"█▀▀▀█▀▀▀█", L"█ ▀▄ ▄▀ █", L"▀▀▄▄▄▄▄▀▀"};
 	COORD tableCoord;
-	tableCoord.X = 65;
+	tableCoord.X = 60;
 	tableCoord.Y = 10;
 
 	int i = 0, offset = 6;
@@ -377,40 +496,40 @@ void StartAbout() {
 
 	GotoXY(tableCoord.X, tableCoord.Y + i);
 	for (int j = 0; j < 5; j++) {
-		GotoXY(tableCoord.X - 9, tableCoord.Y + i + j);
-		wcout << avtStorage[j];
+		GotoXY(tableCoord.X - 10, tableCoord.Y + i + j);
+		wcout << mainAvtStorage[j];
 	}
 	GotoXY(tableCoord.X, tableCoord.Y + i + 2);
-	wcout << L"23122008 - Mai Duc Minh Huy" << endl;
+	wcout << L"23122008 - Mai Duc Minh Huy \t Leader - Graphic Designer - God" << endl;
 	i += offset;
 
 
 	GotoXY(tableCoord.X, tableCoord.Y + i);
 	for (int j = 0; j < 5; j++) {
-		GotoXY(tableCoord.X - 9, tableCoord.Y + i + j);
+		GotoXY(tableCoord.X - 10, tableCoord.Y + i + j);
 		wcout << avtStorage[j];
 	}
 	GotoXY(tableCoord.X, tableCoord.Y + i + 2);
-	wcout << L"23122033 - Le Hoang Minh Huy" << endl;
+	wcout << L"23122033 - Le Hoang Minh Huy \t Mechanic and Feature Sub Dev" << endl;
 	i += offset;
 
 
 	GotoXY(tableCoord.X, tableCoord.Y + i);
 	for (int j = 0; j < 5; j++) {
-		GotoXY(tableCoord.X - 9, tableCoord.Y + i + j);
+		GotoXY(tableCoord.X - 10, tableCoord.Y + i + j);
 		wcout << avtStorage[j];
 	}
 	GotoXY(tableCoord.X, tableCoord.Y + i + 2);
-	wcout << L"23122036 - Nguyen Ngoc Khoa" << endl;
+	wcout << L"23122036 - Nguyen Ngoc Khoa \t Mechanic and Feature Sub Dev" << endl;
 	i += offset;
 
 	GotoXY(tableCoord.X, tableCoord.Y + i);
 	for (int j = 0; j < 5; j++) {
-		GotoXY(tableCoord.X - 9, tableCoord.Y + i + j);
+		GotoXY(tableCoord.X - 10, tableCoord.Y + i + j);
 		wcout << avtStorage[j];
 	}
 	GotoXY(tableCoord.X, tableCoord.Y + i + 2);
-	wcout << L"23122039 - Huynh Trung Kiet" << endl;
+	wcout << L"23122039 - Huynh Trung Kiet \t Mechanic and Feature Core Dev - Audio collector" << endl;
 
 	bool _checkNotEnter = true;
 	while (_checkNotEnter)
