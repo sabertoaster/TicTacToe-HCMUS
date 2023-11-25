@@ -94,6 +94,7 @@ public:
 
 	void printBackgroundAnimation(int index, int coorX, int coorY);
 	void printWinAnimation(char, int, int, COORD);
+	void printWinStreak(char, vector<COORD>, COORD);
 	void printButton();
 
 	void printBoardCanvas(int numCell);

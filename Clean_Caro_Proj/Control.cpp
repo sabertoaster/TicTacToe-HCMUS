@@ -310,7 +310,7 @@ void StartHelp() {
 	COORD helpTextCoor;
 	helpTextCoor.X = 30;
 	helpTextCoor.Y = 10;
-	const char* helpText[18] = { "Player Movement: ","'W': Go up","'S': Go down","'A': Go left","'D': Go right","'Enter': Mark","", "Command Key:","'P': Save game","'Z': Undo the last move", "'Esc': Halt the game","" ,"Caro is the game using the X and O symbols to represent players and followed by a set of rules: ", "3. Two players play against each other on 15 x 15 or 19 x 19 grid.", "4. \"X\" player gets to take the first turn followed by \"O\" player.", "5. Players take turns placing their symbol on an open intersection on the board.", "6. The player that manages to create five in a row first wins the round.", "   The row can be horizontal, vertical, or diagonal as long as it is continuous." };
+	const char* helpText[18] = { "Player Movement: ","'W': Go up","'S': Go down","'A': Go left","'D': Go right","'Enter': Mark","", "Command Key:","'P': Save game","'Z': Undo the last move", "'Esc': Halt the game","" ,"Caro is the game using the X and O symbols to represent players and followed by a set of rules: ", "1. Two players play against each other on 16 x 16 grid.", "2. \"X\" player gets to take the first turn followed by \"O\" player.", "3. Players take turns placing their symbol on an open intersection on the board.", "4. The player that manages to create five in a row first wins the round.", "   The row can be horizontal, vertical, or diagonal as long as it is continuous." };
 
 	/*
 	Player Movement:

@@ -406,75 +406,75 @@ void Visualizer::printWinAnimation(char avt, int waveWidth, int initNumChar, COO
 	int vtcShift = 0, hrztShift = 0; // verticalShift
 	switch (avt) {
 	case 'X':
-			initNumChar += 2;
-			if (initNumChar % 20 == 0) {
-				initNumChar = 0;
-			}
-			SetConsoleTextAttribute(hConsoleOutput, 240);
-			/*GotoXY(animPivot.X, animPivot.Y);
-			for (int j = 0; j < 8; j++) {
-				GotoXY(animPivot.X, animPivot.Y + j);
-				for (int i = 0; i < 160; i++) {
-					wcout << L" ";
-				}
-			}*/
-			GotoXY(animPivot.X, animPivot.Y);
-			for (int j = 0; j < 157; j++) {
+		initNumChar += 2;
+		if (initNumChar % 20 == 0) {
+			initNumChar = 0;
+		}
+		SetConsoleTextAttribute(hConsoleOutput, 240);
+		/*GotoXY(animPivot.X, animPivot.Y);
+		for (int j = 0; j < 8; j++) {
+			GotoXY(animPivot.X, animPivot.Y + j);
+			for (int i = 0; i < 160; i++) {
 				wcout << L" ";
 			}
-			GotoXY(animPivot.X, animPivot.Y + 8);
-			for (int j = 0; j < 157; j++) {
-				wcout << L" ";
-			}
+		}*/
+		GotoXY(animPivot.X, animPivot.Y);
+		for (int j = 0; j < 157; j++) {
+			wcout << L" ";
+		}
+		GotoXY(animPivot.X, animPivot.Y + 8);
+		for (int j = 0; j < 157; j++) {
+			wcout << L" ";
+		}
 
 
-			GotoXY(animPivot.X, animPivot.Y);
-			for (int i = 0; i < 8; i++) {// [hard-code]
-				SetConsoleTextAttribute(hConsoleOutput, colorArr[(i + initNumChar) % 8]);
-				GotoXY(animPivot.X, animPivot.Y + i);
-				hrztShift = vtcShift;
-				for (int j = 0; j < 157; j++) {// [hard-code]
-					if ((j + abs(waveWidth - initNumChar)) % waveWidth == 0) {
-						hrztShift = 1 - hrztShift;
-						COORD currentPos = GetConsoleCursorPosition();
-						GotoXY(currentPos.X, animPivot.Y + i + hrztShift);
-					}
-					wcout << winnerXBanner[i][j];
+		GotoXY(animPivot.X, animPivot.Y);
+		for (int i = 0; i < 8; i++) {// [hard-code]
+			SetConsoleTextAttribute(hConsoleOutput, colorArr[(i + initNumChar) % 8]);
+			GotoXY(animPivot.X, animPivot.Y + i);
+			hrztShift = vtcShift;
+			for (int j = 0; j < 157; j++) {// [hard-code]
+				if ((j + abs(waveWidth - initNumChar)) % waveWidth == 0) {
+					hrztShift = 1 - hrztShift;
+					COORD currentPos = GetConsoleCursorPosition();
+					GotoXY(currentPos.X, animPivot.Y + i + hrztShift);
 				}
+				wcout << winnerXBanner[i][j];
 			}
+		}
 
-			Sleep(100);
+		Sleep(100);
 		break;
 	case 'O':
-			initNumChar += 2;
-			if (initNumChar % 20 == 0) {
-				initNumChar = 0;
-			}
-			SetConsoleTextAttribute(hConsoleOutput, 240);
-			GotoXY(animPivot.X, animPivot.Y);
-			for (int j = 0; j < 150; j++) {
-				wcout << L" ";
-			}
-			GotoXY(animPivot.X, animPivot.Y + 8);
-			for (int j = 0; j < 150; j++) {
-				wcout << L" ";
-			}
-			GotoXY(animPivot.X, animPivot.Y);
-			for (int i = 0; i < 8; i++) {// [hard-code]
-				SetConsoleTextAttribute(hConsoleOutput, colorArr[(i + initNumChar) % 8]);
-				GotoXY(animPivot.X, animPivot.Y + i);
-				hrztShift = vtcShift;
-				for (int j = 0; j < 146; j++) {// [hard-code]
-					if ((j + (waveWidth - initNumChar)) % waveWidth == 0) {
-						hrztShift = 1 - hrztShift;
-						COORD currentPos = GetConsoleCursorPosition();
-						GotoXY(currentPos.X, animPivot.Y + i + hrztShift);
-					}
-					wcout << winnerOBanner[i][j];
+		initNumChar += 2;
+		if (initNumChar % 20 == 0) {
+			initNumChar = 0;
+		}
+		SetConsoleTextAttribute(hConsoleOutput, 240);
+		GotoXY(animPivot.X, animPivot.Y);
+		for (int j = 0; j < 150; j++) {
+			wcout << L" ";
+		}
+		GotoXY(animPivot.X, animPivot.Y + 8);
+		for (int j = 0; j < 150; j++) {
+			wcout << L" ";
+		}
+		GotoXY(animPivot.X, animPivot.Y);
+		for (int i = 0; i < 8; i++) {// [hard-code]
+			SetConsoleTextAttribute(hConsoleOutput, colorArr[(i + initNumChar) % 8]);
+			GotoXY(animPivot.X, animPivot.Y + i);
+			hrztShift = vtcShift;
+			for (int j = 0; j < 146; j++) {// [hard-code]
+				if ((j + (waveWidth - initNumChar)) % waveWidth == 0) {
+					hrztShift = 1 - hrztShift;
+					COORD currentPos = GetConsoleCursorPosition();
+					GotoXY(currentPos.X, animPivot.Y + i + hrztShift);
 				}
+				wcout << winnerOBanner[i][j];
 			}
+		}
 
-			Sleep(100);
+		Sleep(100);
 		break;
 	default:
 		break;
@@ -484,6 +484,19 @@ void Visualizer::printWinAnimation(char avt, int waveWidth, int initNumChar, COO
 	_setmode(_fileno(stdout), _O_TEXT);
 }
 
+void Visualizer::printWinStreak(char avt, vector<COORD> winCoord, COORD initCoor) {
+	_setmode(_fileno(stdout), _O_TEXT);
+	ShowConsoleCursor(false);
+	for (int j = 0; j < 25; j++) {
+		for (int i = 0; i < winCoord.size(); i++) {
+			GotoXY(initCoor.X + 4 *(winCoord[i].X - 1), initCoor.Y + 2 * (winCoord[i].Y - 1));
+			SetConsoleTextAttribute(hConsoleOutput, colorArr[j % 8] - 50);
+			cout << avt;
+		}
+		Sleep(300);
+	}
+	_setmode(_fileno(stdout), _O_TEXT);
+}
 void Visualizer::printButton() { //[saber]
 	for (auto i : buttons) {
 		i.printButton();
@@ -566,7 +579,7 @@ void DrawObject(string objName) {
 		GotoXY(120, 3);
 		visualizer.printPlayerFrame('O');
 		break;
-	
+
 	default:
 		break;
 	}

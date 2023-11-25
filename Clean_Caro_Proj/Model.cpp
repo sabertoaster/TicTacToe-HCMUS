@@ -2028,13 +2028,9 @@ void Player::play()
 			update_namegame();
 		selectWinStreak();
 
-		//GotoXY(0, 0); [Kiet - Vector victory _ animate]
-		//for (auto x : winningCoord)
-		//{
-		//    cout << x.X << " " << x.Y << '\n';
-		//}
-		// 
-		// 
+		/*GotoXY(0, 0); [Kiet - Vector victory _ animate]*/
+		
+		 
 		// tran dau da co nguoi win => di kiem tra a[i][j]
 		// neu a[i][j] == 1 thi x win
 		// a[i][j] == 2 thi o win 
@@ -2043,12 +2039,30 @@ void Player::play()
 		{
 			/*draw_x_win();*/
 			winner = 1;// player X = 1
+			GotoXY(56, 2);
+			int i = 0;
+			for (auto x : winningCoord)
+			{
+				GotoXY(56 , 2 + i);
+				i++;
+				cout << x.X << " " << x.Y << '\n';
+			}
+			visualizer.printWinStreak('X', winningCoord, initCoor);
 			SceneHandle("WinScene_X");
 		}
 		else
 		{
 			/*draw_o_win();*/
 			winner = 2;// player O = 2
+			GotoXY(56, 2);
+			int i = 0;
+			for (auto x : winningCoord)
+			{
+				GotoXY(56, 2 + i);
+				i++;
+				cout << x.X << " " << x.Y << '\n';
+			}
+			visualizer.printWinStreak('O', winningCoord, initCoor);
 			SceneHandle("WinScene_O");
 		}
 	}
