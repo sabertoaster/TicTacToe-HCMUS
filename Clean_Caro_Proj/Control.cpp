@@ -1,4 +1,4 @@
-#include "Control.h"
+﻿#include "Control.h"
 
 void Pointer::startIndexing(string cmd, vector<Button> ptrTemp) {
 	GotoXY(ptrTemp[id].coord.X - 2, ptrTemp[id].coord.Y + 1);
@@ -107,7 +107,17 @@ void InitializeData() {
 		pointer.ptrAfterPlay[nextIndex].prevBtn = &(pointer.ptrAfterPlay[i]);
 	}
 }
-
+void PlayMusic(string cmd) {
+	if (cmd == "Background") {
+		PlaySound(TEXT("SOUND GAME CARO\\music\\nhacnen.wav"), NULL, SND_LOOP | SND_ASYNC);
+		return;
+	}
+	if (cmd == "Victory") {
+		PlaySound(TEXT("SOUND GAME CARO\\music\\victory.wav"), NULL, SND_ASYNC);
+		PlaySound(TEXT("SOUND GAME CARO\\music\\nhacnen.wav"), NULL, SND_LOOP | SND_ASYNC);
+		return;
+	}
+}
 void StartGame() {
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	system("cls");
@@ -218,6 +228,7 @@ void StartWinScene(char player) {
 		}
 
 	}
+	/*PlayMusic("Victory");*/
 	pointer.checkEnter("AfterPlay");
 
 	//SceneHandle("MAIN MENU");
@@ -229,13 +240,11 @@ void StartExit() {
 
 
 
-void PlayMusic() {
-	PlaySound(TEXT("SOUND GAME CARO\\music\\nhacnen.wav"), NULL, SND_LOOP | SND_ASYNC);
-}
+
 
 void StartMenu() {
 	ShowConsoleCursor(false);
-	PlayMusic();
+	PlayMusic("Background");
 	DrawObject("Background");
 	visualizer.printMenuBorder(); // [temporary]
 	GotoXY(68, 1);
@@ -318,7 +327,7 @@ void StartHelp() {
 
 	1. Caro is played using the Xand O symbol.
 	2. Two players play against each other on 15 x 15 or 19 x 19 grid.
-	3. The player representing the �X� symbol gets to take the first turn followed by the player representing the �O� symbol.
+	3. The player representing the “X” symbol gets to take the first turn followed by the player representing the “O” symbol.
 	4. Players take turns placing their symbol on an open intersetion on the board.
 	5. The player that manages to create five in a row first wins the round.The row can be horizontal, vertical, or diagonal as long as it is unbroken.
 	6. Once a player places a symbol on the board, the symbol cannot be moved or changed.*/
@@ -349,24 +358,59 @@ void StartHelp() {
 }
 
 void StartAbout() {
+	//set to UTF16 text cout
+
 	DrawObject("Background");
 	DrawObject("Border");
 	GotoXY(62, 1);
 	DrawObject("About_Logo");
-
+	_setmode(_fileno(stdout), _O_U16TEXT);
+	const wchar_t* avtStorage[5] = { L"      ▄▀ ", L" █▀▀▀█▀█ ", L"  ▀▄░▄▀  ", L"    █    ", L"  ▄▄█▄▄  " };
 	COORD tableCoord;
-	tableCoord.X = 62;
+	tableCoord.X = 65;
 	tableCoord.Y = 10;
-	GotoXY(tableCoord.X, tableCoord.Y);
-	cout << "Bring to you by the 2nd group 23TNT1 - Advisor: Truong Toan Thinh" << endl;
-	GotoXY(tableCoord.X, tableCoord.Y + 1);
-	cout << "23122008 - Mai Duc Minh Huy" << endl;
-	GotoXY(tableCoord.X, tableCoord.Y + 2);
-	cout << "23122033 - Le Hoang Minh Huy" << endl;
-	GotoXY(tableCoord.X, tableCoord.Y + 3);
-	cout << "23122036 - Nguyen Ngoc Khoa" << endl;
-	GotoXY(tableCoord.X, tableCoord.Y + 4);
-	cout << "23122039 - Huynh Trung Kiet" << endl;
+
+	int i = 0, offset = 6;
+	GotoXY(tableCoord.X - 9, tableCoord.Y);
+	wcout << L"Bring to you by the 2nd group 23TNT1 - Advisor: Truong Toan Thinh" << endl;
+	i = i + 2;
+
+	GotoXY(tableCoord.X, tableCoord.Y + i);
+	for (int j = 0; j < 5; j++) {
+		GotoXY(tableCoord.X - 9, tableCoord.Y + i + j);
+		wcout << avtStorage[j];
+	}
+	GotoXY(tableCoord.X, tableCoord.Y + i + 2);
+	wcout << L"23122008 - Mai Duc Minh Huy" << endl;
+	i += offset;
+
+
+	GotoXY(tableCoord.X, tableCoord.Y + i);
+	for (int j = 0; j < 5; j++) {
+		GotoXY(tableCoord.X - 9, tableCoord.Y + i + j);
+		wcout << avtStorage[j];
+	}
+	GotoXY(tableCoord.X, tableCoord.Y + i + 2);
+	wcout << L"23122033 - Le Hoang Minh Huy" << endl;
+	i += offset;
+
+
+	GotoXY(tableCoord.X, tableCoord.Y + i);
+	for (int j = 0; j < 5; j++) {
+		GotoXY(tableCoord.X - 9, tableCoord.Y + i + j);
+		wcout << avtStorage[j];
+	}
+	GotoXY(tableCoord.X, tableCoord.Y + i + 2);
+	wcout << L"23122036 - Nguyen Ngoc Khoa" << endl;
+	i += offset;
+
+	GotoXY(tableCoord.X, tableCoord.Y + i);
+	for (int j = 0; j < 5; j++) {
+		GotoXY(tableCoord.X - 9, tableCoord.Y + i + j);
+		wcout << avtStorage[j];
+	}
+	GotoXY(tableCoord.X, tableCoord.Y + i + 2);
+	wcout << L"23122039 - Huynh Trung Kiet" << endl;
 
 	bool _checkNotEnter = true;
 	while (_checkNotEnter)
@@ -385,7 +429,7 @@ void StartAbout() {
 			};
 		}
 	}
-
+	_setmode(_fileno(stdout), _O_TEXT);//set to UTF16 text cout
 	SceneHandle("MAIN MENU");
 }
 void StartLoad()

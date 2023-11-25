@@ -31,6 +31,8 @@ void GotoXY(int x, int y);
 
 void InitializeData();
 
+void PlayMusic(string);
+
 void StartGame();
 
 void StartPlay();
