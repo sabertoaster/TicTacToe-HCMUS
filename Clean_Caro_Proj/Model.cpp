@@ -911,14 +911,20 @@ void Player::print_display_loadgame(string name_saveload[], int count_name)
 		cout << i << " " << name_saveload[i];
 	}
 	GotoXY(xconsole, yconsole + offSetY * (count_name + 1));
-	changeFontColor(white, red);
+	if (opt.darkMode == 1)
+		changeFontColor(black, pink);
+	else
+		changeFontColor(white, red);
 	if (count_name == 1)
 		cout << "Khong co file luu game nao [ Vui long nhap so 0 de thoat ]";
 	else if (count_name == 2)
 		cout << "Vui long nhap so 1 ";
 	else
 		cout << "Vui long nhap so tu 1 den " << count_name - 1;
-	changeFontColor(white, black);
+	if (opt.darkMode == 1)
+		changeFontColor(black, white);
+	else
+		changeFontColor(white, black);
 }
 void Player::load_game()
 {
