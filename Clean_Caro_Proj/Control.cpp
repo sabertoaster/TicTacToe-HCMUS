@@ -13,7 +13,14 @@ void Pointer::startIndexing(string cmd, vector<Button> ptrTemp) {
 		id = ptrTemp[id].prevBtn->id;
 	}
 	GotoXY(ptrTemp[id].coord.X - 2, ptrTemp[id].coord.Y + 1);
-	changeFontColor(white, black);
+
+	// [Huy_Darkmode]
+	if (opt.darkMode == 1)
+		changeFontColor(black, white);
+	else
+		changeFontColor(white, black);
+	// [Huy_Darkmode]
+
 	cout << ">>";
 }
 
@@ -30,7 +37,14 @@ void Pointer::startIndexingOptions(string cmd, vector<OptionButton> ptrTemp) {
 		id = ptrTemp[id].prevBtn->id;
 	}
 	GotoXY(ptrTemp[id].coord.X - 9, ptrTemp[id].coord.Y + 1);
-	changeFontColor(white, black);
+
+	// [Huy_Darkmode]
+	if (opt.darkMode == 1)
+		changeFontColor(black, white);
+	else
+		changeFontColor(white, black);
+	// [Huy_Darkmode]
+
 	cout << ">>";
 }
 
@@ -150,7 +164,6 @@ void InitializeData() {
 		pointer.ptrOptions[nextIndex].prevBtn = &(pointer.ptrOptions[i]);
 	}
 }
-
 
 void PlayMusic(string cmd) {
 	if (cmd == "Background") {

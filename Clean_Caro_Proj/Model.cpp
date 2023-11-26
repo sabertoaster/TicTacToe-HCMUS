@@ -605,15 +605,25 @@ void Player::SetColor_2(int backgound_color, int text_color)
 	SetConsoleTextAttribute(hStdout, color_code);
 }
 void Player::draw_x() {
+	// [Huy_Darkmode]
+	if (opt.darkMode == 1)
+		changeFontColor(black, pink);
+	else
+		changeFontColor(white, red);
+	// [Huy_Darkmode]
 
-	changeFontColor(white, red);
 	cout << "X";
 }
 
 void Player::draw_o()
 {
-
-	changeFontColor(white, blue1);
+	// [Huy_Darkmode]
+	if (opt.darkMode == 1)
+		changeFontColor(black, blue2);
+	else
+		changeFontColor(white, blue1);
+	// [Huy_Darkmode]
+	
 	cout << "O";
 }
 

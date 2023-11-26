@@ -120,6 +120,14 @@ void Button::printButton() {
 	_setmode(_fileno(stdout), _O_U16TEXT);
 	/*top layer*/
 	GotoXY(coord.X, coord.Y);
+
+	//  [Huy_Darkmode]
+	if (opt.darkMode == 1)
+		changeFontColor(black, white);
+	else
+		changeFontColor(white, black);
+	//  [Huy_Darkmode]
+
 	wcout << L"╔═";
 	for (int i = 0; i < nameLength; i++) {
 		wcout << L"═";
@@ -147,7 +155,7 @@ void Button::playScene() {
 	SceneHandle(temp);
 }
 
-
+//Options
 void OptionButton::playScene() {
 	wstring ws(buttonName);
 	string temp(ws.begin(), ws.end());
@@ -171,6 +179,14 @@ void OptionButton::playScene() {
 void OptionButton::printButton() {
 	_setmode(_fileno(stdout), _O_U16TEXT);
 	/*top layer*/
+	
+	//  [Huy_Darkmode]
+	if (opt.darkMode == 1)
+		changeFontColor(black, white);
+	else
+		changeFontColor(white,black);
+	//  [Huy_Darkmode]
+
 	GotoXY(coord.X, coord.Y);
 	wcout << L"┌─";
 	for (int i = 0; i < nameLength; i++) {
@@ -198,6 +214,14 @@ void OptionButton::printButton() {
 // [define visualizer func]
 void Visualizer::printLogo(string str) {
 	COORD currentCoord = GetConsoleCursorPosition();
+	
+	//  [Huy_Darkmode]
+	if (opt.darkMode == 1)
+		changeFontColor(black, white);
+	else
+		changeFontColor(white, black);
+	//  [Huy_Darkmode]
+
 	switch (string_hash(str))
 	{
 	case main_Logo:
@@ -230,6 +254,13 @@ void Visualizer::printLogo(string str) {
 void Visualizer::printCornerEsc() {
 	_setmode(_fileno(stdout), _O_U16TEXT);
 
+	//  [Huy_Darkmode]
+	if (opt.darkMode == 1)
+		changeFontColor(black, white);
+	else
+		changeFontColor(white, black);
+	//  [Huy_Darkmode]
+
 	GotoXY(3, 2);
 	wcout << L"┌─────┐";
 	GotoXY(3, 3);
@@ -245,13 +276,23 @@ void Visualizer::printBackground(int width, int height) {
 	SetConsoleTextAttribute(hConsoleOutput, 15);
 	//wcout << L"Width" << csbi.dwSize.X << L"Height" << csbi.dwSize.Y << endl; //test width and height of console
 	GotoXY(0, 0);
+
+	//  [Huy_Darkmode]
+	if (opt.darkMode == 1)
+		changeFontColor(black, black);
+	//  [Huy_Darkmode]
+
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < height; j++) {
 			wcout << fullBlock;
 		}
 	}
-	SetConsoleTextAttribute(hConsoleOutput, 240); // 240 for black font white background
-
+	//  [Huy_Darkmode]
+	if (opt.darkMode == 1)
+		changeFontColor(black, white);
+	else
+		changeFontColor(white, black);
+	//  [Huy_Darkmode]
 }
 void Visualizer::printMenuBorder() {//hard-code [saber]
 	_setmode(_fileno(stdout), _O_U16TEXT);
@@ -361,7 +402,14 @@ void Visualizer::printBorder() {
 }
 void Visualizer::printPlayerFrame(char str) {
 	_setmode(_fileno(stdout), _O_U16TEXT);
-	SetConsoleTextAttribute(hConsoleOutput, 240);
+	
+	//  [Huy_Darkmode]
+	if (opt.darkMode == 1)
+		changeFontColor(black, white);
+	else
+		changeFontColor(white, black);
+	//  [Huy_Darkmode]
+
 	COORD currentPos = GetConsoleCursorPosition();
 	int width = 40, height = 31; // ┏━┓ -> width = 1;
 
@@ -420,28 +468,42 @@ void Visualizer::printAvatar(char str, int color) {
 	defaut:
 		break;
 	}
-	int colorX, colorO;
-	if (color == 0) {
-		// define line color here
-		colorX = colorO = 248;
-	}
-	else {
-		// define bright color here
-		colorX = 244;
-		colorO = 241;
-	}
+	/*int colorX, colorO;*/
+	//if (color == 0) {
+	//	// define line color here
+	//	colorX = colorO = 248;
+	//}
+	//else {
+	//	// define bright color here
+	//	colorX = 244;
+	//	colorO = 241;
+	//}
 
 	switch (str)
 	{
 	case 'X':
-		SetConsoleTextAttribute(hConsoleOutput, colorX);
+		//  [Huy_Darkmode]
+		if (opt.darkMode == 1)
+			changeFontColor(black, pink);
+		else
+			changeFontColor(white, red);
+		//  [Huy_Darkmode]
+		
+		//Print
 		for (int i = 0; i < 8; i++) { // [hard-code]
 			GotoXY(currentPos.X, currentPos.Y + i);
 			wcout << avt_x[i];
 		}
 		break;
 	case 'O':
-		SetConsoleTextAttribute(hConsoleOutput, colorO);
+		//  [Huy_Darkmode]
+		if (opt.darkMode == 1)
+			changeFontColor(black, blue2);
+		else
+			changeFontColor(white, blue1);
+		//  [Huy_Darkmode]
+		
+		//Print
 		for (int i = 0; i < 7; i++) { // [hard-code]
 			GotoXY(currentPos.X, currentPos.Y + i);
 			wcout << avt_o[i];
@@ -458,11 +520,23 @@ void Visualizer::printAvatar(char str, int color) {
 void Visualizer::printBackgroundAnimation(int index, int coorX, int coorY) {
 	GotoXY(coorX, coorY);
 	if (index / 5 == 0) {
-		SetConsoleTextAttribute(hConsoleOutput, 244); //244
+		//  [Huy_Darkmode]
+		if (opt.darkMode == 1)
+			changeFontColor(black, red);
+		else
+			changeFontColor(white, red);
+		//  [Huy_Darkmode]
+
 		wcout << big_x[index % 5] << L"\n";
 	}
 	else {
-		SetConsoleTextAttribute(hConsoleOutput, 241); //241
+		//  [Huy_Darkmode]
+		if (opt.darkMode == 1)
+			changeFontColor(black, blue2);
+		else
+			changeFontColor(white, blue1);
+		//  [Huy_Darkmode]
+
 		wcout << big_o[index % 5] << L"\n";
 	}
 }
@@ -476,7 +550,13 @@ void Visualizer::printWinAnimation(char avt, int waveWidth, int initNumChar, COO
 		if (initNumChar % 20 == 0) {
 			initNumChar = 0;
 		}
-		SetConsoleTextAttribute(hConsoleOutput, 240);
+		//  [Huy_Darkmode]
+		if (opt.darkMode == 1)
+			changeFontColor(black, white);
+		else
+			changeFontColor(white, black);
+		//  [Huy_Darkmode]
+
 		/*GotoXY(animPivot.X, animPivot.Y);
 		for (int j = 0; j < 8; j++) {
 			GotoXY(animPivot.X, animPivot.Y + j);
@@ -496,7 +576,13 @@ void Visualizer::printWinAnimation(char avt, int waveWidth, int initNumChar, COO
 
 		GotoXY(animPivot.X, animPivot.Y);
 		for (int i = 0; i < 8; i++) {// [hard-code]
-			SetConsoleTextAttribute(hConsoleOutput, colorArr[(i + initNumChar) % 8]);
+			//  [Huy_Darkmode]
+			if (opt.darkMode == 1)
+				SetConsoleTextAttribute(hConsoleOutput, colorArrDark[(i + initNumChar) % 8]);
+			else
+				SetConsoleTextAttribute(hConsoleOutput, colorArr[(i + initNumChar) % 8]);
+			//  [Huy_Darkmode]
+
 			GotoXY(animPivot.X, animPivot.Y + i);
 			hrztShift = vtcShift;
 			for (int j = 0; j < 157; j++) {// [hard-code]
@@ -516,7 +602,14 @@ void Visualizer::printWinAnimation(char avt, int waveWidth, int initNumChar, COO
 		if (initNumChar % 20 == 0) {
 			initNumChar = 0;
 		}
-		SetConsoleTextAttribute(hConsoleOutput, 240);
+		
+		//  [Huy_Darkmode]
+		if (opt.darkMode == 1)
+			changeFontColor(black, white);
+		else
+			changeFontColor(white, black);
+		//  [Huy_Darkmode]
+
 		GotoXY(animPivot.X, animPivot.Y);
 		for (int j = 0; j < 150; j++) {
 			wcout << L" ";
@@ -527,7 +620,14 @@ void Visualizer::printWinAnimation(char avt, int waveWidth, int initNumChar, COO
 		}
 		GotoXY(animPivot.X, animPivot.Y);
 		for (int i = 0; i < 8; i++) {// [hard-code]
-			SetConsoleTextAttribute(hConsoleOutput, colorArr[(i + initNumChar) % 8]);
+			//  [Huy_Darkmode]
+			if (opt.darkMode == 1)
+				SetConsoleTextAttribute(hConsoleOutput, colorArrDark[(i + initNumChar) % 8]);
+			else
+				SetConsoleTextAttribute(hConsoleOutput, colorArr[(i + initNumChar) % 8]);
+			//  [Huy_Darkmode]
+
+			/*SetConsoleTextAttribute(hConsoleOutput, colorArr[(i + initNumChar) % 8]);*/
 			GotoXY(animPivot.X, animPivot.Y + i);
 			hrztShift = vtcShift;
 			for (int j = 0; j < 146; j++) {// [hard-code]
@@ -555,12 +655,28 @@ void Visualizer::printWinStreak(char avt, vector<COORD> winCoord, COORD initCoor
 	ShowConsoleCursor(false);
 	int colorArr[2];
 	if (avt == 'X') {
-		colorArr[0] = 65;
-		colorArr[1] = 244;
+		//  [Huy_Darkmode]
+		if (opt.darkMode == 0) {
+			colorArr[0] = 65;
+			colorArr[1] = 244;
+		}
+		else {
+			colorArr[0] = 193;
+			colorArr[1] = 12;
+		}
+		//  [Huy_Darkmode]
 	}
 	else {
-		colorArr[0] = 20;
-		colorArr[1] = 241;
+		//  [Huy_Darkmode]
+		if (opt.darkMode == 0) {
+			colorArr[0] = 20;
+			colorArr[1] = 241;
+		}
+		else {
+			colorArr[0] = 28;
+			colorArr[1] = 217;
+		}
+		//  [Huy_Darkmode]
 	}
 	for (int j = 0; j < 20; j++) {
 		for (int i = 0; i < winCoord.size(); i++) {
@@ -580,6 +696,14 @@ void Visualizer::printButton() { //[saber]
 
 void Visualizer::printRadioBtn(COORD coor, bool status) {
 	_setmode(_fileno(stdout), _O_U16TEXT);
+
+	//  [Huy_Darkmode]
+	if (opt.darkMode == 1)
+		changeFontColor(black, white);
+	else
+		changeFontColor(white, black);
+	//  [Huy_Darkmode]
+
 	GotoXY(coor.X, coor.Y);
 	wcout << L"┌───┐";
 	GotoXY(coor.X, coor.Y + 1);
@@ -593,6 +717,14 @@ void Visualizer::printBoardCanvas(int numCell) {
 	SetConsoleTextAttribute(hConsoleOutput, 240);
 	COORD currentCoord = GetConsoleCursorPosition();
 	_setmode(_fileno(stdout), _O_TEXT);
+
+	//  [Huy_Darkmode]
+	if (opt.darkMode == 1)
+		changeFontColor(black, white);
+	else
+		changeFontColor(white, black);
+	//  [Huy_Darkmode]
+
 	for (int i = 0; i < numCell; i++) { // deploy horizontal label
 		GotoXY((currentCoord.X + 2) + i * 4, currentCoord.Y - 1);
 		cout << to_string(i + 1);
