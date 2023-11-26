@@ -33,6 +33,7 @@ int Player::cal(int n)
 int Player::solve(int x, int y, int k)
 {
 	int tmp1 = x, tmp2 = y, cnt = 0, ans = 0;
+	int cd = 0;
 	for (int i = 1; i <= 6; i++)
 	{
 		x++;
@@ -40,7 +41,14 @@ int Player::solve(int x, int y, int k)
 		if (_POINT[x][y] == k)
 			cnt++;
 		else
+		{
+			if (x<1 || x>numcell || y<1 || y>numcell)
+				cd++;
+			else if (_POINT[x][y] != 0)
+				cd++;
 			break;
+		}
+			
 	}
 	/*ans += cal(cnt+(k==2));
 	cnt = 0;*/
@@ -52,10 +60,18 @@ int Player::solve(int x, int y, int k)
 		if (_POINT[x][y] == k)
 			cnt++;
 		else
+		{
+			if (x<1 || x>numcell || y<1 || y>numcell)
+				cd++;
+			else if (_POINT[x][y] != 0)
+				cd++;
 			break;
+		}
+		
 	}
-	ans += cal(cnt + (k == 2));
-	cnt = 0;
+	if ((cd < 2 || cnt == 4))
+		ans += cal(cnt + (k == 2));
+	cnt = 0; cd = 0;
 	// check 2
 	x = tmp1, y = tmp2;
 	for (int i = 1; i <= 6; i++)
@@ -65,7 +81,14 @@ int Player::solve(int x, int y, int k)
 		if (_POINT[x][y] == k)
 			cnt++;
 		else
+		{
+			if (x<1 || x>numcell || y<1 || y>numcell)
+				cd++;
+			else if (_POINT[x][y] != 0)
+				cd++;
 			break;
+		}
+		
 	}
 	/*ans += cal(cnt + (k == 2));
 	cnt = 0;*/
@@ -77,10 +100,18 @@ int Player::solve(int x, int y, int k)
 		if (_POINT[x][y] == k)
 			cnt++;
 		else
+		{
+			if (x<1 || x>numcell || y<1 || y>numcell)
+				cd++;
+			else if (_POINT[x][y] != 0)
+				cd++;
 			break;
+		}
+		
 	}
-	ans += cal(cnt + (k == 2));
-	cnt = 0;
+	if ((cd < 2 || cnt == 4))
+		ans += cal(cnt + (k == 2));
+	cnt = 0; cd = 0;
 	//check 3
 	x = tmp1, y = tmp2;
 	for (int i = 1; i <= 6; i++)
@@ -90,7 +121,14 @@ int Player::solve(int x, int y, int k)
 		if (_POINT[x][y] == k)
 			cnt++;
 		else
+		{
+			if (x<1 || x>numcell || y<1 || y>numcell)
+				cd++;
+			else if (_POINT[x][y] != 0)
+				cd++;
 			break;
+		}
+		
 	}
 	/*ans += cal(cnt + (k == 2));
 	cnt = 0;*/
@@ -102,10 +140,18 @@ int Player::solve(int x, int y, int k)
 		if (_POINT[x][y] == k)
 			cnt++;
 		else
+		{
+			if (x<1 || x>numcell || y<1 || y>numcell)
+				cd++;
+			else if (_POINT[x][y] != 0)
+				cd++;
 			break;
+		}
+		
 	}
-	ans += cal(cnt + (k == 2));
-	cnt = 0;
+	if ((cd < 2 || cnt == 4))
+		ans += cal(cnt + (k == 2));
+	cnt = 0; cd = 0;
 	// check 4;
 	x = tmp1, y = tmp2;
 	for (int i = 1; i <= 6; i++)
@@ -115,7 +161,14 @@ int Player::solve(int x, int y, int k)
 		if (_POINT[x][y] == k)
 			cnt++;
 		else
+		{
+			if (x<1 || x>numcell || y<1 || y>numcell)
+				cd++;
+			else if (_POINT[x][y] != 0)
+				cd++;
 			break;
+		}
+		
 	}
 	/*ans += cal(cnt + (k == 2));
 	cnt = 0;*/
@@ -127,9 +180,17 @@ int Player::solve(int x, int y, int k)
 		if (_POINT[x][y] == k)
 			cnt++;
 		else
+		{
+			if (x<1 || x>numcell || y<1 || y>numcell)
+				cd++;
+			else if (_POINT[x][y] != 0)
+				cd++;
 			break;
+		}
 	}
-	ans += cal(cnt + (k == 2));
+	if ((cd < 2 || cnt == 4))
+		ans += cal(cnt + (k == 2));
+	cnt = 0; cd = 0;
 	return ans;
 }
 void Player::move()
