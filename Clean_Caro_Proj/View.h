@@ -80,6 +80,10 @@ public:
 
 	int colorArr[8] = {244, 246, 254, 242, 251, 241, 253, 246};
 
+	// [Huy_Darkmode]
+	int colorArrDark[8] = { 12,6,14,10,11,9,13,6 };
+	// [Huy_Darkmode]
+
 	const wchar_t* fullBlock = L"█";
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
 	HANDLE hConsoleOutput = GetStdHandle(STD_OUTPUT_HANDLE);
