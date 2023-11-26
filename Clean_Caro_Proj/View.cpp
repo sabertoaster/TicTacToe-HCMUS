@@ -408,6 +408,7 @@ void Visualizer::printPlayerFrame(char str) {
 
 void Visualizer::printAvatar(char str, int color) {
 	_setmode(_fileno(stdout), _O_U16TEXT);
+	ShowConsoleCursor(false);
 	COORD currentPos;
 	switch (str) {
 	case 'X':
@@ -449,6 +450,7 @@ void Visualizer::printAvatar(char str, int color) {
 	default:
 		break;
 	}
+	ShowConsoleCursor(true);
 	_setmode(_fileno(stdout), _O_TEXT);
 }
 

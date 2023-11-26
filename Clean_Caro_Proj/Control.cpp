@@ -163,7 +163,12 @@ void PlayMusic(string cmd) {
 	}
 	if (cmd == "Beep") {
 		PlaySound(TEXT("SOUND GAME CARO\\click\\enter1.wav"), NULL, SND_SYNC | opt.vfxFlag);
-		PlaySound(nullptr, nullptr, 0);
+		if (opt.soundFlag == 0) {
+			PlayMusic("Background");
+		}
+		else {
+			PlaySound(nullptr, nullptr, 0);
+		}
 		return;
 	}
 }
@@ -226,7 +231,7 @@ void StartMatchScene(string matchType) {
 	ShowConsoleCursor(true);
 	Player playerManager(52 + 2, 3 + 1, 16, 1, 1);
 	if (matchType == "PVE") {
-		playerManager.BruteForce = 1;
+		playerManager.Minimax = 1;
 	}
 	playerManager.khoitao();
 	playerManager.play();
