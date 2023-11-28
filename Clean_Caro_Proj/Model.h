@@ -19,7 +19,7 @@ struct Player
     COORD initCoor;
     int i, j, _POINT[100][100], current_player = 1, BruteForce = 0, offSetX = 4, offSetY = 2, numcell, type = 0, Minimax = 0;
     int check_saveload = 0;
-    string ten_ban_dau = "";
+    string name_repeat_load = "";
     // initX y la vi tri con tro tren console
     // i j la vi tri tren bang _POINT
     // player la luot cua nguoi choi x hoac o
@@ -35,16 +35,17 @@ struct Player
     int cal(int); // ham ho tro cho solve
     Player(int initx, int inity, int numcell, int relaX, int relaY);
     int check_huong();
-    int check_4_huong(int ,int );
+    int check_4_huong(int, int);
     vector<pair<int, int>> huong1();
     vector<pair<int, int>> huong2();
     vector<pair<int, int>> huong3();
     vector<pair<int, int>> huong4();
-    vector<COORD> winningCoord ;    
+    vector<COORD> winningCoord;
     vector<pair<int, int>>history;
     vector<pair<int, int> >re_history;
     vector<pair<int, int>>area(int);
     pair<int, int>find_best_move();
+    pair<int, int>find_best_bruteforce();
     int AttackPoint_Horizontal(int nline, int ncolumn, int player);
     int AttackPoint_Vertical(int nline, int ncolumn, int player);
     int AttackPoint_Diagonal1(int nline, int ncolumn, int player);
@@ -53,9 +54,8 @@ struct Player
     int DefendPoint_Vertical(int nline, int ncolumn, int player);
     int DefendPoint_Diagonal1(int nline, int ncolumn, int player);
     int DefendPoint_Diagonal2(int nline, int ncolumn, int player);
-    int minimax(int, int, int , int);
-    int cal_mark(int nline, int ncolumn,int player);
-    int cal_mark2();
+    int minimax(int, int, int, int);
+    int cal_mark();
     int kt_win();
     void load_board();
     void save_game();
@@ -64,7 +64,7 @@ struct Player
     int winner = 0;
     void selectWinStreak();
     void print_display_loadgame(string name_saveload[], int count_name);
-    
+
     vector<string> list_namesave();
     //graphics
     // phan nay de tam trong day cho de debug

@@ -226,7 +226,7 @@ void StartMatchScene(string matchType) {
 	ShowConsoleCursor(true);
 	Player playerManager(52 + 2, 3 + 1, 16, 1, 1);
 	if (matchType == "PVE") {
-		playerManager.BruteForce = 1;
+		playerManager.Minimax = 1;
 	}
 	playerManager.khoitao();
 	playerManager.play();
