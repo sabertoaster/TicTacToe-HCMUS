@@ -903,8 +903,12 @@ void Player::print_display_loadgame(string name_saveload[], int count_name)
 {
 	DrawObject("Background");
 	DrawObject("Border");
+	DrawObject("Text_Border", 48, 120);
 	int xconsole = 50, yconsole = 10;
 	GotoXY(xconsole, yconsole);
+	//Hui
+	GotoXY(48, 1);
+	DrawObject("Saveload_Logo");
 	for (int i = 1; i < count_name; i++)
 	{
 		GotoXY(xconsole, yconsole + offSetY * i);
@@ -930,8 +934,13 @@ void Player::load_game()
 {
 	DrawObject("Background");
 	DrawObject("Border");
+	DrawObject("Text_Border", 48, 120);
 	int xconsole = 50, yconsole = 10;
 	GotoXY(xconsole, yconsole);
+
+	GotoXY(48, 1);
+	DrawObject("Saveload_Logo");
+
 	ifstream fi("file_game/name_saveload.txt");
 	string name_saveload[100];
 	int count_name = 1;

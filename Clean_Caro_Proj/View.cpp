@@ -87,12 +87,15 @@ void changeFontColor(color backgroundColor, color fontColor) {
 
 enum objID {
 	main_Logo,
+	saveload_Logo,
+	options_Logo,
 	about_Logo,
 	help_Logo,
 	button,
 	background,
 	boardCanvas,
 	border,
+	text_border, //Huy Border
 	playerFrame,
 	xMark,
 	oMark,
@@ -104,11 +107,14 @@ enum objID {
 
 objID string_hash(string const& inString) {
 	if (inString == "Main_Logo") return main_Logo;
+	if (inString == "Saveload_Logo") return saveload_Logo;
+	if (inString == "Options_Logo") return options_Logo;
 	if (inString == "About_Logo") return about_Logo;
 	if (inString == "Help_Logo") return help_Logo;
 	if (inString == "Button") return button;
 	if (inString == "Background") return background;
 	if (inString == "Border") return border;
+	if (inString == "Text_Border") return text_border;
 	if (inString == "BoardCanvas") return boardCanvas;
 	if (inString == "PlayerFrame") return playerFrame;
 	if (inString == "WinAnimation_X") return animation_x;
@@ -231,6 +237,20 @@ void Visualizer::printLogo(string str) {
 			currentCoord.Y++; //update the new pointer coordinate
 		}
 		break;
+	case saveload_Logo:
+		for (int i = 0; i < sizeof(saveloadLogo) / sizeof(saveloadLogo[0]); i++) {
+			wcout << saveloadLogo[i];
+			GotoXY(currentCoord.X, currentCoord.Y + 1);
+			currentCoord.Y++; //update the new pointer coordinate
+		}
+		break;
+	case options_Logo:
+		for (int i = 0; i < sizeof(optionsLogo) / sizeof(optionsLogo[0]); i++) {
+			wcout << optionsLogo[i];
+			GotoXY(currentCoord.X, currentCoord.Y + 1);
+			currentCoord.Y++; //update the new pointer coordinate
+		}
+		break;
 	case about_Logo:
 		for (int i = 0; i < sizeof(aboutLogo) / sizeof(aboutLogo[0]); i++) {
 			wcout << aboutLogo[i];
@@ -297,6 +317,7 @@ void Visualizer::printBackground(int width, int height) {
 void Visualizer::printMenuBorder() {//hard-code [saber]
 	_setmode(_fileno(stdout), _O_U16TEXT);
 	GotoXY(0, 0);
+
 	wcout << L"╔";
 	for (int i = 1; i <= 66; i++) {
 		GotoXY(i, 0);
@@ -352,6 +373,7 @@ void Visualizer::printMenuBorder() {//hard-code [saber]
 	wcout << L"║";
 	GotoXY(67, 7);
 	wcout << L"╚";
+
 	for (int i = 68; i <= 100; i++) {
 		GotoXY(i, 7);
 		wcout << L"═";
@@ -380,6 +402,7 @@ void Visualizer::printMenuBorder() {//hard-code [saber]
 void Visualizer::printBorder() {
 	GotoXY(0, 0);
 	wcout << L"╔";
+	
 	for (int i = 1; i <= 168; i++) {
 		GotoXY(i, 0);
 		wcout << L"═";
@@ -400,6 +423,46 @@ void Visualizer::printBorder() {
 	}
 	wcout << L"╝";
 }
+void Visualizer::printTextBorder(int tStartPos,int tEndPos) {
+	GotoXY(tStartPos - 2, 0);
+	wcout << L"╗";
+	GotoXY(tEndPos + 2, 0);
+	wcout << L"╔";
+	
+	GotoXY(tStartPos - 2, 1);
+	wcout << L"╝";
+	GotoXY(tEndPos + 2, 1);
+	wcout << L"╚";
+	GotoXY(tStartPos - 3, 1);
+	wcout << L"╔";
+	GotoXY(tEndPos + 3, 1);
+	wcout << L"╗";
+
+	for (int i = 2; i <= 5; i++) {
+		GotoXY(tStartPos - 3, i);
+		wcout << L"║";
+		GotoXY(tEndPos + 3, i);
+		wcout << L"║";
+	}
+
+	GotoXY(tStartPos - 3, 6);
+	wcout << L"╚";
+	GotoXY(tEndPos + 3, 6);
+	wcout << L"╝";
+	GotoXY(tStartPos - 2, 6);
+	wcout << L"╗";
+	GotoXY(tEndPos + 2, 6);
+	wcout << L"╔";
+	GotoXY(tStartPos - 2, 7);
+	wcout << L"╚";
+	GotoXY(tEndPos + 2, 7);
+	wcout << L"╝";
+	for (int i = tStartPos - 1; i <= tEndPos + 1; i++) {
+		GotoXY(i, 7);
+		wcout << L"═";
+	}
+}
+
 void Visualizer::printPlayerFrame(char str) {
 	_setmode(_fileno(stdout), _O_U16TEXT);
 	
@@ -766,12 +829,18 @@ void Visualizer::printBoardCanvas(int numCell) {
 
 Visualizer visualizer;
 
-void DrawObject(string objName) {
+void DrawObject(string objName,int s,int e) { //Huy Darkmode
 	_setmode(_fileno(stdout), _O_U16TEXT);//set to UTF16 text cout
 	switch (string_hash(objName))
 	{
 	case main_Logo:
 		visualizer.printLogo("Main_Logo");
+		break;
+	case saveload_Logo:
+		visualizer.printLogo("Saveload_Logo");
+		break;
+	case options_Logo:
+		visualizer.printLogo("Options_Logo");
 		break;
 	case about_Logo:
 		visualizer.printLogo("About_Logo");
@@ -790,6 +859,9 @@ void DrawObject(string objName) {
 		break;
 	case border:
 		visualizer.printBorder();
+		break;
+	case text_border:
+		visualizer.printTextBorder(s,e);
 		break;
 	case playerFrame:
 		GotoXY(5, 3);
