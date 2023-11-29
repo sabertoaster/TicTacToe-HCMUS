@@ -236,7 +236,7 @@ void Player::move()
 	{
 		if (history.size() > 0)
 		{
-			if (BruteForce == 0)
+			if (BruteForce == 0 && Minimax == 0)
 			{
 				pair<int, int>his_xy = history.back();
 				re_history.push_back(his_xy);
@@ -283,7 +283,7 @@ void Player::move()
 	{
 		if (re_history.size() > 0)
 		{
-			if (BruteForce == 0)
+			if (BruteForce == 0 && Minimax == 0 )
 			{
 				pair<int, int>his_xy = re_history.back();
 				history.push_back(his_xy);
@@ -411,47 +411,8 @@ void Player::move()
 		else if(BruteForce == 1)
 		{
 			// duyet het cac o trong bang 16x16 luu lai o co nuoc di toi uu
-			int  tmpi = 0, tmpj = 0; // tmpi , tmpj = i,j
-			int ans = -1;   //tmpx, tmp initCoor.Y =initCoor.X,initCoor.Y;
-			for (int _i = 1; _i <= 16; _i++)
-			{
-				for (int _j = 1; _j <= 16; _j++)
-				{
-					if (_POINT[_i][_j] != 0)
-					{
-						continue;
-					}
-					int tmp1 = solve(_i, _j, 1);
-					int tmp2 = solve(_i, _j, 2);
-					int tmp = tmp1 + tmp2;
-					if (tmp2 >= cal(5))
-					{
-						tmp += cal(7);
-					}
-					if (tmp1 >= cal(4) && tmp2 < cal(5))
-					{
-						tmp += cal(6);
-					}
-					if (tmp1 >= cal(3) && tmp1 < cal(4) && tmp2 < cal(4))
-					{
-						tmp = cal(4) - 1;
-					}
-					if (ans < tmp)
-					{
-						ans = tmp;
-						tmpi = _i, tmpj = _j;
-					}
-					else if (ans == tmp)
-					{
-						if (tmp1 > tmp2)
-						{
-							ans = tmp;
-							tmpi = _i, tmpj = _j;
-						}
-					}
-				}
-			}
-
+			pair<int, int>tmp = find_best_bruteforce();
+			int tmpi = tmp.first, tmpj = tmp.second;
 			_POINT[tmpi][tmpj] = 2;
 
 			GotoXY(initCoor.X + (tmpj - 1) * offSetX, initCoor.Y + (tmpi - 1) * offSetY);
@@ -464,9 +425,10 @@ void Player::move()
 			GotoXY(initCoor.X + (j - 1) * offSetX, initCoor.Y + (i - 1) * offSetY);
 			save_I = i; save_J = j;
 			i = tmpi; j = tmpj;
-			check_play_ai = 1;
+			//check_play_ai = 1;
 			history.push_back({ i,j });
 			//PlaySound(TEXT("SOUND GAME CARO\\click\\enter.wav"), NULL, SND_ASYNC);
+			type = check_win();
 		}
 		else
 		{
@@ -483,12 +445,57 @@ void Player::move()
 			GotoXY(initCoor.X + (j - 1) * offSetX, initCoor.Y + (i - 1) * offSetY);
 			save_I = i; save_J = j;
 			i = tmpi; j = tmpj;
-			check_play_ai = 1;
+			//check_play_ai = 1;
 			history.push_back({ i,j });
 			PlaySound(TEXT("SOUND GAME CARO\\click\\enter.wav"), NULL, SND_ASYNC | opt.vfxFlag);
+			type = check_win();
 		}
 	}
 
+}
+pair<int, int> Player::find_best_bruteforce()
+{
+	int  tmpi = 0, tmpj = 0; // tmpi , tmpj = i,j
+	int ans = -1;   //tmpx, tmp initCoor.Y =initCoor.X,initCoor.Y;
+	for (int _i = 1; _i <= 16; _i++)
+	{
+		for (int _j = 1; _j <= 16; _j++)
+		{
+			if (_POINT[_i][_j] != 0)
+			{
+				continue;
+			}
+			int tmp1 = solve(_i, _j, 1);
+			int tmp2 = solve(_i, _j, 2);
+			int tmp = tmp1 + tmp2;
+			if (tmp2 >= cal(5))
+			{
+				tmp += cal(7);
+			}
+			if (tmp1 >= cal(4) && tmp2 < cal(5))
+			{
+				tmp += cal(6);
+			}
+			if (tmp1 >= cal(3) && tmp1 < cal(4) && tmp2 < cal(4))
+			{
+				tmp = cal(4) - 1;
+			}
+			if (ans < tmp)
+			{
+				ans = tmp;
+				tmpi = _i, tmpj = _j;
+			}
+			else if (ans == tmp)
+			{
+				if (tmp1 > tmp2)
+				{
+					ans = tmp;
+					tmpi = _i, tmpj = _j;
+				}
+			}
+		}
+	}
+	return { tmpi,tmpj };
 }
 int Player::check_win()
 {
@@ -596,13 +603,6 @@ int Player::check_win()
 	if (cnt == 0)
 		return 2;
 	return 0;
-}
-void Player::SetColor_2(int backgound_color, int text_color)
-{
-	HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-
-	int color_code = backgound_color * 16 + text_color;
-	SetConsoleTextAttribute(hStdout, color_code);
 }
 void Player::draw_x() {
 	// [Huy_Darkmode]
@@ -893,6 +893,7 @@ void Player::selectWinStreak() {
 }
 void Player::load_board()
 {
+	// ve cac x o cua ban co to
 	for (int i = 1; i <= numcell; i++)
 	{
 		for (int j = 1; j <= numcell; j++)
@@ -912,6 +913,7 @@ void Player::load_board()
 }
 void Player::load_board_mini()
 {
+	// ham nay ve tran dau nho luc load game
 	COORD initCoor_mini;
 	initCoor_mini.X = 95;
 	initCoor_mini.Y = 15;
@@ -948,37 +950,6 @@ void Player::load_board_mini()
 		}
 	}
 }
-void scene_demo_savegame()
-{
-
-	changeFontColor(white, white);
-	for (int i = 0; i <= 40; i++)
-	{
-		for (int j = 0; j <= 170; j++)
-		{
-			cout << " ";
-		}
-	}
-	changeFontColor(white, black);
-}
-int kt_number(string number)
-{
-	if (number.size() == 0)
-		return 0;
-	for (int i = 0; i < number.size(); i++)
-	{
-		if (number[i] > '9' || number[i] < '0')
-			return 0;
-	}
-	return 1;
-}
-long long string_to_number(string s)
-{
-	long long ans = 0;
-	for (int i = 0; i < s.size(); i++)
-		ans = ans * 10 + (s[i] - 48);
-	return ans;
-}
 
 vector<string> Player::list_namesave()
 {
@@ -997,40 +968,10 @@ vector<string> Player::list_namesave()
 
 	return res;
 }
-void Player::print_display_loadgame(string name_saveload[], int count_name)
-{
-	DrawObject("Background");
-	DrawObject("Border");
-	DrawObject("Text_Border", 48, 120);
-	int xconsole = 50, yconsole = 10;
-	GotoXY(xconsole, yconsole);
-	//Hui
-	GotoXY(48, 1);
-	DrawObject("Saveload_Logo");
-	for (int i = 1; i < count_name; i++)
-	{
-		GotoXY(xconsole, yconsole + offSetY * i);
-		cout << i << " " << name_saveload[i];
-	}
-	GotoXY(xconsole, yconsole + offSetY * (count_name + 1));
-
-	if (opt.darkMode == 1) {
-		changeFontColor(black, pink);
-	}
-	else changeFontColor(white, red);
-
-	if (count_name == 1)
-		cout << "Khong co file luu game nao [ Vui long nhap so 0 de thoat ]";
-	else if (count_name == 2)
-		cout << "Vui long nhap so 1 ";
-	else
-		cout << "Vui long nhap so tu 1 den " << count_name - 1;
-	if (opt.darkMode == 1) {
-		changeFontColor(black, white);
-	} else changeFontColor(white, black);
-}
 int Player::load_game()
 {
+	//interface
+
 	DrawObject("Background");
 	DrawObject("Border");
 	DrawObject("Text_Border", 48, 120);
@@ -1072,7 +1013,7 @@ int Player::load_game()
 		for (int j = 1; j <= numcell; j++)
 			ci >> _POINT[i][j];
 
-	ten_ban_dau = temp[0];
+	name_repeat_load = temp[0];
 	ci.close();
 	load_board_mini();
 	bool _checkNotEnter = true, _checkEsc = false;
@@ -1113,28 +1054,16 @@ int Player::load_game()
 				for (int j = 1; j <= numcell; j++)
 					ci >> _POINT[i][j];
 
-			ten_ban_dau = temp[ptrId];
+			name_repeat_load = temp[ptrId];
 			ci.close();
 			load_board_mini();
 		}
 	}
 	
 	if (!_checkEsc) {
-		ifstream ci("file_game/" + temp[ptrId]);
-		ci >> BruteForce >> Minimax >> type >> current_player;
-		for (int i = 1; i <= numcell; i++)
-			for (int j = 1; j <= numcell; j++)
-				ci >> _POINT[i][j];
-
-		ten_ban_dau = temp[ptrId];
-		ci.close();
-		load_board_mini();
 		return 1;
 	}	
-
 	return 0;
-
-	
 }
 void Player::update_namegame()
 {
@@ -1150,11 +1079,11 @@ void Player::update_namegame()
 	ofstream fo_nsave("file_game/name_saveload.txt");
 	for (int i = 1; i <= count_name; i++)
 	{
-		if (name_saveload[i] != ten_ban_dau && name_saveload[i].size() != 0)
+		if (name_saveload[i] != name_repeat_load && name_saveload[i].size() != 0)
 			fo_nsave << name_saveload[i] << "\n";
 	}
 	fo_nsave.close();
-	std::filesystem::remove("file_game/" + ten_ban_dau);
+	std::filesystem::remove("file_game/" + name_repeat_load);
 }
 string check_name_save(string name_saveload,vector<string>temp)
 {
@@ -1178,11 +1107,13 @@ string check_name_save(string name_saveload,vector<string>temp)
 void Player::save_game()
 {
 	vector<string> temp = list_namesave();
-	if (check_saveload == 1)
+	if (check_saveload == 1) // neu nhu file duoc mo tu load thi se khong can nhap ten 
 	{
-		string name_saveload = ten_ban_dau;
+		string name_saveload = name_repeat_load;   // gan ten bang ten luc load vao
 		ofstream fo("file_game/" + name_saveload);
-		fo << BruteForce << " " << Minimax << " " << type << " " << current_player << "\n";
+
+		// luu lai bang
+		fo << BruteForce << " " << Minimax << " " << type << " " << current_player << "\n";  
 		for (int i = 1; i <= numcell; i++)
 		{
 			for (int j = 1; j <= numcell; j++)
@@ -1191,6 +1122,8 @@ void Player::save_game()
 		}
 		fo.close();
 		ofstream fo_nsave("file_game/name_saveload.txt");
+
+		// danh sach cac name file de load ra :))
 		fo_nsave << name_saveload << '\n';
 		for (int i = 0; i < temp.size(); i++)
 			if(name_saveload!=temp[i])
@@ -1198,6 +1131,10 @@ void Player::save_game()
 		fo_nsave.close();
 		return;
 	}
+	// truong hop mo game PLAY 
+	// can dat ten game
+
+	//interface
 	DrawObject("Background");
 	DrawObject("Border");
 	DrawObject("Text_Border", 48, 120);
@@ -1229,10 +1166,16 @@ void Player::save_game()
 
 	GotoXY(35, 10);
 	DrawObject("Save_Board"); // [Saber]
+	///
 
-	load_board_mini();
+
+	// cai bang nho luc load game 
+	load_board_mini(); 
 	int position_x_save = xconsole + 15 , position_y_save = yconsole + offset * 7 -1 ; //15
 	GotoXY(xconsole, position_y_save);
+	//
+
+
 	cout << "Nhap ten FILE: ";
 	bool _checkNotEnter = true, _checkEsc = false;
 	string name_saveload = "";
@@ -1240,6 +1183,7 @@ void Player::save_game()
 		if (_kbhit())
 		{
 			char ch = _getch();
+			// chi cho luu nhung ki tu 
 			if ((ch >= 'A' && ch <= 'Z') || (ch == ' ') || (ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9'))
 			{	
 				if (name_saveload.size() <= 20)
@@ -1249,32 +1193,42 @@ void Player::save_game()
 					cout << ch;
 				}
 			}
+			// nhan nut backspace 
 			if (ch == 8)
 			{
 				if (name_saveload.size() >= 1)
 				{
-					name_saveload.erase(name_saveload.size() - 1, 1);
+					
+					name_saveload.erase(name_saveload.size() - 1, 1); //xoa di ki tu cuoi
+					// xoa khoang trang
 					GotoXY(position_x_save, position_y_save);
 					changeFontColor(white, white);
 					cout << string(21,' ');
 					changeFontColor(white, black);
 					GotoXY(position_x_save, position_y_save);
+					// in ra lai name sau khi xoa ki tu cuoi
 					cout << name_saveload;
+
+					//lam nhu nay cho de xu li
 				}
 			}
-			if (ch == 13)
+			if (ch == 13) // khi nhan nut enter
 			{
-				string tmp = check_name_save(name_saveload, temp);
-				if (tmp=="ok")
+				string tmp = check_name_save(name_saveload, temp);// kiem tra cac truong hop
+				if (tmp=="ok") //name thoa man khong van de :))
 				{
 					_checkNotEnter = false;
 				}
-				else
+				else // name co loi 
 				{
+					// xuong dong duoi nhap ten FILE va xoa cac ki tu
 					GotoXY(xconsole, position_y_save+1);
 					changeFontColor(white, white);
 					cout << string(31, ' ');
 					changeFontColor(white, red);
+				
+					
+					// tien hanh in cac loi
 					GotoXY(xconsole, position_y_save + 1);
 					if (tmp == "loi_all_space")
 					{
@@ -1284,6 +1238,8 @@ void Player::save_game()
 					{
 						cout << "Ten FIlE da bi trung!";
 					}
+					
+					// reset name de cho nhap lai day
 					name_saveload = "";
 					GotoXY(position_x_save, position_y_save);
 					changeFontColor(white, white);
@@ -1294,6 +1250,9 @@ void Player::save_game()
 			}
 			if (ch == 27)
 			{
+				// nhan nut esc
+
+				// choi tiep tuc tran dau dang do
 				DrawObject("Background");
 				DrawObject("Border");
 				DrawObject("PlayerFrame"); // built-in coor for player frame
@@ -1310,9 +1269,12 @@ void Player::save_game()
 			}
 		}
 	}
+
+	// xoa cac khoang trang dau, chuan hoa name_save
 	while (name_saveload.size() >= 1 && name_saveload[0] == ' ')
 		name_saveload.erase(0, 1);
 
+	//luu lai bang
 	ofstream fo("file_game/" + name_saveload);
 	fo << BruteForce << " " << Minimax << " " << type << " " << current_player << "\n";
 	for (int i = 1; i <= numcell; i++)
@@ -1322,6 +1284,8 @@ void Player::save_game()
 		fo << "\n";
 	}
 	fo.close();
+
+	//in ra cac ten file luu trong name_saveload.txt
 	ofstream fo_nsave("file_game/name_saveload.txt");
 	fo_nsave << name_saveload << '\n';
 	for (int i = 0; i < temp.size(); i++)
@@ -1344,7 +1308,7 @@ void create_saved_games_folder() {
 /// minimax area
 /// </summary>
 
-int winScore = 1000000000;
+int winScore = INT_MAX;
 int AttackPoint_List[] = { 0,16,670,11000,200000,200000 ,200000 ,200000 };
 int DefendPoint_List[] = { 0,5,210,2700,45000,45000 ,45000 ,45000 };//
 int BlockedAttackPoint_List[] = { 0,1,50, 440,200000,200000 ,200000 ,200000 }; //
@@ -1383,54 +1347,6 @@ vector<pair<int, int> > Player::area(int ex)
 		}
 	}
 	return list_erea;
-}
-int getConsecutiveSetScore(int count, int blocks, bool currentTurn) {
-
-	currentTurn = 0;
-	int winGuarantee = 1000000;
-	if (blocks == 2 && count <= 5) return 0;
-	switch (count) {
-		// Ăn 5 -> Cho điểm cao nhất
-	case 5: {
-		return winScore;
-	}
-	case 4: {
-		// Đang 4 -> Tuỳ theo lược và bị chặn: winGuarantee, winGuarantee/4, 200
-		if (currentTurn) return winGuarantee;
-		else {
-			if (blocks == 0) return winGuarantee / 4;
-			else return 200;
-		}
-	}
-	case 3: {
-		// Đang 3: Block = 0
-		if (blocks == 0) {
-			// Nếu lược của currentTurn thì ăn 3 + 1 = 4 (không bị block) -> 50000 -> Khả năng thắng cao. 
-			// Ngược lại không phải lược của currentTurn thì khả năng bị blocks cao
-			if (currentTurn) return 50000;
-			else return 200;
-		}
-		else {
-			// Block == 1 hoặc Blocks == 2
-			if (currentTurn) return 10;
-			else return 5;
-		}
-	}
-	case 2: {
-		// Tương tự với 2
-		if (blocks == 0) {
-			if (currentTurn) return 7;
-			else return 5;
-		}
-		else {
-			return 3;
-		}
-	}
-	case 1: {
-		return 1;
-	}
-	}
-	return winScore * 2;
 }
 int Player::AttackPoint_Horizontal(int nline,int ncolumn,int player)
 {
@@ -2101,16 +2017,7 @@ int Player::check_4_huong(int i,int j)
 	return 0;
 }
 
-int Player::cal_mark(int nline, int ncolumn,int player)
-{
-	int attack_point = AttackPoint_Horizontal(nline, ncolumn, player) + AttackPoint_Vertical(nline, ncolumn, player);
-	attack_point = attack_point + AttackPoint_Diagonal1(nline, ncolumn, player) + AttackPoint_Diagonal2(nline, ncolumn, player);
-	int defend_point = DefendPoint_Horizontal(nline, ncolumn, player) + DefendPoint_Vertical(nline, ncolumn, player);
-	defend_point = defend_point + DefendPoint_Diagonal1(nline, ncolumn, player) + DefendPoint_Diagonal2(nline, ncolumn, player);
-	return attack_point+defend_point;
-}
-
-int Player::cal_mark2()
+int Player::cal_mark()
 {
 	int ans = 0;
 	for (pair<int, int>tmp : history)
@@ -2161,23 +2068,22 @@ int Player::kt_win()
 	for (pair<int, int>tmp : history)
 	{
 		if (check_4_huong(tmp.first, tmp.second))
-			return 1;
+			_POINT[tmp.first][tmp.second];
 	}
 	return 0;
 }
 
 int Player::minimax(int depth, int alpha, int beta, int minimax_player)
 {
-	if (kt_win())
-	{
-		if (minimax_player == 1)
-			return -winScore;
-		else
-			return winScore;
-	}
+	int type_win = kt_win();
+	if (type_win == 1)
+		return -winScore;
+	if(type_win == 2)
+		return winScore;
+
 	if (depth == 0)
 	{
-		return cal_mark2();
+		return cal_mark();
 	}
 	if (minimax_player == 1)
 	{
@@ -2211,17 +2117,17 @@ int Player::minimax(int depth, int alpha, int beta, int minimax_player)
 		{
 			int i = area_list[k].first;
 			int j = area_list[k].second;
-				if (_POINT[i][j] != 0)
-					continue;
-				_POINT[i][j] = 1;
-				history.push_back({ i,j });
-				int eval = minimax(depth - 1, alpha, beta, 1);
-				minEval = min(minEval, eval);
-				beta = min(beta, eval);
-				history.pop_back();
-				_POINT[i][j] = 0;
-				if (alpha >= beta)
-					break;
+			if (_POINT[i][j] != 0)
+				continue;
+			_POINT[i][j] = 1;
+			history.push_back({ i,j });
+			int eval = minimax(depth - 1, alpha, beta, 1);
+			minEval = min(minEval, eval);
+			beta = min(beta, eval);
+			history.pop_back();
+			_POINT[i][j] = 0;
+			if (alpha >= beta)
+				break;
 		}
 		return minEval;
 	}
@@ -2290,7 +2196,8 @@ void Player::play()
 	while (1)
 	{
 		move(); // di chuyen va ve o x len bang
-		type = check_win(); // check : type==0 choi tiep | type==1 player x hoac o da win | type == 2 hoa
+		if (type == 0)
+			type = check_win(); // check : type==0 choi tiep | type==1 player x hoac o da win | type == 2 hoa
 		if (type) // neu 1 nguoi choi da thang hoac hoa thi thoat
 			break;
 		if (check_save == 1)
@@ -2313,8 +2220,10 @@ void Player::play()
 	}
 	if (type == 2)
 	{
+		if (check_saveload == 1)
+			update_namegame();
 		// tran dau hoa
-		draw_draw();
+		//draw_draw();
 	}
 	else if (type == 1)
 	{
