@@ -19,7 +19,7 @@ struct Player
     COORD initCoor;
     int i, j, _POINT[100][100], current_player = 1, BruteForce = 0, offSetX = 4, offSetY = 2, numcell, type = 0, Minimax = 0;
     int check_saveload = 0;
-    string ten_ban_dau = "";
+    string name_repeat_load = "";
     // initX y la vi tri con tro tren console
     // i j la vi tri tren bang _POINT
     // player la luot cua nguoi choi x hoac o
@@ -45,6 +45,7 @@ struct Player
     vector<pair<int, int> >re_history;
     vector<pair<int, int>>area(int);
     pair<int, int>find_best_move();
+    pair<int, int>find_best_bruteforce();
     int AttackPoint_Horizontal(int nline, int ncolumn, int player);
     int AttackPoint_Vertical(int nline, int ncolumn, int player);
     int AttackPoint_Diagonal1(int nline, int ncolumn, int player);
@@ -54,8 +55,7 @@ struct Player
     int DefendPoint_Diagonal1(int nline, int ncolumn, int player);
     int DefendPoint_Diagonal2(int nline, int ncolumn, int player);
     int minimax(int, int, int , int);
-    int cal_mark(int nline, int ncolumn,int player);
-    int cal_mark2();
+    int cal_mark();
     int kt_win();
     void load_board();
     void save_game();
@@ -63,82 +63,13 @@ struct Player
     void update_namegame();
     int winner = 0;
     void selectWinStreak();
-    void print_display_loadgame(string name_saveload[], int count_name);
     void load_board_mini();
     vector<string> list_namesave();
     //graphics
     // phan nay de tam trong day cho de debug
     // nho xoa phan nay
-    void draw_rectangle(int x, int y, int u, int v, int color)
-    {
-        draw_background(x, y, u, y, color);
-        //draw_background(x+1, y, u+1, y, color);
-        draw_background(x, v, u, v, color);
-        //draw_background(x + 1, v, u + 1, v, color);
-        draw_background(x, y, x, v, color);
-        draw_background(x + 1, y, x + 1, v, color);
-        draw_background(u, y, u, v, color);
-        draw_background(u - 1, y, u - 1, v, color);
-    }
-    void SetColor_2(int backgound_color, int text_color);
-    void draw_background(int x, int y, int u, int v, int color)
-    {
-        SetColor_2(color, color);
-        for (int i = x; i <= u; i++)
-        {
-            for (int j = y; j <= v; j++)
-            {
-                GotoXY(i, j);
-                cout << " ";
-                //Sleep(0.01);
-            }
-        }
-    }
-    void GotoXY(int x, int y)
-    {
-        COORD coord;
-        coord.X = x;
-        coord.Y = y;
-        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
-    }
-
-    void draw_board()
-    {
-        int x = 43, y = 0;
-        for (int i = 1; i <= 16; i++)
-        {
-            for (int j = 1; j <= 16; j++)
-            {
-                GotoXY(x, y);
-                x += 4;
-                //Sleep(0.01);
-            }
-            y += 2;
-            x = 43;
-        }
-    }
     void draw_x();
     void draw_o();
-
-    void draw_x_win()
-    {
-        GotoXY(135, 20);
-        cout << " X WIN";
-        draw_rectangle(130, 15, 150, 25, 1);
-        GotoXY(0, 41);
-    }
-    void draw_o_win()
-    {
-        GotoXY(135, 20);
-        cout << "O WIN";
-        draw_rectangle(130, 15, 150, 25, 1);
-        GotoXY(0, 41);
-    }
-    void draw_draw()
-    {
-
-    }
-
 
 };
 
