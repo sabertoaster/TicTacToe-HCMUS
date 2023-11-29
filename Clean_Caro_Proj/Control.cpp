@@ -578,20 +578,25 @@ void StartAbout() {
 }
 void StartLoad()
 {
+
 	Player playerManager(52 + 2, 3 + 1, 16, 1, 1);
 	playerManager.khoitao();
-	playerManager.load_game();
-	DrawObject("Background");
-	DrawObject("Border");
-	DrawObject("PlayerFrame"); // built-in coor for player frame
-	GotoXY(52, 3);
-	DrawObject("BoardCanvas");
-	playerManager.load_board();
-	ShowConsoleCursor(true);
-	playerManager.check_saveload = 1;
-	if (playerManager.type == 0)
-	{
-		playerManager.play();
+	if (!playerManager.load_game()) {
+		SceneHandle("MAIN MENU");
 	}
-	playerManager.check_saveload = 0;
+	else {
+		DrawObject("Background");
+		DrawObject("Border");
+		DrawObject("PlayerFrame"); // built-in coor for player frame
+		GotoXY(52, 3);
+		DrawObject("BoardCanvas");
+		playerManager.load_board();
+		ShowConsoleCursor(true);
+		playerManager.check_saveload = 1;
+		if (playerManager.type == 0)
+		{
+			playerManager.play();
+		}
+		playerManager.check_saveload = 0;
+	}
 }

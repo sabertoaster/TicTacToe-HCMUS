@@ -87,6 +87,7 @@ void changeFontColor(color backgroundColor, color fontColor) {
 
 enum objID {
 	main_Logo,
+	save_Board,
 	saveload_Logo,
 	options_Logo,
 	about_Logo,
@@ -107,6 +108,7 @@ enum objID {
 
 objID string_hash(string const& inString) {
 	if (inString == "Main_Logo") return main_Logo;
+	if (inString == "Save_Board") return save_Board;
 	if (inString == "Saveload_Logo") return saveload_Logo;
 	if (inString == "Options_Logo") return options_Logo;
 	if (inString == "About_Logo") return about_Logo;
@@ -218,6 +220,42 @@ void OptionButton::printButton() {
 
 
 // [define visualizer func]
+void Visualizer::printSaveBoard() {
+	int height = 25, width = 100;
+	_setmode(_fileno(stdout), _O_U16TEXT);
+	COORD currentCoord = GetConsoleCursorPosition();
+	GotoXY(currentCoord.X, currentCoord.Y);
+	wcout << L"┌";
+	for (int i = 0; i < width - 1 ; i++) {
+		wcout << L"─";
+	}
+	wcout << L"┐";
+	
+	int temp = width / 2;
+	for (int i = 1; i < height; i ++) {
+		GotoXY(currentCoord.X, currentCoord.Y + i);
+		wcout << L"│";
+	}
+
+	for (int i = 1; i < height ; i++) {
+		GotoXY(currentCoord.X + temp, currentCoord.Y + i);
+		wcout << L"│";
+	}
+	
+	for (int i = 1; i < height; i++) {
+		GotoXY(currentCoord.X + width, currentCoord.Y + i);
+		wcout << L"│";
+	}
+
+	GotoXY(currentCoord.X, currentCoord.Y + height);
+	wcout << L"└";
+	for (int i = 0; i < width - 1; i++) {
+		wcout << L"─";
+	}
+	wcout << L"┘";
+	_setmode(_fileno(stdout), _O_TEXT);
+}
+
 void Visualizer::printLogo(string str) {
 	COORD currentCoord = GetConsoleCursorPosition();
 	
@@ -835,6 +873,9 @@ void DrawObject(string objName,int s,int e) { //Huy Darkmode
 	{
 	case main_Logo:
 		visualizer.printLogo("Main_Logo");
+		break;
+	case save_Board:
+		visualizer.printSaveBoard();
 		break;
 	case saveload_Logo:
 		visualizer.printLogo("Saveload_Logo");

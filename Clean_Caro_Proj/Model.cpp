@@ -976,30 +976,111 @@ void Player::print_display_loadgame(string name_saveload[], int count_name)
 		cout << i << " " << name_saveload[i];
 	}
 	GotoXY(xconsole, yconsole + offSetY * (count_name + 1));
-	changeFontColor(white, red);
+
+	if (opt.darkMode == 1) {
+		changeFontColor(black, pink);
+	}
+	else changeFontColor(white, red);
+
 	if (count_name == 1)
 		cout << "Khong co file luu game nao [ Vui long nhap so 0 de thoat ]";
 	else if (count_name == 2)
 		cout << "Vui long nhap so 1 ";
 	else
 		cout << "Vui long nhap so tu 1 den " << count_name - 1;
-	changeFontColor(white, black);
+	if (opt.darkMode == 1) {
+		changeFontColor(black, white);
+	} else changeFontColor(white, black);
 }
-void Player::load_game()
+int Player::load_game()
 {
 	DrawObject("Background");
 	DrawObject("Border");
 	DrawObject("Text_Border", 48, 120);
-	int xconsole = 50, yconsole = 10;
-	GotoXY(xconsole, yconsole);
-
 	GotoXY(48, 1);
 	DrawObject("Saveload_Logo");
+	DrawObject("CornerEsc");
+	COORD boardPos;
+	boardPos.X = 35;
+	boardPos.Y = 10;
 
-	ifstream fi("file_game/name_saveload.txt");
-	string name_saveload[100];
-	int count_name = 1;
-	while (getline(fi, name_saveload[count_name]))
+	COORD ptrInit = boardPos;
+	ptrInit.X += 5;
+	ptrInit.Y += 3;
+
+	GotoXY(ptrInit.X, ptrInit.Y);
+	cout << ">>";
+
+	int offset = 3;
+
+	int xconsole = boardPos.X + 10, yconsole = boardPos.Y + 3;
+	vector<string> temp = list_namesave();
+	int count_name = temp.size();
+	int ptrId = 0, max_id = 7, current_max_id;
+	
+	current_max_id = min(count_name, max_id);
+	for (int i = 0; i < current_max_id; i++)
+	{
+		GotoXY(xconsole, yconsole + offset * i);
+		cout << i + 1 << ") " << temp[i];
+	}
+
+
+	GotoXY(35, 10);
+	DrawObject("Save_Board"); // [Saber]
+
+	bool _checkNotEnter = true, _checkEsc = false;
+	while (_checkNotEnter) {
+		if (_kbhit())
+		{
+			switch (_getch()) {
+			case 'a':
+			case 'w':
+				GotoXY(ptrInit.X, ptrInit.Y + ptrId * offset);
+				cout << "  ";
+				ptrId = max(0, ptrId - 1);
+				GotoXY(ptrInit.X, ptrInit.Y + ptrId * offset);
+				cout << ">>";
+				break;
+			case 's':
+			case 'd':
+				GotoXY(ptrInit.X, ptrInit.Y + ptrId * offset);
+				cout << "  ";
+				ptrId = min(current_max_id - 1, ptrId + 1);
+				GotoXY(ptrInit.X, ptrInit.Y + ptrId * offset);
+				cout << ">>";
+				break;
+			case 13:
+				_checkNotEnter = false;
+				break;
+			case 27: 
+				_checkEsc = true;
+				_checkNotEnter = false;
+				break;
+			default:
+				break;
+			}
+		}
+	}
+	
+	if (!_checkEsc) {
+		ifstream ci("file_game/" + temp[ptrId]);
+		ci >> BruteForce >> Minimax >> type >> current_player;
+		for (int i = 1; i <= numcell; i++)
+			for (int j = 1; j <= numcell; j++)
+				ci >> _POINT[i][j];
+
+		ten_ban_dau = temp[ptrId];
+		ci.close();
+		return 1;
+	}	
+
+	return 0;
+
+	/*ifstream fi("file_game/name_saveload.txt");
+	string name_saveload[100];*/
+	/*int count_name = 1;*/
+	/*while (getline(fi, name_saveload[count_name]))
 	{
 		count_name++;
 	}
@@ -1007,8 +1088,8 @@ void Player::load_game()
 	{
 		GotoXY(xconsole, yconsole + offSetY * i);
 		cout << i << " " << name_saveload[i];
-	}
-	if (count_name == 1)
+	}*/
+	/*if (count_name == 1)
 	{
 		print_display_loadgame(name_saveload, count_name);
 	}
@@ -1048,16 +1129,21 @@ void Player::load_game()
 		}
 
 	} while (check_ok_number == 0);
+
+
 	int so_tmp = string_to_number(number_name);
 	string name_game = name_saveload[so_tmp];
+
+
 	ifstream ci("file_game/" + name_game);
 	ci >> BruteForce >> Minimax >> type >> current_player;
 	for (int i = 1; i <= numcell; i++)
 		for (int j = 1; j <= numcell; j++)
 			ci >> _POINT[i][j];
-	scene_demo_savegame();
+
 	ten_ban_dau = name_game;
-	ci.close();
+	ci.close();*/
+
 }
 void Player::update_namegame()
 {

@@ -95,6 +95,7 @@ public:
 		GetConsoleScreenBufferInfo(hConsoleOutput, &csbi); // initialize value to csbi when create class instance
 	}
 
+	void printSaveBoard();
 	void printLogo(string str);
 	void printCornerEsc();
 	void printBackground(int width, int height);

@@ -59,7 +59,7 @@ struct Player
     int kt_win();
     void load_board();
     void save_game();
-    void load_game();
+    int load_game();
     void update_namegame();
     int winner = 0;
     void selectWinStreak();
