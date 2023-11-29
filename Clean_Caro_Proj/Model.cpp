@@ -422,6 +422,7 @@ void Player::move()
 			i = tmpi; j = tmpj;
 			//check_play_ai = 1;
 			history.push_back({ i,j });
+			type = check_win();
 			//PlaySound(TEXT("SOUND GAME CARO\\click\\enter.wav"), NULL, SND_ASYNC);
 		}
 		else
@@ -429,6 +430,7 @@ void Player::move()
 			pair<int, int>tmp = find_best_move();
 			int tmpi = tmp.first, tmpj = tmp.second;
 			_POINT[tmpi][tmpj] = 2;
+
 			GotoXY(initCoor.X + (tmpj - 1) * offSetX, initCoor.Y + (tmpi - 1) * offSetY);
 			draw_o();
 			visualizer.printAvatar('X', 1); // Visualize O's turn
@@ -442,6 +444,7 @@ void Player::move()
 			//check_play_ai = 1;
 			history.push_back({ i,j });
 			PlaySound(TEXT("SOUND GAME CARO\\click\\enter.wav"), NULL, SND_ASYNC | opt.vfxFlag);
+			type = check_win();
 		}
 	}
 
@@ -953,6 +956,7 @@ void Player::print_display_loadgame(string name_saveload[], int count_name)
 }
 void Player::load_game()
 {
+	// lay ra danh sach ten cac file 
 	DrawObject("Background");
 	DrawObject("Border");
 	int xconsole = 50, yconsole = 10;
@@ -964,15 +968,20 @@ void Player::load_game()
 	{
 		count_name++;
 	}
+	//
+	// in cac  ten file
 	for (int i = 1; i < count_name; i++)
 	{
 		GotoXY(xconsole, yconsole + offSetY * i);
 		cout << i << " " << name_saveload[i];
 	}
-	if (count_name == 1)
+	//
+
+	if (count_name == 1)// truong hop khong co file nao
 	{
 		print_display_loadgame(name_saveload, count_name);
 	}
+
 	string number_name;
 	int check_ok_number = 1;
 	do
@@ -1041,6 +1050,7 @@ void Player::update_namegame()
 }
 void Player::save_game()
 {
+	// lay ra danh sach cac ten file
 	int check_name = 0;
 	string name_saveload[100];
 	string name_save;
@@ -1050,11 +1060,12 @@ void Player::save_game()
 	{
 		count_name++;
 	}
-	if (check_saveload == 1)
+	
+	if (check_saveload == 1) // neu file do mo tu load tu khong can nhap ten save
 	{
 		name_save = name_repeat_load;
 	}
-	else
+	else // nhap ten de save game
 	{
 		DrawObject("Background");
 		DrawObject("Border");
@@ -1071,7 +1082,19 @@ void Player::save_game()
 			check_name = 0;
 			GotoXY(xconsole, yconsole + offSetY * count_name);
 			cout << "Nhap ten: ";
-			cin >> name_save;
+			//cin.ignore();
+			getline(cin, name_save);
+			int cnt_space = 0;
+			for (int i = 0; i < name_save.size(); i++)// neu ki tu nhap vao toan khoang trang
+				cnt_space += (name_save[i] == ' ');
+
+			if (name_save.size() > 20|| cnt_space == name_save.size())
+			{
+				// neu nhap vao lon hon 20 ki tu
+				GotoXY(xconsole, yconsole + offSetY * count_name);
+				cout << string(20 + (int)name_save.size(), ' ');
+				check_name = 1;
+			}
 			for (int i = 1; i < count_name; i++)
 				if (name_saveload[i] == name_save)
 				{
@@ -1981,7 +2004,10 @@ pair<int, int> Player::find_best_move()
 				continue;
 			_POINT[i][j] = 1;
 			if (check_4_huong(i, j))
+			{
+				_POINT[i][j] = 0;
 				return { i,j };
+			}	
 			_POINT[i][j] = 0;
 		}
 	}
@@ -2022,7 +2048,8 @@ void Player::play()
 	while (1)
 	{
 		move(); // di chuyen va ve o x len bang
-		type = check_win(); // check : type==0 choi tiep | type==1 player x hoac o da win | type == 2 hoa
+		if(type==0)
+			type = check_win(); // check : type==0 choi tiep | type==1 player x hoac o da win | type == 2 hoa
 		if (type) // neu 1 nguoi choi da thang hoac hoa thi thoat
 			break;
 		if (check_save == 1)
