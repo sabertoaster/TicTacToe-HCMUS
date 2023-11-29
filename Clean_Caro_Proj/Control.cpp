@@ -148,8 +148,8 @@ void InitializeData() {
 		pointer.ptrAfterPlay[nextIndex].prevBtn = &(pointer.ptrAfterPlay[i]);
 	}
 
-	darkModeBtn.coord.X = 60;
-	darkModeBtn.coord.Y = 8;
+	darkModeBtn.coord.X = 65;
+	darkModeBtn.coord.Y = 12;
 	offset = 8;
 	pointer.ptrOptions = { darkModeBtn, musicBtn, vfxBtn };
 	for (int i = 0; i < pointer.ptrOptions.size(); i++) { // [FIXED REMOVE BUTTONS FROM VISUALIZER
@@ -379,6 +379,10 @@ void StartOption() {
 	DrawObject("Background");
 	DrawObject("Border");
 	DrawObject("CornerEsc");
+	/*visualizer.printTextBorder(57, 113);*/
+	DrawObject("Text_Border",57,113);
+	GotoXY(57, 1);
+	DrawObject("Options_Logo");
 	for (auto i : pointer.ptrOptions) { //Visualize Btn;
 		i.printButton();
 		bool state = false;
@@ -438,6 +442,8 @@ void StartOption() {
 void StartHelp() {
 	DrawObject("Background");
 	DrawObject("Border");
+	DrawObject("Text_Border",65,95);
+	
 	DrawObject("CornerEsc");
 	GotoXY(65, 1);
 	DrawObject("Help_Logo");
@@ -495,8 +501,9 @@ void StartHelp() {
 void StartAbout() {
 	//set to UTF16 text cout
 
-	DrawObject("Background");
-	DrawObject("Border");
+	DrawObject("Background");//
+	DrawObject("Border");//
+	DrawObject("Text_Border",62,104);
 	DrawObject("CornerEsc");
 	GotoXY(62, 1);
 	DrawObject("About_Logo");
