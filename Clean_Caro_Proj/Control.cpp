@@ -196,7 +196,7 @@ void StartGame() {
 void StartPlay() {
 	DrawObject("Background");
 	DrawObject("Border");
-
+	DrawObject("CornerEsc");
 	for (auto i : pointer.ptrChoosePlayer) { //Visualize Btn;
 		i.printButton();
 	}

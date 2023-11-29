@@ -1087,6 +1087,7 @@ void Player::save_game()
 	}
 	else
 	{
+		//Visualize save in-game here
 		DrawObject("Background");
 		DrawObject("Border");
 		int xconsole = 50, yconsole = 10;
