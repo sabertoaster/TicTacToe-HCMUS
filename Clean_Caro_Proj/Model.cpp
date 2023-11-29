@@ -910,6 +910,44 @@ void Player::load_board()
 		}
 	}
 }
+void Player::load_board_mini()
+{
+	COORD initCoor_mini;
+	initCoor_mini.X = 95;
+	initCoor_mini.Y = 15;
+	GotoXY(95, 13);
+	changeFontColor(white, black);
+	if (Minimax == 1 || BruteForce == 1)
+	{
+		cout << "Play Mode: Bot";
+	}
+	else
+	{
+		cout << "Play Mode: PVP";
+	}
+	for (int i = 1; i <= numcell; i++)
+	{
+		for (int j = 1; j <= numcell; j++)
+		{
+			if (_POINT[i][j] == 1)
+			{
+				GotoXY(initCoor_mini.X + (j - 1) * 2, initCoor_mini.Y + (i - 1) * 1);
+				draw_x();
+			}
+			else if (_POINT[i][j] == 2)
+			{
+				GotoXY(initCoor_mini.X + (j - 1) * 2, initCoor_mini.Y + (i - 1) * 1);
+				draw_o();
+			}
+			else
+			{
+				GotoXY(initCoor_mini.X + (j - 1) * 2, initCoor_mini.Y + (i - 1) * 1);
+				changeFontColor(white, black);
+				cout << " ";
+			}
+		}
+	}
+}
 void scene_demo_savegame()
 {
 
@@ -956,7 +994,6 @@ vector<string> Player::list_namesave()
 	{
 		res.push_back(name_saveload[i]);
 	}
-	reverse(res.begin(), res.end());
 
 	return res;
 }
@@ -1029,37 +1066,56 @@ int Player::load_game()
 	GotoXY(35, 10);
 	DrawObject("Save_Board"); // [Saber]
 
+	ifstream ci("file_game/" + temp[0]);
+	ci >> BruteForce >> Minimax >> type >> current_player;
+	for (int i = 1; i <= numcell; i++)
+		for (int j = 1; j <= numcell; j++)
+			ci >> _POINT[i][j];
+
+	ten_ban_dau = temp[0];
+	ci.close();
+	load_board_mini();
 	bool _checkNotEnter = true, _checkEsc = false;
 	while (_checkNotEnter) {
 		if (_kbhit())
 		{
-			switch (_getch()) {
-			case 'a':
-			case 'w':
+			char ch = _getch();
+			if (ch == 'a' || ch == 'w')
+			{
 				GotoXY(ptrInit.X, ptrInit.Y + ptrId * offset);
 				cout << "  ";
 				ptrId = max(0, ptrId - 1);
 				GotoXY(ptrInit.X, ptrInit.Y + ptrId * offset);
+				changeFontColor(white, black);
 				cout << ">>";
-				break;
-			case 's':
-			case 'd':
+			}
+			if (ch == 's' || ch == 'd')
+			{
 				GotoXY(ptrInit.X, ptrInit.Y + ptrId * offset);
 				cout << "  ";
 				ptrId = min(current_max_id - 1, ptrId + 1);
 				GotoXY(ptrInit.X, ptrInit.Y + ptrId * offset);
+				changeFontColor(white, black);
 				cout << ">>";
-				break;
-			case 13:
+			}
+			if (ch == 13)
+			{
 				_checkNotEnter = false;
-				break;
-			case 27: 
+			}
+			if (ch == 27)
+			{
 				_checkEsc = true;
 				_checkNotEnter = false;
-				break;
-			default:
-				break;
 			}
+			ifstream ci("file_game/" + temp[ptrId]);
+			ci >> BruteForce >> Minimax >> type >> current_player;
+			for (int i = 1; i <= numcell; i++)
+				for (int j = 1; j <= numcell; j++)
+					ci >> _POINT[i][j];
+
+			ten_ban_dau = temp[ptrId];
+			ci.close();
+			load_board_mini();
 		}
 	}
 	
@@ -1072,78 +1128,13 @@ int Player::load_game()
 
 		ten_ban_dau = temp[ptrId];
 		ci.close();
+		load_board_mini();
 		return 1;
 	}	
 
 	return 0;
 
-	/*ifstream fi("file_game/name_saveload.txt");
-	string name_saveload[100];*/
-	/*int count_name = 1;*/
-	/*while (getline(fi, name_saveload[count_name]))
-	{
-		count_name++;
-	}
-	for (int i = 1; i < count_name; i++)
-	{
-		GotoXY(xconsole, yconsole + offSetY * i);
-		cout << i << " " << name_saveload[i];
-	}*/
-	/*if (count_name == 1)
-	{
-		print_display_loadgame(name_saveload, count_name);
-	}
-	string number_name;
-	int check_ok_number = 1;
-	do
-	{
-		check_ok_number = 1;
-		GotoXY(xconsole, yconsole + offSetY * count_name);
-		cout << "Nhap so : ";
-		getline(cin, number_name);
-		if (kt_number(number_name) == 1)
-		{
-			if (number_name.size() >= 9)
-			{
-				print_display_loadgame(name_saveload, count_name);
-				check_ok_number = 0;
-			}
-			else
-			{
-				long long tmp = string_to_number(number_name);
-				if (tmp == 0)
-				{
-					StartMenu();
-				}
-				if (tmp >= count_name)
-				{
-					print_display_loadgame(name_saveload, count_name);
-					check_ok_number = 0;
-				}
-			}
-		}
-		else
-		{
-			print_display_loadgame(name_saveload, count_name);
-			check_ok_number = 0;
-		}
-
-	} while (check_ok_number == 0);
-
-
-	int so_tmp = string_to_number(number_name);
-	string name_game = name_saveload[so_tmp];
-
-
-	ifstream ci("file_game/" + name_game);
-	ci >> BruteForce >> Minimax >> type >> current_player;
-	for (int i = 1; i <= numcell; i++)
-		for (int j = 1; j <= numcell; j++)
-			ci >> _POINT[i][j];
-
-	ten_ban_dau = name_game;
-	ci.close();*/
-
+	
 }
 void Player::update_namegame()
 {
@@ -1165,56 +1156,164 @@ void Player::update_namegame()
 	fo_nsave.close();
 	std::filesystem::remove("file_game/" + ten_ban_dau);
 }
+string check_name_save(string name_saveload,vector<string>temp)
+{
+	int check_space = 0;
+	for (int i = 0; i < name_saveload.size(); i++)
+		if (name_saveload[i] != ' ')
+		{
+			check_space = 1;
+		}
+	if (check_space == 0)
+	{
+		return "loi_all_space";
+	}
+	for (int i = 0; i < temp.size(); i++)
+	{
+		if (name_saveload == temp[i])
+			return "loi_trung_ten";
+	}
+	return "ok";
+}
 void Player::save_game()
 {
-	int check_name = 0;
-	string name_saveload[100];
-	string name_save;
-	int count_name = 1;
-	ifstream fi("file_game/name_saveload.txt");
-	while (getline(fi, name_saveload[count_name]))
-	{
-		count_name++;
-	}
+	vector<string> temp = list_namesave();
 	if (check_saveload == 1)
 	{
-		name_save = ten_ban_dau;
-	}
-	else
-	{
-		//Visualize save in-game here
-		DrawObject("Background");
-		DrawObject("Border");
-		int xconsole = 50, yconsole = 10;
-		GotoXY(xconsole, yconsole);
-		for (int i = 1; i < count_name; i++)
+		string name_saveload = ten_ban_dau;
+		ofstream fo("file_game/" + name_saveload);
+		fo << BruteForce << " " << Minimax << " " << type << " " << current_player << "\n";
+		for (int i = 1; i <= numcell; i++)
 		{
-			GotoXY(xconsole, yconsole + offSetY * i);
-			cout << name_saveload[i];
+			for (int j = 1; j <= numcell; j++)
+				fo << _POINT[i][j] << " ";
+			fo << "\n";
 		}
-		fi.close();
-		do
-		{
-			check_name = 0;
-			GotoXY(xconsole, yconsole + offSetY * count_name);
-			cout << "Nhap ten: ";
-			cin >> name_save;
-			for (int i = 1; i < count_name; i++)
-				if (name_saveload[i] == name_save)
-				{
-					GotoXY(xconsole, yconsole + offSetY * (count_name + 1));
-					changeFontColor(white, red);
-					cout << "!Ten bi trung";
-					changeFontColor(white, black);
-					GotoXY(xconsole, yconsole + offSetY * count_name);
-					cout << string(10 + (int)name_save.size(), ' ');
-					check_name = 1;
-					break;
-				}
-
-		} while (check_name);
+		fo.close();
+		ofstream fo_nsave("file_game/name_saveload.txt");
+		fo_nsave << name_saveload << '\n';
+		for (int i = 0; i < temp.size(); i++)
+			if(name_saveload!=temp[i])
+				fo_nsave << temp[i] << "\n";
+		fo_nsave.close();
+		return;
 	}
-	ofstream fo("file_game/" + name_save);
+	DrawObject("Background");
+	DrawObject("Border");
+	DrawObject("Text_Border", 48, 120);
+	GotoXY(48, 1);
+	DrawObject("Saveload_Logo");
+	DrawObject("CornerEsc");
+	COORD boardPos;
+	boardPos.X = 35;
+	boardPos.Y = 10;
+
+	COORD ptrInit = boardPos;
+	ptrInit.X += 5;
+	ptrInit.Y += 3;
+
+	GotoXY(ptrInit.X, ptrInit.Y);
+
+	int offset = 3;
+
+	int xconsole = boardPos.X + 10, yconsole = boardPos.Y + 3;
+	int count_name = temp.size();
+	int ptrId = 0, max_id = 7, current_max_id;
+
+	current_max_id = min(count_name, max_id);
+	for (int i = 0; i < current_max_id; i++)
+	{
+		GotoXY(xconsole, yconsole + offset * i);
+		cout << i + 1 << ") " << temp[i];
+	}
+
+	GotoXY(35, 10);
+	DrawObject("Save_Board"); // [Saber]
+
+	load_board_mini();
+	int position_x_save = xconsole + 15 , position_y_save = yconsole + offset * 7 -1 ; //15
+	GotoXY(xconsole, position_y_save);
+	cout << "Nhap ten FILE: ";
+	bool _checkNotEnter = true, _checkEsc = false;
+	string name_saveload = "";
+	while (_checkNotEnter) {
+		if (_kbhit())
+		{
+			char ch = _getch();
+			if ((ch >= 'A' && ch <= 'Z') || (ch == ' ') || (ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9'))
+			{	
+				if (name_saveload.size() <= 20)
+				{
+					name_saveload += ch;
+					changeFontColor(white, black);
+					cout << ch;
+				}
+			}
+			if (ch == 8)
+			{
+				if (name_saveload.size() >= 1)
+				{
+					name_saveload.erase(name_saveload.size() - 1, 1);
+					GotoXY(position_x_save, position_y_save);
+					changeFontColor(white, white);
+					cout << string(21,' ');
+					changeFontColor(white, black);
+					GotoXY(position_x_save, position_y_save);
+					cout << name_saveload;
+				}
+			}
+			if (ch == 13)
+			{
+				string tmp = check_name_save(name_saveload, temp);
+				if (tmp=="ok")
+				{
+					_checkNotEnter = false;
+				}
+				else
+				{
+					GotoXY(xconsole, position_y_save+1);
+					changeFontColor(white, white);
+					cout << string(31, ' ');
+					changeFontColor(white, red);
+					GotoXY(xconsole, position_y_save + 1);
+					if (tmp == "loi_all_space")
+					{
+						cout << "Ten FIlE khong duoc de trong!";	
+					}
+					else
+					{
+						cout << "Ten FIlE da bi trung!";
+					}
+					name_saveload = "";
+					GotoXY(position_x_save, position_y_save);
+					changeFontColor(white, white);
+					cout << string(21, ' ');
+					GotoXY(position_x_save, position_y_save);
+					changeFontColor(white, black);
+				}
+			}
+			if (ch == 27)
+			{
+				DrawObject("Background");
+				DrawObject("Border");
+				DrawObject("PlayerFrame"); // built-in coor for player frame
+				GotoXY(52, 3);
+				DrawObject("BoardCanvas");
+				load_board();
+				ShowConsoleCursor(true);
+				if (type == 0)
+				{
+					play();
+				}
+				_checkEsc = true;
+				_checkNotEnter = false;
+			}
+		}
+	}
+	while (name_saveload.size() >= 1 && name_saveload[0] == ' ')
+		name_saveload.erase(0, 1);
+
+	ofstream fo("file_game/" + name_saveload);
 	fo << BruteForce << " " << Minimax << " " << type << " " << current_player << "\n";
 	for (int i = 1; i <= numcell; i++)
 	{
@@ -1224,25 +1323,9 @@ void Player::save_game()
 	}
 	fo.close();
 	ofstream fo_nsave("file_game/name_saveload.txt");
-	name_saveload[count_name] = name_save;
-
-	if (check_saveload == 1)
-	{
-		for (int i = 1; i < count_name; i++)
-		{
-			if(name_saveload[i] != ten_ban_dau)
-				fo_nsave << name_saveload[i] << "\n";
-		}
-		fo_nsave << ten_ban_dau << "\n";
-	}
-	else
-	{
-		for (int i = 1; i <= count_name; i++)
-		{
-			fo_nsave << name_saveload[i] << "\n";
-		}
-	}
-
+	fo_nsave << name_saveload << '\n';
+	for (int i = 0; i < temp.size(); i++)
+		fo_nsave << temp[i] << "\n";
 	fo_nsave.close();
 
 }
@@ -2146,6 +2229,30 @@ int Player::minimax(int depth, int alpha, int beta, int minimax_player)
 
 pair<int, int> Player::find_best_move()
 {
+	for (int i = 1; i <= numcell; i++)
+	{
+		for (int j = 1; j <= numcell; j++)
+		{
+			if (_POINT[i][j] != 0)
+				continue;
+			_POINT[i][j] = 2;
+			if (check_4_huong(i, j))
+				return { i,j };
+			_POINT[i][j] = 0;
+		}
+	}
+	for (int i = 1; i <= numcell; i++)
+	{
+		for (int j = 1; j <= numcell; j++)
+		{
+			if (_POINT[i][j] != 0)
+				continue;
+			_POINT[i][j] = 1;
+			if (check_4_huong(i, j))
+				return { i,j };
+			_POINT[i][j] = 0;
+		}
+	}
 	int ans = INT_MIN;
 	pair<int, int>best_move;
 	vector<pair<int, int>>area_list = area(1);

@@ -64,7 +64,7 @@ struct Player
     int winner = 0;
     void selectWinStreak();
     void print_display_loadgame(string name_saveload[], int count_name);
-    
+    void load_board_mini();
     vector<string> list_namesave();
     //graphics
     // phan nay de tam trong day cho de debug
