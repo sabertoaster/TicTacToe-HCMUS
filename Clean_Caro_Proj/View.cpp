@@ -98,6 +98,7 @@ enum objID {
 	border,
 	text_border, //Huy Border
 	playerFrame,
+	playerAIFrame,
 	xMark,
 	oMark,
 	animation_x,
@@ -119,6 +120,7 @@ objID string_hash(string const& inString) {
 	if (inString == "Text_Border") return text_border;
 	if (inString == "BoardCanvas") return boardCanvas;
 	if (inString == "PlayerFrame") return playerFrame;
+	if (inString == "PlayerVsAIFrame") return playerAIFrame;
 	if (inString == "WinAnimation_X") return animation_x;
 	if (inString == "WinAnimation_O") return animation_o;
 	if (inString == "CornerEsc") return cornerEsc;
@@ -287,6 +289,30 @@ void Visualizer::printLogo(string str) {
 			wcout << optionsLogo[i];
 			GotoXY(currentCoord.X, currentCoord.Y + 1);
 			currentCoord.Y++; //update the new pointer coordinate
+		}
+		if (opt.darkMode == 0) {
+			for (int i = 0; i < 5; i++) {
+				GotoXY(101, 10 + i);
+				wcout << sunBanner[i];
+			}
+		}
+		else {
+			for (int i = 0; i < 5; i++) {
+				GotoXY(97, 10 + i);
+				wcout << moonBanner[i];
+			}
+		}
+		if (opt.vfxFlag == 0) {
+			for (int i = 0; i < 5; i++) {
+				GotoXY(97, 28 + i);
+				wcout << backMusicBanner[i];
+			}
+		}
+		if (opt.soundFlag == 0) {
+			for (int i = 0; i < 5; i++) {
+				GotoXY(97, 19 + i);
+				wcout << mainMusicBanner[i];
+			}
 		}
 		break;
 	case about_Logo:
@@ -519,6 +545,8 @@ void Visualizer::printPlayerFrame(char str) {
 	for (int i = 1; i <= width; i++) { // print column
 		GotoXY(currentPos.X + i, currentPos.Y);
 		wcout << L"━";
+		GotoXY(currentPos.X + i, currentPos.Y + 10);
+		wcout << L"━";
 		GotoXY(currentPos.X + i, currentPos.Y + height + 1);
 		wcout << L"━";
 	}
@@ -535,6 +563,27 @@ void Visualizer::printPlayerFrame(char str) {
 	GotoXY(currentPos.X + width + 1, currentPos.Y + height + 1); // bottom left
 	wcout << L"┛";
 
+	//Print Help Buttons
+	GotoXY(currentPos.X + 10, currentPos.Y + height + 2);
+	wcout << L"┏";
+	GotoXY(currentPos.X + 10, currentPos.Y + height + 4);
+	wcout << L"┗";
+	GotoXY(currentPos.X + 31, currentPos.Y + height + 4);
+	wcout << L"┛";
+	GotoXY(currentPos.X + 31, currentPos.Y + height + 2);
+	wcout << L"┓";
+	GotoXY(currentPos.X + 10, currentPos.Y + height + 3);
+	wcout << L"┃";
+	GotoXY(currentPos.X + 31, currentPos.Y + height + 3);
+	wcout << L"┃";
+
+	for (int i = 1; i <= 20; i++) {
+		GotoXY(currentPos.X + 10 + i, currentPos.Y + height + 2);
+		wcout << L"━";
+		GotoXY(currentPos.X + 10 + i, currentPos.Y + height + 4);
+		wcout << L"━";
+	}
+
 	switch (str)
 	{
 	case 'X':
@@ -542,16 +591,46 @@ void Visualizer::printPlayerFrame(char str) {
 		avtXCoor.Y = currentPos.Y + 1;
 		GotoXY(avtXCoor.X, avtXCoor.Y);
 		printAvatar('X', 1);
+		GotoXY(currentPos.X + 13, currentPos.Y + height + 3);
+		if (opt.darkMode == 1)
+			changeFontColor(black, white);
+		else
+			changeFontColor(white, black);
+		cout << " P : Save Game";
 		break;
 	case 'O':
 		avtOCoor.X = currentPos.X + (width + 1) / 2 - 7;
 		avtOCoor.Y = currentPos.Y + 1;
 		GotoXY(avtOCoor.X, avtOCoor.Y);
 		printAvatar('O', 0);
+		GotoXY(currentPos.X + 16, currentPos.Y + height + 3);
+		if (opt.darkMode == 1)
+			changeFontColor(black, white);
+		else
+			changeFontColor(white, black);
+		cout << " U : Undo";
+		break;
+	case 'A':
+		avtAICoor.X = currentPos.X + (width + 1) / 2 - 6;
+		avtAICoor.Y = currentPos.Y + 16;
+		GotoXY(avtAICoor.X, avtAICoor.Y);
+		printAvatar('A', 0);
+		break;
+	case 'P':
+		avtPlayerCoor.X = currentPos.X + (width + 1) / 2 - 19;
+		avtPlayerCoor.Y = currentPos.Y + 15;
+		GotoXY(avtPlayerCoor.X, avtPlayerCoor.Y);
+		printAvatar('P', 1);
+		break;
+	case 'S':
+		avtPlayerCoor.X = currentPos.X + (width + 1) / 2 - 17;
+		avtPlayerCoor.Y = currentPos.Y + 17;
+		GotoXY(avtPlayerCoor.X, avtPlayerCoor.Y);
+		printAvatar('S', 1);
+		break;
 	default:
 		break;
 	}
-
 	_setmode(_fileno(stdout), _O_TEXT);
 }
 
@@ -565,6 +644,15 @@ void Visualizer::printAvatar(char str, int color) {
 		break;
 	case 'O':
 		currentPos = avtOCoor;
+		break;
+	case 'A':
+		currentPos = avtAICoor;
+		break;
+	case 'P':
+		currentPos = avtPlayerCoor;
+		break;
+	case 'S':
+		currentPos = avtPlayerCoor;
 		break;
 	defaut:
 		break;
@@ -608,6 +696,46 @@ void Visualizer::printAvatar(char str, int color) {
 		for (int i = 0; i < 7; i++) { // [hard-code]
 			GotoXY(currentPos.X, currentPos.Y + i);
 			wcout << avt_o[i];
+		}
+		break;
+	case 'A':
+		//  [Huy_Darkmode]
+		if (opt.darkMode == 1)
+			changeFontColor(black, cyan);
+		else
+			changeFontColor(white, blue3);
+		//  [Huy_Darkmode]
+
+		//Print
+		for (int i = 0; i < 11; i++) {
+			GotoXY(currentPos.X, currentPos.Y + i);
+			wcout << botBanner[i];
+		}
+		break;
+	case 'P':
+		// [Huy_Darkmode]
+		if (opt.darkMode == 1)
+			changeFontColor(black, pink);
+		else
+			changeFontColor(white, pink);
+
+		//Print
+		for (int i = 0; i < 12; i++) {
+			GotoXY(currentPos.X, currentPos.Y + i);
+			wcout << player1Banner[i];
+		}
+		break;
+	case 'S':
+		// [Huy_Darkmode]
+		if (opt.darkMode == 1)
+			changeFontColor(black, cyan);
+		else
+			changeFontColor(white, blue1);
+
+		//Print
+		for (int i = 0; i < 9; i++) {
+			GotoXY(currentPos.X, currentPos.Y + i);
+			wcout << player2Banner[i];
 		}
 		break;
 	default:
@@ -909,6 +1037,20 @@ void DrawObject(string objName,int s,int e) { //Huy Darkmode
 		visualizer.printPlayerFrame('X');
 		GotoXY(120, 3);
 		visualizer.printPlayerFrame('O');
+		GotoXY(5, 3);
+		visualizer.printPlayerFrame('P');
+		GotoXY(120, 3);
+		visualizer.printPlayerFrame('S');
+		break;
+	case playerAIFrame:
+		GotoXY(5, 3);
+		visualizer.printPlayerFrame('X');
+		GotoXY(120, 3);
+		visualizer.printPlayerFrame('O');
+		GotoXY(120, 3);
+		visualizer.printPlayerFrame('A');
+		GotoXY(5, 3);
+		visualizer.printPlayerFrame('P');
 		break;
 	case cornerEsc:
 		visualizer.printCornerEsc();

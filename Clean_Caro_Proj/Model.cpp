@@ -244,17 +244,24 @@ void Player::move()
 				_POINT[his_xy.first][his_xy.second] = 0;
 				current_player = 1 - current_player;
 				GotoXY(initCoor.X + (his_xy.second - 1) * offSetX, initCoor.Y + (his_xy.first - 1) * offSetY);
-				changeFontColor(white, white);
+				if (opt.darkMode == 1)
+					changeFontColor(black, black);
+				else
+					changeFontColor(white, white);
 				cout << " ";
 				if (current_player == 1)
 				{
-					visualizer.printAvatar('X', 1); // Visualize O's turn
-					visualizer.printAvatar('O', 0);
+					//visualizer.printAvatar('X', 1); // Visualize O's turn
+					//visualizer.printAvatar('O', 0);
+					//visualizer.printAvatar('A', 0);
+					//visualizer.printAvatar('P', 1);
 				}
 				else
 				{
-					visualizer.printAvatar('X', 0); // Visualize X's turn
-					visualizer.printAvatar('O', 1);
+					//visualizer.printAvatar('X', 0); // Visualize X's turn
+					//visualizer.printAvatar('O', 1);
+					//visualizer.printAvatar('A', 1);
+					//visualizer.printAvatar('P', 0);
 				}
 				//GotoXY(initCoor.X + (j - 1) * offSetX, initCoor.Y + (i - 1) * offSetY);
 			}
@@ -377,15 +384,19 @@ void Player::move()
 			if (current_player == 1)
 			{
 				draw_x();
-				visualizer.printAvatar('X', 0); // Visualize X's turn
-				visualizer.printAvatar('O', 1);
+				//visualizer.printAvatar('X', 0); // Visualize X's turn
+				//visualizer.printAvatar('O', 1);
+				//visualizer.printAvatar('A', 1);
+				/*visualizer.printAvatar('P', 0);*/
 				_POINT[i][j] = 1;
 			}
 			else
 			{
 				draw_o();
-				visualizer.printAvatar('X', 1); // Visualize O's turn
-				visualizer.printAvatar('O', 0);
+				//visualizer.printAvatar('X', 1); // Visualize O's turn
+				//visualizer.printAvatar('O', 0);
+				//visualizer.printAvatar('A', 0);
+				/*visualizer.printAvatar('P', 1);*/
 				_POINT[i][j] = 2;
 			}
 			current_player = 1 - current_player;
@@ -400,8 +411,10 @@ void Player::move()
 			if (_POINT[i][j] == 0 && check_enter && !check_up && !check_down && !check_right && !check_left)
 			{
 				draw_x();
-				visualizer.printAvatar('X', 0); // Visualize X's turn
-				visualizer.printAvatar('O', 1);
+				//visualizer.printAvatar('X', 0); // Visualize X's turn
+				//visualizer.printAvatar('O', 1);
+				//visualizer.printAvatar('A', 1);
+				/*visualizer.printAvatar('P', 0);*/
 				_POINT[i][j] = 1;
 				current_player = 1 - current_player;
 				check_enter = 0;
@@ -417,8 +430,10 @@ void Player::move()
 
 			GotoXY(initCoor.X + (tmpj - 1) * offSetX, initCoor.Y + (tmpi - 1) * offSetY);
 			draw_o();
-			visualizer.printAvatar('X', 1); // Visualize O's turn
-			visualizer.printAvatar('O', 0);
+			//visualizer.printAvatar('X', 1); // Visualize O's turn
+			//visualizer.printAvatar('O', 0);
+			//visualizer.printAvatar('A', 0);
+			/*visualizer.printAvatar('P', 1);*/
 
 			current_player = 1 - current_player;
 			check_enter = 0;
@@ -437,8 +452,10 @@ void Player::move()
 			_POINT[tmpi][tmpj] = 2;
 			GotoXY(initCoor.X + (tmpj - 1) * offSetX, initCoor.Y + (tmpi - 1) * offSetY);
 			draw_o();
-			visualizer.printAvatar('X', 1); // Visualize O's turn
-			visualizer.printAvatar('O', 0);
+			//visualizer.printAvatar('X', 1); // Visualize O's turn
+			//visualizer.printAvatar('O', 0);
+			//visualizer.printAvatar('A', 0);
+			//visualizer.printAvatar('P', 1);
 
 			current_player = 1 - current_player;
 			check_enter = 0;
@@ -611,6 +628,8 @@ void Player::draw_x() {
 	else
 		changeFontColor(white, red);
 	// [Huy_Darkmode]
+
+
 
 	cout << "X";
 }
