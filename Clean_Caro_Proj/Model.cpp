@@ -449,7 +449,6 @@ void Player::move()
 			//check_play_ai = 1;
 			history.push_back({ i,j });
 			//PlaySound(TEXT("SOUND GAME CARO\\click\\enter.wav"), NULL, SND_ASYNC);
-			type = check_win();
 		}
 		else
 		{
@@ -471,7 +470,6 @@ void Player::move()
 			//check_play_ai = 1;
 			history.push_back({ i,j });
 			PlaySound(TEXT("SOUND GAME CARO\\click\\enter.wav"), NULL, SND_ASYNC | opt.vfxFlag);
-			type = check_win();
 		}
 	}
 
@@ -2258,7 +2256,7 @@ void Player::play()
 	while (1)
 	{
 		move(); // di chuyen va ve o x len bang
-		if (type == 0)
+
 			type = check_win(); // check : type==0 choi tiep | type==1 player x hoac o da win | type == 2 hoa
 		if (type) // neu 1 nguoi choi da thang hoac hoa thi thoat
 			break;
