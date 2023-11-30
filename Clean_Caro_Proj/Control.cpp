@@ -238,14 +238,17 @@ void StartPlay() {
 void StartMatchScene(string matchType) {
 	DrawObject("Background");
 	DrawObject("Border");
-	DrawObject("PlayerFrame"); // built-in coor for player frame
+	// built-in coor for player frame
 	GotoXY(52, 3);
 	DrawObject("BoardCanvas");
 	ShowConsoleCursor(true);
 	Player playerManager(52 + 2, 3 + 1, 16, 1, 1);
 	if (matchType == "PVE") {
 		playerManager.Minimax = 1;
+		DrawObject("PlayerVsAIFrame");
 	}
+	else
+		DrawObject("PlayerFrame");
 	playerManager.khoitao();
 	playerManager.play();
 

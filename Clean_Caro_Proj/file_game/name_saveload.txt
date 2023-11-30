@@ -3,3 +3,5 @@ game1
 chimt
 cc
 lmao
+t.darkMode
+urple2);
