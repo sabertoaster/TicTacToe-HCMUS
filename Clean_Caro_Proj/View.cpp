@@ -89,6 +89,7 @@ enum objID {
 	main_Logo,
 	save_Board,
 	saveload_Logo,
+	save_Logo,
 	options_Logo,
 	about_Logo,
 	help_Logo,
@@ -111,6 +112,7 @@ objID string_hash(string const& inString) {
 	if (inString == "Main_Logo") return main_Logo;
 	if (inString == "Save_Board") return save_Board;
 	if (inString == "Saveload_Logo") return saveload_Logo;
+	if (inString == "Save_Logo") return save_Logo;
 	if (inString == "Options_Logo") return options_Logo;
 	if (inString == "About_Logo") return about_Logo;
 	if (inString == "Help_Logo") return help_Logo;
@@ -280,6 +282,13 @@ void Visualizer::printLogo(string str) {
 	case saveload_Logo:
 		for (int i = 0; i < sizeof(saveloadLogo) / sizeof(saveloadLogo[0]); i++) {
 			wcout << saveloadLogo[i];
+			GotoXY(currentCoord.X, currentCoord.Y + 1);
+			currentCoord.Y++; //update the new pointer coordinate
+		}
+		break;
+	case save_Logo:
+		for (int i = 0; i < 6; i++) {
+			wcout << saveLogo[i];
 			GotoXY(currentCoord.X, currentCoord.Y + 1);
 			currentCoord.Y++; //update the new pointer coordinate
 		}
@@ -608,7 +617,7 @@ void Visualizer::printPlayerFrame(char str) {
 			changeFontColor(black, white);
 		else
 			changeFontColor(white, black);
-		cout << " U : Undo";
+		cout << " Z : Undo";
 		break;
 	case 'A':
 		avtAICoor.X = currentPos.X + (width + 1) / 2 - 6;
@@ -1007,6 +1016,9 @@ void DrawObject(string objName,int s,int e) { //Huy Darkmode
 		break;
 	case saveload_Logo:
 		visualizer.printLogo("Saveload_Logo");
+		break;
+	case save_Logo:
+		visualizer.printLogo("Save_Logo");
 		break;
 	case options_Logo:
 		visualizer.printLogo("Options_Logo");

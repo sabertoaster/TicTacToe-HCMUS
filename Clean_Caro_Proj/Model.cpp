@@ -272,14 +272,20 @@ void Player::move()
 				_POINT[his_xy.first][his_xy.second] = 0;
 				history.pop_back();
 				GotoXY(initCoor.X + (his_xy.second - 1) * offSetX, initCoor.Y + (his_xy.first - 1) * offSetY);
-				changeFontColor(white, white);
+				if (opt.darkMode == 1)
+					changeFontColor(black, black);
+				else
+					changeFontColor(white, white);
 				cout << " ";
 				his_xy = history.back();
 				re_history.push_back(his_xy);
 				_POINT[his_xy.first][his_xy.second] = 0;
 				history.pop_back();
 				GotoXY(initCoor.X + (his_xy.second - 1) * offSetX, initCoor.Y + (his_xy.first - 1) * offSetY);
-				changeFontColor(white, white);
+				if (opt.darkMode == 1)
+					changeFontColor(black, black);
+				else
+					changeFontColor(white, white);
 				cout << " ";
 				/*GotoXY(initCoor.X + (j - 1) * offSetX, initCoor.Y + (i - 1) * offSetY);*/
 			}
@@ -937,13 +943,20 @@ void Player::load_board_mini()
 	initCoor_mini.X = 95;
 	initCoor_mini.Y = 15;
 	GotoXY(95, 13);
-	changeFontColor(white, black);
 	if (Minimax == 1 || BruteForce == 1)
 	{
+		if (opt.darkMode == 1)
+			changeFontColor(black, cyan);
+		else
+			changeFontColor(white, blue1);
 		cout << "Play Mode: Bot";
 	}
 	else
 	{
+		if (opt.darkMode == 1)
+			changeFontColor(black, pink);
+		else
+			changeFontColor(white, red);
 		cout << "Play Mode: PVP";
 	}
 	for (int i = 1; i <= numcell; i++)
@@ -963,8 +976,12 @@ void Player::load_board_mini()
 			else
 			{
 				GotoXY(initCoor_mini.X + (j - 1) * 2, initCoor_mini.Y + (i - 1) * 1);
-				changeFontColor(white, black);
-				cout << " ";
+				/*changeFontColor(white, black);*/
+				if (opt.darkMode == 1)
+					changeFontColor(black, white);
+				else
+					changeFontColor(white, black);
+				cout << ".";
 			}
 		}
 	}
@@ -1046,7 +1063,10 @@ int Player::load_game()
 				cout << "  ";
 				ptrId = max(0, ptrId - 1);
 				GotoXY(ptrInit.X, ptrInit.Y + ptrId * offset);
-				changeFontColor(white, black);
+				if (opt.darkMode == 1)
+					changeFontColor(black, white);
+				else
+					changeFontColor(white, black);
 				cout << ">>";
 			}
 			if (ch == 's' || ch == 'd')
@@ -1055,7 +1075,10 @@ int Player::load_game()
 				cout << "  ";
 				ptrId = min(current_max_id - 1, ptrId + 1);
 				GotoXY(ptrInit.X, ptrInit.Y + ptrId * offset);
-				changeFontColor(white, black);
+				if (opt.darkMode == 1)
+					changeFontColor(black, white);
+				else
+					changeFontColor(white, black);
 				cout << ">>";
 			}
 			if (ch == 13)
@@ -1158,7 +1181,7 @@ void Player::save_game()
 	DrawObject("Border");
 	DrawObject("Text_Border", 48, 120);
 	GotoXY(48, 1);
-	DrawObject("Saveload_Logo");
+	DrawObject("Save_Logo");
 	DrawObject("CornerEsc");
 	COORD boardPos;
 	boardPos.X = 35;
@@ -1208,7 +1231,10 @@ void Player::save_game()
 				if (name_saveload.size() <= 20)
 				{
 					name_saveload += ch;
-					changeFontColor(white, black);
+					if (opt.darkMode == 1)
+						changeFontColor(black, white);
+					else
+						changeFontColor(white, black);
 					cout << ch;
 				}
 			}
@@ -1221,9 +1247,15 @@ void Player::save_game()
 					name_saveload.erase(name_saveload.size() - 1, 1); //xoa di ki tu cuoi
 					// xoa khoang trang
 					GotoXY(position_x_save, position_y_save);
-					changeFontColor(white, white);
+					if (opt.darkMode == 1)
+						changeFontColor(black, black);
+					else
+						changeFontColor(white, white);
 					cout << string(21,' ');
-					changeFontColor(white, black);
+					if (opt.darkMode == 1)
+						changeFontColor(black, white);
+					else
+						changeFontColor(white, black);
 					GotoXY(position_x_save, position_y_save);
 					// in ra lai name sau khi xoa ki tu cuoi
 					cout << name_saveload;
@@ -1242,10 +1274,15 @@ void Player::save_game()
 				{
 					// xuong dong duoi nhap ten FILE va xoa cac ki tu
 					GotoXY(xconsole, position_y_save+1);
-					changeFontColor(white, white);
+					if (opt.darkMode == 1)
+						changeFontColor(black, black);
+					else
+						changeFontColor(white, white);
 					cout << string(31, ' ');
-					changeFontColor(white, red);
-				
+					if (opt.darkMode == 1)
+						changeFontColor(black, pink);
+					else
+						changeFontColor(white, red);
 					
 					// tien hanh in cac loi
 					GotoXY(xconsole, position_y_save + 1);
@@ -1261,10 +1298,16 @@ void Player::save_game()
 					// reset name de cho nhap lai day
 					name_saveload = "";
 					GotoXY(position_x_save, position_y_save);
-					changeFontColor(white, white);
+					if (opt.darkMode == 1)
+						changeFontColor(black, black);
+					else
+						changeFontColor(white, white);
 					cout << string(21, ' ');
 					GotoXY(position_x_save, position_y_save);
-					changeFontColor(white, black);
+					if (opt.darkMode == 1)
+						changeFontColor(black, white);
+					else
+						changeFontColor(white, black);
 				}
 			}
 			if (ch == 27)
