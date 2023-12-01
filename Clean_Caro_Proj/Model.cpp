@@ -377,7 +377,7 @@ void Player::move()
 	}
 
 	GotoXY(initCoor.X + (j - 1) * offSetX, initCoor.Y + (i - 1) * offSetY);
-	if (BruteForce == 0)
+	if (BruteForce == 0 && Minimax == 0)
 	{
 		if (_POINT[i][j] == 0 && check_enter && !check_up && !check_down && !check_right && !check_left)
 		{
