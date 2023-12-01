@@ -295,6 +295,7 @@ void Player::move()
 				cout << " ";
 				/*GotoXY(initCoor.X + (j - 1) * offSetX, initCoor.Y + (i - 1) * offSetY);*/
 			}
+			kt_undo = 1;
 			check_undo = 0;
 		}
 	}
@@ -426,6 +427,11 @@ void Player::move()
 			current_player = 1 - current_player;
 			check_enter = 0;
 			history.push_back({ i,j });
+			if (kt_undo == 1)
+			{
+				kt_undo = 0;
+				re_history.clear();
+			}
 		}
 	}
 	if (BruteForce == 1 || Minimax >= 1) 
@@ -443,7 +449,13 @@ void Player::move()
 				current_player = 1 - current_player;
 				check_enter = 0;
 				history.push_back({ i,j });
+				if (kt_undo == 1)
+				{
+					kt_undo = 0;
+					re_history.clear();
+				}
 			}
+			
 		}
 		else if(BruteForce == 1)
 		{
