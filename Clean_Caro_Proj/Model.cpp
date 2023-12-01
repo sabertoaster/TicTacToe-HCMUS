@@ -992,6 +992,7 @@ void Player::load_board_mini()
 				else
 					changeFontColor(white, black);
 				cout << ".";
+
 			}
 		}
 	}
@@ -1192,6 +1193,7 @@ void Player::save_game()
 	DrawObject("Text_Border", 48, 120);
 	GotoXY(48, 1);
 	DrawObject("Save_Logo");
+
 	DrawObject("CornerEsc");
 	COORD boardPos;
 	boardPos.X = 35;
