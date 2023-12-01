@@ -281,6 +281,9 @@ void StartWinScene(char player) {
 			visualizer.printWinAnimation('O', waveWidth, initNumChar, animPivot);
 			/*DrawObject("WinAnimation_O");*/
 			break;
+		case 'D':
+			visualizer.printWinAnimation('D', waveWidth, initNumChar, animPivot);
+			break;
 		default:
 			break;
 		}

@@ -782,6 +782,7 @@ void Visualizer::printBackgroundAnimation(int index, int coorX, int coorY) {
 void Visualizer::printWinAnimation(char avt, int waveWidth, int initNumChar, COORD animPivot) {
 	_setmode(_fileno(stdout), _O_U16TEXT);
 	int vtcShift = 0, hrztShift = 0; // verticalShift
+	COORD newPivot = { 40, 5 };
 	switch (avt) {
 	case 'X':
 		initNumChar += 2;
@@ -879,6 +880,54 @@ void Visualizer::printWinAnimation(char avt, int waveWidth, int initNumChar, COO
 		}
 
 		Sleep(100);
+		break;
+	case 'D':
+
+
+		if (initNumChar % 20 == 0) {
+			initNumChar = 0;
+		}
+
+		//  [Huy_Darkmode]
+		if (opt.darkMode == 1)
+			changeFontColor(black, white);
+		else
+			changeFontColor(white, black);
+		//  [Huy_Darkmode]
+
+		GotoXY(newPivot.X, newPivot.Y);
+		for (int j = 0; j < 90; j++) {
+			wcout << L" ";
+		}
+		GotoXY(newPivot.X, newPivot.Y + 8);
+		for (int j = 0; j < 90; j++) {
+			wcout << L" ";
+		}
+		GotoXY(newPivot.X, newPivot.Y);
+		for (int i = 0; i < 8; i++) {// [hard-code]
+			//  [Huy_Darkmode]
+			if (opt.darkMode == 1)
+				SetConsoleTextAttribute(hConsoleOutput, colorArrDark[(i + initNumChar) % 8]);
+			else
+				SetConsoleTextAttribute(hConsoleOutput, colorArr[(i + initNumChar) % 8]);
+			//  [Huy_Darkmode]
+
+			/*SetConsoleTextAttribute(hConsoleOutput, colorArr[(i + initNumChar) % 8]);*/
+			GotoXY(newPivot.X, newPivot.Y + i);
+			hrztShift = vtcShift;
+			for (int j = 0; j < 89; j++) {// [hard-code]
+				if ((j + (waveWidth - initNumChar)) % waveWidth == 0) {
+					hrztShift = 1 - hrztShift;
+					COORD currentPos = GetConsoleCursorPosition();
+					GotoXY(currentPos.X, newPivot.Y + i + hrztShift);
+				}
+				wcout << drawBanner[i][j];
+			}
+		}
+
+		Sleep(100);
+
+
 		break;
 	default:
 		break;
@@ -1122,6 +1171,10 @@ void SceneHandle(string sceneName) {
 	}
 	if (sceneName == "WinScene_O") {
 		StartWinScene('O');
+		return;
+	}
+	if (sceneName == "WinScene_D") {
+		StartWinScene('D');
 		return;
 	}
 }

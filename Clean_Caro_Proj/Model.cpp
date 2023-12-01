@@ -2286,6 +2286,7 @@ void Player::play()
 			update_namegame();
 		// tran dau hoa
 		//draw_draw();
+		SceneHandle("WinScene_D");
 	}
 	else if (type == 1)
 	{
