@@ -18,7 +18,7 @@ struct Player
 {
     COORD initCoor;
     int i, j, _POINT[100][100], current_player = 1, BruteForce = 0, offSetX = 4, offSetY = 2, numcell, type = 0, Minimax = 0;
-    int check_saveload = 0, kt_undo = 0;
+    int check_saveload = 0, kt_undo = 0, TimeMode = 0, set_time = 0;
     string name_repeat_load = "";
     // initX y la vi tri con tro tren console
     // i j la vi tri tren bang _POINT
@@ -64,6 +64,8 @@ struct Player
     int winner = 0;
     void selectWinStreak();
     void load_board_mini();
+    void  init_time();
+    void print_time();
     vector<string> list_namesave();
     //graphics
     // phan nay de tam trong day cho de debug
