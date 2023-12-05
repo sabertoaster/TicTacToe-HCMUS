@@ -191,12 +191,12 @@ void OptionButton::playScene() {
 void OptionButton::printButton() {
 	_setmode(_fileno(stdout), _O_U16TEXT);
 	/*top layer*/
-	
+
 	//  [Huy_Darkmode]
 	if (opt.darkMode == 1)
 		changeFontColor(black, white);
 	else
-		changeFontColor(white,black);
+		changeFontColor(white, black);
 	//  [Huy_Darkmode]
 
 	GotoXY(coord.X, coord.Y);
@@ -230,22 +230,22 @@ void Visualizer::printSaveBoard() {
 	COORD currentCoord = GetConsoleCursorPosition();
 	GotoXY(currentCoord.X, currentCoord.Y);
 	wcout << L"┌";
-	for (int i = 0; i < width - 1 ; i++) {
+	for (int i = 0; i < width - 1; i++) {
 		wcout << L"─";
 	}
 	wcout << L"┐";
-	
+
 	int temp = width / 2;
-	for (int i = 1; i < height; i ++) {
+	for (int i = 1; i < height; i++) {
 		GotoXY(currentCoord.X, currentCoord.Y + i);
 		wcout << L"│";
 	}
 
-	for (int i = 1; i < height ; i++) {
+	for (int i = 1; i < height; i++) {
 		GotoXY(currentCoord.X + temp, currentCoord.Y + i);
 		wcout << L"│";
 	}
-	
+
 	for (int i = 1; i < height; i++) {
 		GotoXY(currentCoord.X + width, currentCoord.Y + i);
 		wcout << L"│";
@@ -262,7 +262,7 @@ void Visualizer::printSaveBoard() {
 
 void Visualizer::printLogo(string str) {
 	COORD currentCoord = GetConsoleCursorPosition();
-	
+
 	//  [Huy_Darkmode]
 	if (opt.darkMode == 1)
 		changeFontColor(black, white);
@@ -475,7 +475,7 @@ void Visualizer::printMenuBorder() {//hard-code [saber]
 void Visualizer::printBorder() {
 	GotoXY(0, 0);
 	wcout << L"╔";
-	
+
 	for (int i = 1; i <= 168; i++) {
 		GotoXY(i, 0);
 		wcout << L"═";
@@ -496,12 +496,12 @@ void Visualizer::printBorder() {
 	}
 	wcout << L"╝";
 }
-void Visualizer::printTextBorder(int tStartPos,int tEndPos) {
+void Visualizer::printTextBorder(int tStartPos, int tEndPos) {
 	GotoXY(tStartPos - 2, 0);
 	wcout << L"╗";
 	GotoXY(tEndPos + 2, 0);
 	wcout << L"╔";
-	
+
 	GotoXY(tStartPos - 2, 1);
 	wcout << L"╝";
 	GotoXY(tEndPos + 2, 1);
@@ -538,7 +538,7 @@ void Visualizer::printTextBorder(int tStartPos,int tEndPos) {
 
 void Visualizer::printPlayerFrame(char str) {
 	_setmode(_fileno(stdout), _O_U16TEXT);
-	
+
 	//  [Huy_Darkmode]
 	if (opt.darkMode == 1)
 		changeFontColor(black, white);
@@ -682,11 +682,22 @@ void Visualizer::printAvatar(char str, int color) {
 	case 'X':
 		//  [Huy_Darkmode]
 		if (opt.darkMode == 1)
-			changeFontColor(black, pink);
-		else
-			changeFontColor(white, red);
+			if (color == 1) {
+				changeFontColor(black, pink);
+			}
+			else {
+				changeFontColor(black, white);
+			}
+		else {
+			if (color == 1) {
+				changeFontColor(white, red);
+			}
+			else {
+				changeFontColor(white, grey2);
+			}
+		}
 		//  [Huy_Darkmode]
-		
+
 		//Print
 		for (int i = 0; i < 8; i++) { // [hard-code]
 			GotoXY(currentPos.X, currentPos.Y + i);
@@ -696,11 +707,23 @@ void Visualizer::printAvatar(char str, int color) {
 	case 'O':
 		//  [Huy_Darkmode]
 		if (opt.darkMode == 1)
-			changeFontColor(black, blue2);
+			if (color == 1) {
+				changeFontColor(black, blue2);
+			}
+			else {
+				changeFontColor(black, white);
+			}
 		else
-			changeFontColor(white, blue1);
+		{
+			if (color == 1) {
+				changeFontColor(white, blue1);
+			}
+			else {
+				changeFontColor(white, grey2);
+			}
+		}
 		//  [Huy_Darkmode]
-		
+
 		//Print
 		for (int i = 0; i < 7; i++) { // [hard-code]
 			GotoXY(currentPos.X, currentPos.Y + i);
@@ -841,7 +864,7 @@ void Visualizer::printWinAnimation(char avt, int waveWidth, int initNumChar, COO
 		if (initNumChar % 20 == 0) {
 			initNumChar = 0;
 		}
-		
+
 		//  [Huy_Darkmode]
 		if (opt.darkMode == 1)
 			changeFontColor(black, white);
@@ -1053,7 +1076,7 @@ void Visualizer::printBoardCanvas(int numCell) {
 
 Visualizer visualizer;
 
-void DrawObject(string objName,int s,int e) { //Huy Darkmode
+void DrawObject(string objName, int s, int e) { //Huy Darkmode
 	_setmode(_fileno(stdout), _O_U16TEXT);//set to UTF16 text cout
 	switch (string_hash(objName))
 	{
@@ -1091,7 +1114,7 @@ void DrawObject(string objName,int s,int e) { //Huy Darkmode
 		visualizer.printBorder();
 		break;
 	case text_border:
-		visualizer.printTextBorder(s,e);
+		visualizer.printTextBorder(s, e);
 		break;
 	case playerFrame:
 		GotoXY(5, 3);

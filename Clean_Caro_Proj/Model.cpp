@@ -306,11 +306,15 @@ void Player::move()
 				{
 					_POINT[his_xy.first][his_xy.second] = 1;
 					draw_x();
+					visualizer.printAvatar('X', 0); // Visualize X's turn
+					visualizer.printAvatar('O', 1);
 				}
 				else
 				{
 					_POINT[his_xy.first][his_xy.second] = 2;
 					draw_o();
+					visualizer.printAvatar('X', 1); // Visualize O's turn
+					visualizer.printAvatar('O', 0);
 				}
 				current_player = 1 - current_player;
 			}
@@ -322,6 +326,8 @@ void Player::move()
 				GotoXY(initCoor.X + (his_xy.second - 1) * offSetX, initCoor.Y + (his_xy.first - 1) * offSetY);
 				_POINT[his_xy.first][his_xy.second] = 1;
 				draw_x();
+				visualizer.printAvatar('X', 0); // Visualize X's turn
+				visualizer.printAvatar('O', 1);
 
 				his_xy = re_history.back();
 				history.push_back(his_xy);
@@ -329,6 +335,9 @@ void Player::move()
 				GotoXY(initCoor.X + (his_xy.second - 1) * offSetX, initCoor.Y + (his_xy.first - 1) * offSetY);
 				_POINT[his_xy.first][his_xy.second] = 2;
 				draw_o();
+
+				visualizer.printAvatar('X', 1); // Visualize O's turn
+				visualizer.printAvatar('O', 0);
 				
 			}
 			check_reundo = 0;
@@ -390,8 +399,8 @@ void Player::move()
 			if (current_player == 1)
 			{
 				draw_x();
-				//visualizer.printAvatar('X', 0); // Visualize X's turn
-				//visualizer.printAvatar('O', 1);
+				visualizer.printAvatar('X', 0); // Visualize X's turn
+				visualizer.printAvatar('O', 1);
 				//visualizer.printAvatar('A', 1);
 				/*visualizer.printAvatar('P', 0);*/
 				_POINT[i][j] = 1;
@@ -399,8 +408,8 @@ void Player::move()
 			else
 			{
 				draw_o();
-				//visualizer.printAvatar('X', 1); // Visualize O's turn
-				//visualizer.printAvatar('O', 0);
+				visualizer.printAvatar('X', 1); // Visualize O's turn
+				visualizer.printAvatar('O', 0);
 				//visualizer.printAvatar('A', 0);
 				/*visualizer.printAvatar('P', 1);*/
 				_POINT[i][j] = 2;
@@ -417,8 +426,8 @@ void Player::move()
 			if (_POINT[i][j] == 0 && check_enter && !check_up && !check_down && !check_right && !check_left)
 			{
 				draw_x();
-				//visualizer.printAvatar('X', 0); // Visualize X's turn
-				//visualizer.printAvatar('O', 1);
+				visualizer.printAvatar('X', 0); // Visualize X's turn
+				visualizer.printAvatar('O', 1);
 				//visualizer.printAvatar('A', 1);
 				/*visualizer.printAvatar('P', 0);*/
 				_POINT[i][j] = 1;
@@ -436,8 +445,8 @@ void Player::move()
 
 			GotoXY(initCoor.X + (tmpj - 1) * offSetX, initCoor.Y + (tmpi - 1) * offSetY);
 			draw_o();
-			//visualizer.printAvatar('X', 1); // Visualize O's turn
-			//visualizer.printAvatar('O', 0);
+			visualizer.printAvatar('X', 1); // Visualize O's turn
+			visualizer.printAvatar('O', 0);
 			//visualizer.printAvatar('A', 0);
 			/*visualizer.printAvatar('P', 1);*/
 
@@ -458,10 +467,10 @@ void Player::move()
 			_POINT[tmpi][tmpj] = 2;
 			GotoXY(initCoor.X + (tmpj - 1) * offSetX, initCoor.Y + (tmpi - 1) * offSetY);
 			draw_o();
-			//visualizer.printAvatar('X', 1); // Visualize O's turn
-			//visualizer.printAvatar('O', 0);
-			//visualizer.printAvatar('A', 0);
-			//visualizer.printAvatar('P', 1);
+			visualizer.printAvatar('X', 1); // Visualize O's turn
+			visualizer.printAvatar('O', 0);
+			/*visualizer.printAvatar('A', 0);
+			visualizer.printAvatar('P', 1);*/
 
 			current_player = 1 - current_player;
 			check_enter = 0;
