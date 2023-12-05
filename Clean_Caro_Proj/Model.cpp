@@ -3,7 +3,13 @@
 #include <fstream>
 #define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
 #include <experimental/filesystem>
-int check_play_ai = 0, save_I, save_J, check_save=0;
+#include<chrono>
+using namespace chrono;
+
+auto start_time = system_clock::now();
+auto end_time = system_clock::now();
+auto elapsed_time = duration_cast<milliseconds>(end_time - start_time);
+int check_play_ai = 0, save_I, save_J, check_save=0, milliseconds_as_int = 0;
 Player::Player(int x, int y, int inputnumcell, int j, int i) {
 	// x,y la toa do console // i tuong ung voi y // j tuong ung voi x
 	initCoor.X = x;
@@ -398,6 +404,7 @@ void Player::move()
 		{
 			if (current_player == 1)
 			{
+
 				draw_x();
 				visualizer.printAvatar('X', 0); // Visualize X's turn
 				visualizer.printAvatar('O', 1);
@@ -414,12 +421,14 @@ void Player::move()
 				/*visualizer.printAvatar('P', 1);*/
 				_POINT[i][j] = 2;
 			}
+			if (TimeMode == 1)
+				start_time = system_clock::now();
 			current_player = 1 - current_player;
 			check_enter = 0;
 			history.push_back({ i,j });
 		}
 	}
-	if (BruteForce == 1 || Minimax == 1) 
+	if (BruteForce == 1 || Minimax >= 1) 
 	{
 		if (current_player == 1)
 		{
@@ -1053,7 +1062,7 @@ int Player::load_game()
 	DrawObject("Save_Board"); // [Saber]
 
 	ifstream ci("file_game/" + temp[0]);
-	ci >> BruteForce >> Minimax >> type >> current_player;
+	ci >> BruteForce >> Minimax >> type >> current_player >> TimeMode >> set_time;
 	for (int i = 1; i <= numcell; i++)
 		for (int j = 1; j <= numcell; j++)
 			ci >> _POINT[i][j];
@@ -1222,12 +1231,12 @@ void Player::save_game()
 
 	// cai bang nho luc load game 
 	load_board_mini(); 
-	int position_x_save = xconsole + 15 , position_y_save = yconsole + offset * 7 -1 ; //15
+	int position_x_save = xconsole + 19 , position_y_save = yconsole + offset * 7 -1 ; //15
 	GotoXY(xconsole, position_y_save);
 	//
 
 
-	cout << "Nhap ten FILE: ";
+	cout << "Enter FILE's name: ";  // 20
 	bool _checkNotEnter = true, _checkEsc = false;
 	string name_saveload = "";
 	while (_checkNotEnter) {
@@ -1347,7 +1356,7 @@ void Player::save_game()
 
 	//luu lai bang
 	ofstream fo("file_game/" + name_saveload);
-	fo << BruteForce << " " << Minimax << " " << type << " " << current_player << "\n";
+	fo << BruteForce << " " << Minimax << " " << type << " " << current_player << " "<<TimeMode<<" "<<set_time<<'\n';
 	for (int i = 1; i <= numcell; i++)
 	{
 		for (int j = 1; j <= numcell; j++)
@@ -2241,7 +2250,7 @@ pair<int, int> Player::find_best_move()
 		{
 			_POINT[i][j] = 2;
 			history.push_back({ i,j });
-			int tmp = minimax(3, INT_MIN, INT_MAX, 0);
+			int tmp = minimax(Minimax, INT_MIN, INT_MAX, 0);
 			history.pop_back();
 			_POINT[i][j] = 0;
 			if (tmp > ans)
@@ -2254,9 +2263,152 @@ pair<int, int> Player::find_best_move()
 	return best_move;
 }
 
+void Player:: init_time()
+{
+	GotoXY(70, 36);
+	cout << "Enter time limit (s): ";
+	set_time = 0;
+	bool _checkNotEnter = true, _checkEsc = false;
+	while (_checkNotEnter) {
+		if (_kbhit())
+		{
+			char ch = _getch();
+			// chi cho luu nhung ki tu 
+			if ((ch >= '0' && ch <= '9'))
+			{
+				if (set_time <= 1000)
+				{
+					set_time = set_time * 10 + (ch - 48);
+
+					GotoXY(92, 36);
+					if (opt.darkMode == 1)
+						changeFontColor(black, white);
+					else
+						changeFontColor(white, black);
+					cout << string(10, ' ');
+					GotoXY(92, 36);
+					if (opt.darkMode == 1)
+						changeFontColor(black, white);
+					else
+						changeFontColor(white, black);
+					if (set_time > 0)
+						cout << set_time;
+				}
+			}
+			if (ch == 8)
+			{
+				if (set_time > 0)
+				{
+					set_time /= 10;
+					GotoXY(92, 36);
+					if (opt.darkMode == 1)
+						changeFontColor(black, white);
+					else
+						changeFontColor(white, black);
+					cout << string(10, ' ');
+					GotoXY(92, 36);
+					if (opt.darkMode == 1)
+						changeFontColor(black, white);
+					else
+						changeFontColor(white, black);
+					if (set_time > 0)
+						cout << set_time;
+				}
+			}
+			if (ch == 13)
+			{
+				if (set_time >=10)
+					_checkNotEnter = false;
+			}
+		}
+	}
+	GotoXY(70, 36);
+	if (opt.darkMode == 1)
+		changeFontColor(black, white);
+	else
+		changeFontColor(white, black);
+	cout << string(30, ' ');
+}
+void Player::print_time()
+{
+	if (current_player == 1)
+	{
+		GotoXY(25, 15);
+		if (opt.darkMode == 1)
+			changeFontColor(black, white);
+		else
+			changeFontColor(white, black);
+		cout << string(5, ' ');
+
+
+		GotoXY(25, 15);
+		if (opt.darkMode == 1)
+			changeFontColor(black, white);
+		else
+			changeFontColor(white, black);
+		if (set_time - milliseconds_as_int / 1000 <= 10)
+		{
+			if (opt.darkMode == 1)
+				changeFontColor(black, red);
+			else
+				changeFontColor(white, red);
+			PlaySound(TEXT("SOUND GAME CARO\\keyboard\\time.wav"), NULL, SND_ASYNC | opt.vfxFlag);
+		}
+		cout << set_time - milliseconds_as_int / 1000;
+
+		GotoXY(140, 15);
+		if (opt.darkMode == 1)
+			changeFontColor(black, white);
+		else
+			changeFontColor(white, black);
+		cout << set_time;
+	}
+	else
+	{
+		GotoXY(140, 15);
+		if (opt.darkMode == 1)
+			changeFontColor(black, white);
+		else
+			changeFontColor(white, black);
+		cout << string(5, ' ');
+
+		GotoXY(140, 15);
+		if (opt.darkMode == 1)
+			changeFontColor(black, white);
+		else
+			changeFontColor(white, black);
+		if (set_time - milliseconds_as_int / 1000 <= 10)
+		{
+			if (opt.darkMode == 1)
+				changeFontColor(black, red);
+			else
+				changeFontColor(white, red);
+			PlaySound(TEXT("SOUND GAME CARO\\keyboard\\time.wav"), NULL, SND_ASYNC | opt.vfxFlag);
+		}
+		cout << set_time - milliseconds_as_int / 1000;
+
+		GotoXY(25, 15);
+		if (opt.darkMode == 1)
+			changeFontColor(black, white);
+		else
+			changeFontColor(white, black);
+		cout << set_time;
+	}
+}
 void Player::play()
 {
 	create_saved_games_folder();
+	
+	//TimeMode = 1;
+	if (TimeMode == 1)
+	{
+		if(set_time == 0)
+			init_time();
+		start_time = system_clock::now();
+		end_time = system_clock::now();
+		elapsed_time = duration_cast<milliseconds>(end_time - start_time);
+	}
+	
 	/*
 	y tuong:
 	 dung ham move de vua di chuyen va danh
@@ -2267,10 +2419,53 @@ void Player::play()
 	while (1)
 	{
 		move(); // di chuyen va ve o x len bang
-		if (type == 0)
-			type = check_win(); // check : type==0 choi tiep | type==1 player x hoac o da win | type == 2 hoa
+		type = check_win(); // check : type==0 choi tiep | type==1 player x hoac o da win | type == 2 hoa
+		if (TimeMode == 1 && type == 0)
+		{
+			end_time = system_clock::now();
+			elapsed_time = duration_cast<milliseconds>(end_time - start_time);
+			milliseconds_as_int = static_cast<int>(elapsed_time.count());
+			if (milliseconds_as_int % 1000 == 0)
+			{
+				print_time();
+			}
+			if (milliseconds_as_int/1000 >= set_time)
+			{
+				if (check_saveload == 1)
+					update_namegame();
+				
+				if (current_player == 1)
+				{
+					winner = 2;// player O = 2
+					GotoXY(17, 15);
+					if (opt.darkMode == 1)
+						changeFontColor(black, white);
+					else
+						changeFontColor(white, black);
+					cout << "RUN OUT OF TIME!";
+					PlayMusic("Victory");
+					visualizer.printWinStreak('O', winningCoord, initCoor);
+					SceneHandle("WinScene_O");
+					
+				}
+				else
+				{
+					winner = 1;// player X = 1
+					GotoXY(132, 15);
+					if (opt.darkMode == 1)
+						changeFontColor(black, white);
+					else
+						changeFontColor(white, black);
+					cout << "RUN OUT OF TIME!";
+					PlayMusic("Victory");
+					visualizer.printWinStreak('X', winningCoord, initCoor);
+					SceneHandle("WinScene_X");
+				}
+			}
+		}
 		if (type) // neu 1 nguoi choi da thang hoac hoa thi thoat
 			break;
+		
 		if (check_save == 1)
 		{
 			break;

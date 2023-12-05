@@ -244,7 +244,7 @@ void StartMatchScene(string matchType) {
 	ShowConsoleCursor(true);
 	Player playerManager(52 + 2, 3 + 1, 16, 1, 1);
 	if (matchType == "PVE") {
-		playerManager.Minimax = 1;
+		playerManager.Minimax = 3;
 		DrawObject("PlayerVsAIFrame");
 	}
 	else
