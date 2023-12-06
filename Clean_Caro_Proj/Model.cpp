@@ -1185,7 +1185,7 @@ void Player::save_game()
 		ofstream fo("file_game/" + name_saveload);
 
 		// luu lai bang
-		fo << BruteForce << " " << Minimax << " " << type << " " << current_player << " "<<TimeMode<<" "<<set_time;
+		fo << BruteForce << " " << Minimax << " " << type << " " << current_player << " "<<TimeMode<<" "<<set_time<<'\n';
 		for (int i = 1; i <= numcell; i++)
 		{
 			for (int j = 1; j <= numcell; j++)
