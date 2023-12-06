@@ -2277,7 +2277,9 @@ pair<int, int> Player::find_best_move()
 
 void Player:: init_time()
 {
-	GotoXY(70, 36);
+	int position = 52,position_y=37;
+	GotoXY(position, position_y);
+	position += 22;
 	cout << "Enter time limit (s): ";
 	set_time = 0;
 	bool _checkNotEnter = true, _checkEsc = false;
@@ -2288,17 +2290,17 @@ void Player:: init_time()
 			// chi cho luu nhung ki tu 
 			if ((ch >= '0' && ch <= '9'))
 			{
-				if (set_time <= 1000)
+				if (set_time < 100)
 				{
 					set_time = set_time * 10 + (ch - 48);
 
-					GotoXY(92, 36);
+					GotoXY(position, position_y);
 					if (opt.darkMode == 1)
 						changeFontColor(black, white);
 					else
 						changeFontColor(white, black);
 					cout << string(10, ' ');
-					GotoXY(92, 36);
+					GotoXY(position, position_y);
 					if (opt.darkMode == 1)
 						changeFontColor(black, white);
 					else
@@ -2312,13 +2314,13 @@ void Player:: init_time()
 				if (set_time > 0)
 				{
 					set_time /= 10;
-					GotoXY(92, 36);
+					GotoXY(position, position_y);
 					if (opt.darkMode == 1)
 						changeFontColor(black, white);
 					else
 						changeFontColor(white, black);
 					cout << string(10, ' ');
-					GotoXY(92, 36);
+					GotoXY(position, position_y);
 					if (opt.darkMode == 1)
 						changeFontColor(black, white);
 					else
@@ -2334,7 +2336,7 @@ void Player:: init_time()
 			}
 		}
 	}
-	GotoXY(70, 36);
+	GotoXY(position-22, position_y);
 	if (opt.darkMode == 1)
 		changeFontColor(black, white);
 	else
