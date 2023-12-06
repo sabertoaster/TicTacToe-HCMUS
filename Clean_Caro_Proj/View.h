@@ -91,7 +91,10 @@ public:
 	const wchar_t* drawBanner[8] = {L" ██▓▄▄▄█████▓  ██████     ▄▄▄         ▓█████▄  ██▀███   ▄▄▄       █     █░    ▐██▌  ▐██▌ ", L"▓██▒▓  ██▒ ▓▒▒██    ▒    ▒████▄       ▒██▀ ██▌▓██ ▒ ██▒▒████▄    ▓█░ █ ░█░    ▐██▌  ▐██▌ ", L"▒██▒▒ ▓██░ ▒░░ ▓██▄      ▒██  ▀█▄     ░██   █▌▓██ ░▄█ ▒▒██  ▀█▄  ▒█░ █ ░█     ▐██▌  ▐██▌ ", L"░██░░ ▓██▓ ░   ▒   ██▒   ░██▄▄▄▄██    ░▓█▄   ▌▒██▀▀█▄  ░██▄▄▄▄██ ░█░ █ ░█     ▓██▒  ▓██▒ ", L"░██░  ▒██▒ ░ ▒██████▒▒    ▓█   ▓██▒   ░▒████▓ ░██▓ ▒██▒ ▓█   ▓██▒░░██▒██▓     ▒▄▄   ▒▄▄  ", L"░▓    ▒ ░░   ▒ ▒▓▒ ▒ ░    ▒▒   ▓▒█░    ▒▒▓  ▒ ░ ▒▓ ░▒▓░ ▒▒   ▓▒█░░ ▓░▒ ▒      ░▀▀▒  ░▀▀▒ ", L" ▒ ░    ░    ░ ░▒  ░ ░     ▒   ▒▒ ░    ░ ▒  ▒   ░▒ ░ ▒░  ▒   ▒▒ ░  ▒ ░ ░      ░  ░  ░  ░ ", L" ▒ ░  ░      ░  ░  ░       ░   ▒       ░ ░  ░   ░░   ░   ░   ▒     ░   ░         ░     ░ "};
 
 	int colorArr[8] = {244, 246, 254, 242, 251, 241, 253, 246};
-
+	color playerXColor[6] {red, pink, green1, green2, blue1, purple2};
+	color playerXColorDark[6]{ red, pink, beige, green2, blue1, purple2 };
+	color playerOColor[5] {blue1, green1, green2, blue3, purple2};
+	color playerOColorDark[5]{ blue1, cyan, purple1, blue3, purple2 };
 	// [Huy_Darkmode]
 	int colorArrDark[8] = { 12,6,14,10,11,9,13,6 };
 	// [Huy_Darkmode]
@@ -112,6 +115,7 @@ public:
 	void printMenuBorder();
 	void printBorder();
 	void printTextBorder(int tStartPos, int tEndPos);
+	void printHelpButtons(char ButtonName);
 	void printPlayerFrame(char input); // X or O
 	void printAvatar(char input, int color);
 
