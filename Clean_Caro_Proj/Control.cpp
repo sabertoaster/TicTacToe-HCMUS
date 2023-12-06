@@ -559,17 +559,54 @@ void StartOption() {
 void StartHelp() {
 	DrawObject("Background");
 	DrawObject("Border");
-	DrawObject("Text_Border", 65, 95);
-
+	DrawObject("Text_Border",65,95);
 	DrawObject("CornerEsc");
 	GotoXY(65, 1);
 	DrawObject("Help_Logo");
 
 	COORD helpTextCoor;
-	helpTextCoor.X = 30;
-	helpTextCoor.Y = 10;
-	const char* helpText[18] = { "Player Movement: ","'W': Go up","'S': Go down","'A': Go left","'D': Go right","'Enter': Mark","", "Command Key:","'P': Save game","'Z': Undo the last move", "'Esc': Halt the game/ Return to the previous scene of the game","" ,"Caro is the game using the X and O symbols to represent players and followed by a set of rules: ", "1. Two players play against each other on 16 x 16 grid.", "2. \"X\" player gets to take the first turn followed by \"O\" player.", "3. Players take turns placing their symbol on an open intersection on the board.", "4. The player that manages to create five in a row first wins the round.", "   The row can be horizontal, vertical, or diagonal as long as it is continuous." };
+	helpTextCoor.X = 35;
+	helpTextCoor.Y = 11;
+	const char* helpText[16] = { "Player Movement: ","'W': Go up","'S': Go down","'A': Go left","'D': Go right","'Enter': Mark","","","","" ,"Caro is the game using the X and O symbols to represent players and followed by a set of rules: ", "1. Two players play against each other on 16 x 16 grid.", "2. \"X\" player gets to take the first turn followed by \"O\" player.", "3. Players take turns placing their symbol on an open intersection on the board.", "4. The player that manages to create five in a row first wins the round.", "   The row can be horizontal, vertical, or diagonal as long as it is continuous."};
 
+	GotoXY(32, 8);
+	COORD currentPos = GetConsoleCursorPosition();
+	int width = 100, height = 20; // ┏━┓ -> width = 1;
+
+	_setmode(_fileno(stdout), _O_U16TEXT);
+
+	GotoXY(currentPos.X, currentPos.Y); // top left
+	wcout << L"┏";
+	for (int i = 1; i <= width; i++) { // print column
+		GotoXY(currentPos.X + i, currentPos.Y);
+		wcout << L"━";
+		GotoXY(currentPos.X + i, currentPos.Y + 2);
+		wcout << L"━";
+		GotoXY(currentPos.X + i, currentPos.Y + 10);
+		wcout << L"━";
+		GotoXY(currentPos.X + i, currentPos.Y + 12);
+		wcout << L"━";
+		GotoXY(currentPos.X + i, currentPos.Y + height + 1);
+		wcout << L"━";
+	}
+	GotoXY(currentPos.X + width + 1, currentPos.Y); // top right
+	wcout << L"┓";
+	for (int i = 1; i <= height; i++) { // print column
+		GotoXY(currentPos.X, currentPos.Y + i);
+		wcout << L"┃";
+		GotoXY(currentPos.X + width + 1, currentPos.Y + i);
+		wcout << L"┃";
+	}
+	for (int i = 1; i <= height / 2 - 3; i++) {
+		GotoXY(currentPos.X + 28, currentPos.Y + 2 + i);
+		wcout << L"┃";
+	}
+	GotoXY(currentPos.X, currentPos.Y + height + 1); // bottom left
+	wcout << L"┗";
+	GotoXY(currentPos.X + width + 1, currentPos.Y + height + 1); // bottom left
+	wcout << L"┛";
+
+	_setmode(_fileno(stdout), _O_TEXT);
 	/*
 	Player Movement:
 	'W': Go up
@@ -593,6 +630,20 @@ void StartHelp() {
 		GotoXY(helpTextCoor.X, helpTextCoor.Y + i);
 		cout << helpText[i];
 	}
+	GotoXY(helpTextCoor.X + 30, helpTextCoor.Y);
+	cout << "Command Key:";
+	GotoXY(helpTextCoor.X + 30, helpTextCoor.Y + 1);
+	cout << "'P': Save game";
+	GotoXY(helpTextCoor.X + 30, helpTextCoor.Y + 2);
+	cout << "'Y': Save game";
+	GotoXY(helpTextCoor.X + 30, helpTextCoor.Y + 3);
+	cout << "'Z': Undo the last move";
+	GotoXY(helpTextCoor.X + 30, helpTextCoor.Y + 4);
+	cout << "'Esc': Halt the game/ Return to the previous scene of the game";
+	GotoXY(helpTextCoor.X + 37, helpTextCoor.Y - 2);
+	cout << "Feature and Command Keys";
+	GotoXY(helpTextCoor.X + 45, helpTextCoor.Y + 8);
+	cout << "Rules";
 
 	bool _checkNotEnter = true;
 	while (_checkNotEnter)

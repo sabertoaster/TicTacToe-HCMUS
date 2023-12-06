@@ -536,6 +536,50 @@ void Visualizer::printTextBorder(int tStartPos, int tEndPos) {
 	}
 }
 
+void printHelpButtons(char ButtonName) {
+	_setmode(_fileno(stdout), _O_U16TEXT);
+	COORD currentPos = GetConsoleCursorPosition();
+	int width = 40, height = 31;
+
+	GotoXY(currentPos.X + 10, currentPos.Y + height + 2);
+	wcout << L"┏";
+	GotoXY(currentPos.X + 10, currentPos.Y + height + 4);
+	wcout << L"┗";
+	GotoXY(currentPos.X + 31, currentPos.Y + height + 4);
+	wcout << L"┛";
+	GotoXY(currentPos.X + 31, currentPos.Y + height + 2);
+	wcout << L"┓";
+	GotoXY(currentPos.X + 10, currentPos.Y + height + 3);
+	wcout << L"┃";
+	GotoXY(currentPos.X + 31, currentPos.Y + height + 3);
+	wcout << L"┃";
+
+	for (int i = 1; i <= 20; i++) {
+		GotoXY(currentPos.X + 10 + i, currentPos.Y + height + 2);
+		wcout << L"━";
+		GotoXY(currentPos.X + 10 + i, currentPos.Y + height + 4);
+		wcout << L"━";
+	}
+
+	_setmode(_fileno(stdout), _O_TEXT);
+	switch (ButtonName) {
+	case 'P':
+		GotoXY(currentPos.X + 13, currentPos.Y + height + 3);
+		cout << " P : Save Game";
+		break;
+	case 'Y':
+		GotoXY(currentPos.X + 16, currentPos.Y + height + 3);
+		cout << " Y : Redo";
+		break;
+	case 'Z':
+		GotoXY(currentPos.X + 16, currentPos.Y + height + 3);
+		cout << " Z : Undo";
+		break;
+	default:
+		break;
+	}
+}
+
 void Visualizer::printPlayerFrame(char str) {
 	_setmode(_fileno(stdout), _O_U16TEXT);
 
@@ -572,27 +616,6 @@ void Visualizer::printPlayerFrame(char str) {
 	GotoXY(currentPos.X + width + 1, currentPos.Y + height + 1); // bottom left
 	wcout << L"┛";
 
-	//Print Help Buttons
-	GotoXY(currentPos.X + 10, currentPos.Y + height + 2);
-	wcout << L"┏";
-	GotoXY(currentPos.X + 10, currentPos.Y + height + 4);
-	wcout << L"┗";
-	GotoXY(currentPos.X + 31, currentPos.Y + height + 4);
-	wcout << L"┛";
-	GotoXY(currentPos.X + 31, currentPos.Y + height + 2);
-	wcout << L"┓";
-	GotoXY(currentPos.X + 10, currentPos.Y + height + 3);
-	wcout << L"┃";
-	GotoXY(currentPos.X + 31, currentPos.Y + height + 3);
-	wcout << L"┃";
-
-	for (int i = 1; i <= 20; i++) {
-		GotoXY(currentPos.X + 10 + i, currentPos.Y + height + 2);
-		wcout << L"━";
-		GotoXY(currentPos.X + 10 + i, currentPos.Y + height + 4);
-		wcout << L"━";
-	}
-
 	switch (str)
 	{
 	case 'X':
@@ -605,7 +628,6 @@ void Visualizer::printPlayerFrame(char str) {
 			changeFontColor(black, white);
 		else
 			changeFontColor(white, black);
-		cout << " P : Save Game";
 		break;
 	case 'O':
 		avtOCoor.X = currentPos.X + (width + 1) / 2 - 7;
@@ -733,9 +755,21 @@ void Visualizer::printAvatar(char str, int color) {
 	case 'A':
 		//  [Huy_Darkmode]
 		if (opt.darkMode == 1)
-			changeFontColor(black, cyan);
+			if (color == 1) {
+				changeFontColor(black, cyan);
+			}
+			else {
+				changeFontColor(black, white);
+			}
 		else
-			changeFontColor(white, blue3);
+		{
+			if (color == 1) {
+				changeFontColor(white, blue3);
+			}
+			else {
+				changeFontColor(white, grey2);
+			}
+		}
 		//  [Huy_Darkmode]
 
 		//Print
@@ -745,27 +779,47 @@ void Visualizer::printAvatar(char str, int color) {
 		}
 		break;
 	case 'P':
-		// [Huy_Darkmode]
-		if (opt.darkMode == 1)
-			changeFontColor(black, pink);
-		else
-			changeFontColor(white, pink);
-
 		//Print
 		for (int i = 0; i < 12; i++) {
-			GotoXY(currentPos.X, currentPos.Y + i);
+			//Darkmode
+			if (opt.darkMode == 1)
+				if (color == 1)
+					changeFontColor(black, playerXColorDark[i % 6]);
+				else
+					changeFontColor(black, white);
+			else
+			{
+				if (color == 1)
+					changeFontColor(white, playerXColor[i % 6]);
+				else
+					changeFontColor(white, grey2);
+			}
+			
+			GotoXY(7, 18 + i);
+			
 			wcout << player1Banner[i];
 		}
 		break;
 	case 'S':
-		// [Huy_Darkmode]
-		if (opt.darkMode == 1)
-			changeFontColor(black, cyan);
-		else
-			changeFontColor(white, blue1);
-
 		//Print
 		for (int i = 0; i < 9; i++) {
+			// [Huy_Darkmode]
+			if (opt.darkMode == 1)
+				if (color == 1) {
+					changeFontColor(black, playerOColorDark[i % 5]);
+				}
+				else {
+					changeFontColor(black, white);
+				}
+			else
+			{
+				if (color == 1) {
+					changeFontColor(white, playerOColor[i % 5]);
+				}
+				else {
+					changeFontColor(white, grey2);
+				}
+			}
 			GotoXY(currentPos.X, currentPos.Y + i);
 			wcout << player2Banner[i];
 		}
@@ -1117,6 +1171,15 @@ void DrawObject(string objName, int s, int e) { //Huy Darkmode
 		visualizer.printTextBorder(s, e);
 		break;
 	case playerFrame:
+		//Print Buttons
+		GotoXY(5, 3);
+		printHelpButtons('P');
+		GotoXY(120, 3);
+		printHelpButtons('Z');
+		GotoXY(85, 3);
+		printHelpButtons('Y');
+
+		//Print Frames and Avatars
 		GotoXY(5, 3);
 		visualizer.printPlayerFrame('X');
 		GotoXY(120, 3);
@@ -1127,6 +1190,15 @@ void DrawObject(string objName, int s, int e) { //Huy Darkmode
 		visualizer.printPlayerFrame('S');
 		break;
 	case playerAIFrame:
+		//Print Buttons
+		GotoXY(5, 3);
+		printHelpButtons('P');
+		GotoXY(120, 3);
+		printHelpButtons('Z');
+		GotoXY(85, 3);
+		printHelpButtons('Y');
+
+		//Print Frames and Avatars
 		GotoXY(5, 3);
 		visualizer.printPlayerFrame('X');
 		GotoXY(120, 3);
