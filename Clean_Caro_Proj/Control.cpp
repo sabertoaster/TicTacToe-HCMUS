@@ -115,9 +115,14 @@ void InitializeData() {
 
 	Button chooseCPUBtn(L"PLAYER VERSUS COMPUTER"); // define buttons for choose CPU/ player scene
 	Button choosePlayerBtn(L"PLAYER VERSUS PLAYER");
-	chooseCPUBtn.coord.X = 80;
-	chooseCPUBtn.coord.Y = 10;
-	offset = 15;
+	Button chooseCPUeasy(L"EASY MODE");
+	Button chooseCPUhard(L"HARD MODE");
+	Button chooseTimeMode(L"TIME LIMITED");
+	Button chooseNotTime(L"UNLIMITED");
+
+	chooseCPUBtn.coord.X = 65;
+	chooseCPUBtn.coord.Y = 15;
+	offset = 10;
 	pointer.ptrChoosePlayer = { chooseCPUBtn, choosePlayerBtn }; // initialize buttons for main menu
 	for (int i = 0; i < pointer.ptrChoosePlayer.size(); i++) { // [FIXED REMOVE BUTTONS FROM VISUALIZER
 		pointer.ptrChoosePlayer[i].id = i;
@@ -131,6 +136,37 @@ void InitializeData() {
 		pointer.ptrChoosePlayer[nextIndex].prevBtn = &(pointer.ptrChoosePlayer[i]);
 	}
 
+	pointer.ptrChoosePlayer.push_back(chooseCPUeasy);
+	pointer.ptrChoosePlayer.push_back(chooseCPUhard);
+
+	// hard-code [Saber]
+	for (int i = 2; i < 4; i++) {
+		pointer.ptrChoosePlayer[i].id = i;
+
+		int nextIndex = 2 + (i + 1) % (4 - 2);
+
+		pointer.ptrChoosePlayer[i].coord.X = pointer.ptrChoosePlayer[0].coord.X + 30;
+		pointer.ptrChoosePlayer[i].coord.Y = pointer.ptrChoosePlayer[0].coord.Y - 2 + (i - 2) * 4;
+
+		pointer.ptrChoosePlayer[i].nextBtn = &(pointer.ptrChoosePlayer[nextIndex]);
+		pointer.ptrChoosePlayer[nextIndex].prevBtn = &(pointer.ptrChoosePlayer[i]);
+	}
+
+	pointer.ptrChoosePlayer.push_back(chooseTimeMode);
+	pointer.ptrChoosePlayer.push_back(chooseNotTime);
+
+	// hard-code [Saber]
+	for (int i = 4; i < 6; i++) {
+		pointer.ptrChoosePlayer[i].id = i;
+
+		int nextIndex = 4 + (i + 1) % (6 - 4);
+
+		pointer.ptrChoosePlayer[i].coord.X = pointer.ptrChoosePlayer[1].coord.X + 30;
+		pointer.ptrChoosePlayer[i].coord.Y = pointer.ptrChoosePlayer[1].coord.Y - 2 + (i - 4) * 4;
+
+		pointer.ptrChoosePlayer[i].nextBtn = &(pointer.ptrChoosePlayer[nextIndex]);
+		pointer.ptrChoosePlayer[nextIndex].prevBtn = &(pointer.ptrChoosePlayer[i]);
+	}
 
 	playBtn.coord.X = 80;
 	playBtn.coord.Y = 20;
@@ -203,6 +239,7 @@ void StartPlay() {
 
 	pointer.startIndexing("", pointer.ptrChoosePlayer);
 	bool _checkNotEnter = true, _checkEsc = false;
+	int layer = 0;
 	while (_checkNotEnter)
 	{
 		if (_kbhit())
@@ -219,11 +256,46 @@ void StartPlay() {
 				pointer.startIndexing("next", pointer.ptrChoosePlayer);
 				break;
 			case 13: //Enter ASCII value of enter
-				_checkNotEnter = false;
+				if (layer == 0) {
+					// hard-code [saber]
+					GotoXY(pointer.ptrChoosePlayer[pointer.id].coord.X - 2, pointer.ptrChoosePlayer[pointer.id].coord.Y + 1);
+					cout << "  "; // delete the old pointer
+					switch (pointer.id) {
+					case 0:
+						pointer.id = 3;
+						break;
+					case 1:
+						pointer.id = 5;
+						break;
+					default:
+						break;
+					}
+					pointer.startIndexing("next", pointer.ptrChoosePlayer);
+					layer++;
+				}
+				else {
+					_checkNotEnter = false;
+				}
 				break;
 			case 27:
-				_checkEsc = true;
-				_checkNotEnter = false;
+				if (layer == 1) {
+					// hard-code [saber]
+					GotoXY(pointer.ptrChoosePlayer[pointer.id].coord.X - 2, pointer.ptrChoosePlayer[pointer.id].coord.Y + 1);
+					cout << "  "; // delete the old pointer
+
+					if (pointer.id >= 2 && pointer.id <= 3) {
+						pointer.id = 1;
+					}
+					if (pointer.id >= 4 && pointer.id <= 5) {
+						pointer.id = 0;
+					}
+					pointer.startIndexing("next", pointer.ptrChoosePlayer);
+					layer--;
+				}
+				else {
+					_checkEsc = true;
+					_checkNotEnter = false;
+				}
 				break;
 			default:
 				break;
@@ -235,7 +307,7 @@ void StartPlay() {
 	else SceneHandle("MAIN MENU");
 }
 
-void StartMatchScene(string matchType) {
+void StartMatchScene(string matchType, int level) {
 	DrawObject("Background");
 	DrawObject("Border");
 	// built-in coor for player frame
@@ -244,11 +316,22 @@ void StartMatchScene(string matchType) {
 	ShowConsoleCursor(true);
 	Player playerManager(52 + 2, 3 + 1, 16, 1, 1);
 	if (matchType == "PVE") {
-		playerManager.Minimax = 3;
+		switch (level) {
+		case 1:
+			playerManager.BruteForce = 1;
+			break;
+		case 2:
+			playerManager.Minimax = 3;
+			break;
+		default:
+			break;
+		}
 		DrawObject("PlayerVsAIFrame");
 	}
-	else
+	else {
 		DrawObject("PlayerFrame");
+		playerManager.TimeMode = 1;
+	}
 	playerManager.khoitao();
 	playerManager.play();
 
@@ -386,7 +469,7 @@ void StartOption() {
 	DrawObject("Border");
 	DrawObject("CornerEsc");
 	/*visualizer.printTextBorder(57, 113);*/
-	DrawObject("Text_Border",57,113);
+	DrawObject("Text_Border", 57, 113);
 	GotoXY(57, 1);
 	DrawObject("Options_Logo");
 	for (auto i : pointer.ptrOptions) { //Visualize Btn;
@@ -396,7 +479,7 @@ void StartOption() {
 		case 0:
 			state = opt.darkMode;
 			break;
-		case 1: 
+		case 1:
 			state = (opt.soundFlag != opt.muteFlag);
 			break;
 		case 2:
@@ -448,8 +531,8 @@ void StartOption() {
 void StartHelp() {
 	DrawObject("Background");
 	DrawObject("Border");
-	DrawObject("Text_Border",65,95);
-	
+	DrawObject("Text_Border", 65, 95);
+
 	DrawObject("CornerEsc");
 	GotoXY(65, 1);
 	DrawObject("Help_Logo");
@@ -509,13 +592,13 @@ void StartAbout() {
 
 	DrawObject("Background");//
 	DrawObject("Border");//
-	DrawObject("Text_Border",62,104);
+	DrawObject("Text_Border", 62, 104);
 	DrawObject("CornerEsc");
 	GotoXY(62, 1);
 	DrawObject("About_Logo");
 	_setmode(_fileno(stdout), _O_U16TEXT);
 	const wchar_t* avtStorage[5] = { L"      ▄▀ ", L" █▀▀▀█▀█ ", L"  ▀▄░▄▀  ", L"    █    ", L"  ▄▄█▄▄  " };
-	const wchar_t* mainAvtStorage[5] = { L"▄   ▄   ▄", L"█  █▀█  █", L"█▀▀▀█▀▀▀█", L"█ ▀▄ ▄▀ █", L"▀▀▄▄▄▄▄▀▀"};
+	const wchar_t* mainAvtStorage[5] = { L"▄   ▄   ▄", L"█  █▀█  █", L"█▀▀▀█▀▀▀█", L"█ ▀▄ ▄▀ █", L"▀▀▄▄▄▄▄▀▀" };
 	COORD tableCoord;
 	tableCoord.X = 60;
 	tableCoord.Y = 10;

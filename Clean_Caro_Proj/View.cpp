@@ -1180,12 +1180,19 @@ void SceneHandle(string sceneName) {
 		StartExit();
 		return;
 	}
+	if (sceneName == "EASY MODE") {
+		StartMatchScene("PVE", 1);
+	}
+	if (sceneName == "HARD MODE") {
+		StartMatchScene("PVE", 2);
+	}
+
 	if (sceneName == "PLAYER VERSUS COMPUTER") {
-		StartMatchScene("PVE");
+		/*StartMatchScene("PVE");*/
 		return;
 	}
 	if (sceneName == "PLAYER VERSUS PLAYER") {
-		StartMatchScene("PVP");
+		StartMatchScene("PVP", 0);
 		return;
 	}
 	if (sceneName == "WinScene_X") {

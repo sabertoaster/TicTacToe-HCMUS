@@ -52,7 +52,7 @@ void StartGame();
 
 void StartPlay();
 
-void StartMatchScene(string typeMatch);
+void StartMatchScene(string typeMatch, int level);
 
 void StartWinScene(char);
 
