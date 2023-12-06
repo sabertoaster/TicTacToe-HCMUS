@@ -1111,7 +1111,7 @@ int Player::load_game()
 				_checkNotEnter = false;
 			}
 			ifstream ci("file_game/" + temp[ptrId]);
-			ci >> BruteForce >> Minimax >> type >> current_player;
+			ci >> BruteForce >> Minimax >> type >> current_player>>TimeMode>>set_time;
 			for (int i = 1; i <= numcell; i++)
 				for (int j = 1; j <= numcell; j++)
 					ci >> _POINT[i][j];
@@ -1175,7 +1175,7 @@ void Player::save_game()
 		ofstream fo("file_game/" + name_saveload);
 
 		// luu lai bang
-		fo << BruteForce << " " << Minimax << " " << type << " " << current_player << "\n";  
+		fo << BruteForce << " " << Minimax << " " << type << " " << current_player << " "<<TimeMode<<" "<<set_time;
 		for (int i = 1; i <= numcell; i++)
 		{
 			for (int j = 1; j <= numcell; j++)
