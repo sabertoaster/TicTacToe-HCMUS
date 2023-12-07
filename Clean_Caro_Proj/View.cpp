@@ -1186,13 +1186,19 @@ void SceneHandle(string sceneName) {
 	if (sceneName == "HARD MODE") {
 		StartMatchScene("PVE", 2);
 	}
+	if (sceneName == "TIME LIMITED") {
+		StartMatchScene("PVP", 3);
+	}
+	if (sceneName == "UNLIMITED") {
+		StartMatchScene("PVP", 4);
+	}
 
 	if (sceneName == "PLAYER VERSUS COMPUTER") {
 		/*StartMatchScene("PVE");*/
 		return;
 	}
 	if (sceneName == "PLAYER VERSUS PLAYER") {
-		StartMatchScene("PVP", 0);
+		//StartMatchScene("PVP", 0);
 		return;
 	}
 	if (sceneName == "WinScene_X") {

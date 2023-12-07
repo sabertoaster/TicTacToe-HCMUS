@@ -123,50 +123,69 @@ void InitializeData() {
 	chooseCPUBtn.coord.X = 65;
 	chooseCPUBtn.coord.Y = 15;
 	offset = 10;
-	pointer.ptrChoosePlayer = { chooseCPUBtn, choosePlayerBtn }; // initialize buttons for main menu
+	pointer.ptrChoosePlayer = { chooseCPUBtn, choosePlayerBtn, chooseCPUeasy, chooseCPUhard, chooseTimeMode, chooseNotTime }; // initialize buttons for main menu
 	for (int i = 0; i < pointer.ptrChoosePlayer.size(); i++) { // [FIXED REMOVE BUTTONS FROM VISUALIZER
 		pointer.ptrChoosePlayer[i].id = i;
 
 		int nextIndex = (i + 1) % pointer.ptrChoosePlayer.size();
 
-		pointer.ptrChoosePlayer[i].coord.X = pointer.ptrChoosePlayer[0].coord.X;
-		pointer.ptrChoosePlayer[i].coord.Y = pointer.ptrChoosePlayer[0].coord.Y + offset * i;
+		if (i < 2)
+		{
+			pointer.ptrChoosePlayer[i].coord.X = pointer.ptrChoosePlayer[0].coord.X;
+			pointer.ptrChoosePlayer[i].coord.Y = pointer.ptrChoosePlayer[0].coord.Y + offset * i;
 
-		pointer.ptrChoosePlayer[i].nextBtn = &(pointer.ptrChoosePlayer[nextIndex]);
-		pointer.ptrChoosePlayer[nextIndex].prevBtn = &(pointer.ptrChoosePlayer[i]);
+			pointer.ptrChoosePlayer[i].nextBtn = &(pointer.ptrChoosePlayer[nextIndex]);
+			pointer.ptrChoosePlayer[nextIndex].prevBtn = &(pointer.ptrChoosePlayer[i]);
+		}
+		else if (i < 4)
+		{
+			pointer.ptrChoosePlayer[i].coord.X = pointer.ptrChoosePlayer[0].coord.X + 30;
+			pointer.ptrChoosePlayer[i].coord.Y = pointer.ptrChoosePlayer[0].coord.Y - 2 + (i - 2) * 4;
+
+			pointer.ptrChoosePlayer[i].nextBtn = &(pointer.ptrChoosePlayer[nextIndex]);
+			pointer.ptrChoosePlayer[nextIndex].prevBtn = &(pointer.ptrChoosePlayer[i]);
+		}
+		else
+		{
+			pointer.ptrChoosePlayer[i].coord.X = pointer.ptrChoosePlayer[1].coord.X + 30;
+			pointer.ptrChoosePlayer[i].coord.Y = pointer.ptrChoosePlayer[1].coord.Y - 2 + (i - 4) * 4;
+
+			pointer.ptrChoosePlayer[i].nextBtn = &(pointer.ptrChoosePlayer[nextIndex]);
+			pointer.ptrChoosePlayer[nextIndex].prevBtn = &(pointer.ptrChoosePlayer[i]);
+		}
 	}
 
-	pointer.ptrChoosePlayer.push_back(chooseCPUeasy);
-	pointer.ptrChoosePlayer.push_back(chooseCPUhard);
+	//pointer.ptrChoosePlayer.push_back(chooseCPUeasy);
+	//pointer.ptrChoosePlayer.push_back(chooseCPUhard);
 
-	// hard-code [Saber]
-	for (int i = 2; i < 4; i++) {
-		pointer.ptrChoosePlayer[i].id = i;
+	//// hard-code [Saber]
+	//for (int i = 2; i < 4; i++) {
+	//	pointer.ptrChoosePlayer[i].id = i;
 
-		int nextIndex = 2 + (i + 1) % (4 - 2);
+	//	int nextIndex = 2 + (i + 1) % (4 - 2);
 
-		pointer.ptrChoosePlayer[i].coord.X = pointer.ptrChoosePlayer[0].coord.X + 30;
-		pointer.ptrChoosePlayer[i].coord.Y = pointer.ptrChoosePlayer[0].coord.Y - 2 + (i - 2) * 4;
+	//	pointer.ptrChoosePlayer[i].coord.X = pointer.ptrChoosePlayer[0].coord.X + 30;
+	//	pointer.ptrChoosePlayer[i].coord.Y = pointer.ptrChoosePlayer[0].coord.Y - 2 + (i - 2) * 4;
 
-		pointer.ptrChoosePlayer[i].nextBtn = &(pointer.ptrChoosePlayer[nextIndex]);
-		pointer.ptrChoosePlayer[nextIndex].prevBtn = &(pointer.ptrChoosePlayer[i]);
-	}
+	//	pointer.ptrChoosePlayer[i].nextBtn = &(pointer.ptrChoosePlayer[nextIndex]);
+	//	pointer.ptrChoosePlayer[nextIndex].prevBtn = &(pointer.ptrChoosePlayer[i]);
+	//}
 
-	pointer.ptrChoosePlayer.push_back(chooseTimeMode);
-	pointer.ptrChoosePlayer.push_back(chooseNotTime);
+	//pointer.ptrChoosePlayer.push_back(chooseTimeMode);
+	//pointer.ptrChoosePlayer.push_back(chooseNotTime);
 
-	// hard-code [Saber]
-	for (int i = 4; i < 6; i++) {
-		pointer.ptrChoosePlayer[i].id = i;
+	//// hard-code [Saber]
+	//for (int i = 4; i < 6; i++) {
+	//	pointer.ptrChoosePlayer[i].id = i;
 
-		int nextIndex = 4 + (i + 1) % (6 - 4);
+	//	int nextIndex = 4 + (i + 1) % (6 - 4);
 
-		pointer.ptrChoosePlayer[i].coord.X = pointer.ptrChoosePlayer[1].coord.X + 30;
-		pointer.ptrChoosePlayer[i].coord.Y = pointer.ptrChoosePlayer[1].coord.Y - 2 + (i - 4) * 4;
+	//	pointer.ptrChoosePlayer[i].coord.X = pointer.ptrChoosePlayer[1].coord.X + 30;
+	//	pointer.ptrChoosePlayer[i].coord.Y = pointer.ptrChoosePlayer[1].coord.Y - 2 + (i - 4) * 4;
 
-		pointer.ptrChoosePlayer[i].nextBtn = &(pointer.ptrChoosePlayer[nextIndex]);
-		pointer.ptrChoosePlayer[nextIndex].prevBtn = &(pointer.ptrChoosePlayer[i]);
-	}
+	//	pointer.ptrChoosePlayer[i].nextBtn = &(pointer.ptrChoosePlayer[nextIndex]);
+	//	pointer.ptrChoosePlayer[nextIndex].prevBtn = &(pointer.ptrChoosePlayer[i]);
+	//}
 
 	playBtn.coord.X = 80;
 	playBtn.coord.Y = 20;
@@ -240,6 +259,7 @@ void StartPlay() {
 	pointer.startIndexing("", pointer.ptrChoosePlayer);
 	bool _checkNotEnter = true, _checkEsc = false;
 	int layer = 0;
+
 	while (_checkNotEnter)
 	{
 		if (_kbhit())
@@ -249,11 +269,13 @@ void StartPlay() {
 			{
 			case 'a':
 			case 'w':
-				pointer.startIndexing("prev", pointer.ptrChoosePlayer);
+				if (pointer.id % 2 != 0)
+					pointer.startIndexing("prev", pointer.ptrChoosePlayer);
 				break;
 			case 's':
 			case 'd':
-				pointer.startIndexing("next", pointer.ptrChoosePlayer);
+				if (pointer.id % 2 != 1)
+					pointer.startIndexing("next", pointer.ptrChoosePlayer);
 				break;
 			case 13: //Enter ASCII value of enter
 				if (layer == 0) {
@@ -262,10 +284,10 @@ void StartPlay() {
 					cout << "  "; // delete the old pointer
 					switch (pointer.id) {
 					case 0:
-						pointer.id = 3;
+						pointer.id = 1;
 						break;
 					case 1:
-						pointer.id = 5;
+						pointer.id = 3;
 						break;
 					default:
 						break;
@@ -284,9 +306,9 @@ void StartPlay() {
 					cout << "  "; // delete the old pointer
 
 					if (pointer.id >= 2 && pointer.id <= 3) {
-						pointer.id = 1;
+						pointer.id = 5;
 					}
-					if (pointer.id >= 4 && pointer.id <= 5) {
+					else if (pointer.id >= 4 && pointer.id <= 5) {
 						pointer.id = 0;
 					}
 					pointer.startIndexing("next", pointer.ptrChoosePlayer);
@@ -329,8 +351,9 @@ void StartMatchScene(string matchType, int level) {
 		DrawObject("PlayerVsAIFrame");
 	}
 	else {
+		if(level==3)
+			playerManager.TimeMode = 1;
 		DrawObject("PlayerFrame");
-		playerManager.TimeMode = 1;
 	}
 	playerManager.khoitao();
 	playerManager.play();
