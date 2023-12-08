@@ -271,11 +271,15 @@ void StartPlay() {
 			case 'w':
 				if (pointer.id % 2 != 0)
 					pointer.startIndexing("prev", pointer.ptrChoosePlayer);
+				else
+					pointer.startIndexing("next", pointer.ptrChoosePlayer);
 				break;
 			case 's':
 			case 'd':
 				if (pointer.id % 2 != 1)
 					pointer.startIndexing("next", pointer.ptrChoosePlayer);
+				else
+					pointer.startIndexing("prev", pointer.ptrChoosePlayer);
 				break;
 			case 13: //Enter ASCII value of enter
 				if (layer == 0) {
@@ -365,6 +369,7 @@ void StartWinScene(char player) {
 	ShowConsoleCursor(false);
 	DrawObject("Background");
 	DrawObject("Border");
+	pointer.id = 1;
 	for (auto i : pointer.ptrAfterPlay) { //Visualize Btn;
 		i.printButton();
 	}

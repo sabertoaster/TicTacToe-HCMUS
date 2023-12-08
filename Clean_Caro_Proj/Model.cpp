@@ -1308,7 +1308,7 @@ void Player::save_game()
 						changeFontColor(black, black);
 					else
 						changeFontColor(white, white);
-					cout << string(31, ' ');
+					cout << string(35, ' ');
 					if (opt.darkMode == 1)
 						changeFontColor(black, pink);
 					else
@@ -1318,11 +1318,11 @@ void Player::save_game()
 					GotoXY(xconsole, position_y_save + 1);
 					if (tmp == "loi_all_space")
 					{
-						cout << "Ten FIlE khong duoc de trong!";	
+						cout << "The file name cannot be empty!";	
 					}
 					else
 					{
-						cout << "Ten FIlE da bi trung!";
+						cout << "The file name has been duplicated!";
 					}
 					
 					// reset name de cho nhap lai day
