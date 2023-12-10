@@ -1054,6 +1054,8 @@ int Player::load_game()
 	GotoXY(48, 1);
 	DrawObject("Saveload_Logo");
 	DrawObject("CornerEsc");
+	GotoXY(35, 10);
+	DrawObject("Save_Board"); // [Saber]
 	COORD boardPos;
 	boardPos.X = 35;
 	boardPos.Y = 10;
@@ -1070,6 +1072,25 @@ int Player::load_game()
 	int xconsole = boardPos.X + 10, yconsole = boardPos.Y + 3;
 	vector<string> temp = list_namesave();
 	int count_name = temp.size();
+	if (count_name == 0)
+	{
+		bool _checkNotEnter = true, _checkEsc = false;
+		while (_checkNotEnter) {
+			if (_kbhit())
+			{
+				char ch = _getch();
+				if (ch == 27)
+				{
+					_checkEsc = true;
+					_checkNotEnter = false;
+				}
+			}
+		}
+		if (!_checkEsc) {
+			return 1;
+		}
+		return 0;
+	}
 	int ptrId = 0, max_id = 7, current_max_id;
 	
 	current_max_id = min(count_name, max_id);
@@ -1079,9 +1100,7 @@ int Player::load_game()
 		cout << i + 1 << ") " << temp[i];
 	}
 
-
-	GotoXY(35, 10);
-	DrawObject("Save_Board"); // [Saber]
+	//print_list_name();
 
 	ifstream ci("file_game/" + temp[0]);
 	ci >> BruteForce >> Minimax >> type >> current_player >> TimeMode >> set_time;
@@ -1113,7 +1132,7 @@ int Player::load_game()
 			{
 				GotoXY(ptrInit.X, ptrInit.Y + ptrId * offset);
 				cout << "  ";
-				ptrId = min(current_max_id - 1, ptrId + 1);
+				ptrId = min(max(current_max_id - 1,0), ptrId + 1);
 				GotoXY(ptrInit.X, ptrInit.Y + ptrId * offset);
 				if (opt.darkMode == 1)
 					changeFontColor(black, white);
@@ -1130,6 +1149,65 @@ int Player::load_game()
 				_checkEsc = true;
 				_checkNotEnter = false;
 			}
+			if (ch == 'x')//delete
+			{
+				if (count_name <= 0)
+					continue;
+				std::filesystem::remove("file_game/" + temp[ptrId]);
+				name_repeat_load = temp[ptrId];
+				update_namegame();
+				for (int i = 0; i < current_max_id; i++)
+				{
+					GotoXY(xconsole, yconsole + offset * i);
+					cout << string(35, ' ');
+				}
+				temp = list_namesave();
+				count_name = temp.size();
+				current_max_id = min(count_name, max_id);
+				for (int i = 0; i < current_max_id; i++)
+				{
+					GotoXY(xconsole, yconsole + offset * i);
+					cout << i + 1 << ") " << temp[i];
+				}
+				GotoXY(ptrInit.X, ptrInit.Y + ptrId * offset);
+				cout << "  ";
+				ptrId = max(0, ptrId - 1);
+				GotoXY(ptrInit.X, ptrInit.Y + ptrId * offset);
+				if (opt.darkMode == 1)
+					changeFontColor(black, white);
+				else
+					changeFontColor(white, black);
+				cout << ">>";
+				if (count_name == 0) // ve lai bang mini
+				{
+					COORD initCoor_mini;
+					initCoor_mini.X = 95;
+					initCoor_mini.Y = 15;
+					GotoXY(95, 13);
+					if (opt.darkMode == 1)
+						changeFontColor(black, cyan);
+					else
+						changeFontColor(white, blue1);
+					cout << "                     ";
+					for (int i = 1; i <= numcell; i++)
+					{
+						for (int j = 1; j <= numcell; j++)
+						{
+							
+							GotoXY(initCoor_mini.X + (j - 1) * 2, initCoor_mini.Y + (i - 1) * 1);
+							/*changeFontColor(white, black);*/
+							if (opt.darkMode == 1)
+								changeFontColor(black, white);
+							else
+								changeFontColor(white, black);
+							cout << " ";
+							
+						}
+					}
+				}
+			}
+			if (count_name <= 0)
+				continue;
 			ifstream ci("file_game/" + temp[ptrId]);
 			ci >> BruteForce >> Minimax >> type >> current_player>>TimeMode>>set_time;
 			for (int i = 1; i <= numcell; i++)
