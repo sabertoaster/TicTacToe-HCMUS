@@ -1092,6 +1092,7 @@ int Player::load_game()
 		return 0;
 	}
 	int ptrId = 0, max_id = 7, current_max_id;
+	int current_count = 6;
 	
 	current_max_id = min(count_name, max_id);
 	for (int i = 0; i < current_max_id; i++)
@@ -1118,9 +1119,32 @@ int Player::load_game()
 			char ch = _getch();
 			if (ch == 'a' || ch == 'w')
 			{
+				if (ptrId == 0 && current_count - 6 > 0)
+				{
+					current_count--;
+					for (int i = 0; i < current_max_id; i++)
+					{
+						GotoXY(xconsole, yconsole + offset * i);
+						cout << string(35, ' ');
+					}
+					for (int i = current_count - 6; i <= current_count; i++)
+					{
+						GotoXY(xconsole, yconsole + offset * (i - (current_count - 6)));
+						cout << i + 1 << ") " << temp[i];
+					}
+					GotoXY(ptrInit.X, ptrInit.Y + ptrId * offset);
+					cout << "  ";
+					GotoXY(ptrInit.X, ptrInit.Y + ptrId * offset);
+					if (opt.darkMode == 1)
+						changeFontColor(black, white);
+					else
+						changeFontColor(white, black);
+					cout << ">>";
+				}
 				GotoXY(ptrInit.X, ptrInit.Y + ptrId * offset);
 				cout << "  ";
 				ptrId = max(0, ptrId - 1);
+				/*current_count = ptrId;*/
 				GotoXY(ptrInit.X, ptrInit.Y + ptrId * offset);
 				if (opt.darkMode == 1)
 					changeFontColor(black, white);
@@ -1130,15 +1154,43 @@ int Player::load_game()
 			}
 			if (ch == 's' || ch == 'd')
 			{
-				GotoXY(ptrInit.X, ptrInit.Y + ptrId * offset);
-				cout << "  ";
-				ptrId = min(max(current_max_id - 1,0), ptrId + 1);
-				GotoXY(ptrInit.X, ptrInit.Y + ptrId * offset);
-				if (opt.darkMode == 1)
-					changeFontColor(black, white);
-				else
-					changeFontColor(white, black);
-				cout << ">>";
+				if (ptrId == 6 && current_count + 1 < count_name)
+				{
+					current_count++;
+					for (int i = 0; i < current_max_id; i++)
+					{
+						GotoXY(xconsole, yconsole + offset * i);
+						cout << string(35, ' ');
+					}
+					for (int i = current_count - 6 ; i <= current_count; i++)
+					{
+						GotoXY(xconsole, yconsole + offset * (i- (current_count-6)));
+						cout << i + 1 << ") " << temp[i];
+					}
+					GotoXY(ptrInit.X, ptrInit.Y + ptrId * offset);
+					cout << "  ";
+					//ptrId = max(0, ptrId - 1);
+					GotoXY(ptrInit.X, ptrInit.Y + ptrId * offset);
+					if (opt.darkMode == 1)
+						changeFontColor(black, white);
+					else
+						changeFontColor(white, black);
+					cout << ">>";
+				}
+				if (!(ptrId == 6 && current_count + 1 == count_name))
+				{
+					GotoXY(ptrInit.X, ptrInit.Y + ptrId * offset);
+					cout << "  ";
+					ptrId = min(max(current_max_id - 1, 0), ptrId + 1);
+					//current_count = ptrId;
+					GotoXY(ptrInit.X, ptrInit.Y + ptrId * offset);
+					if (opt.darkMode == 1)
+						changeFontColor(black, white);
+					else
+						changeFontColor(white, black);
+					cout << ">>";
+				}
+			
 			}
 			if (ch == 13)
 			{
@@ -1153,8 +1205,8 @@ int Player::load_game()
 			{
 				if (count_name <= 0)
 					continue;
-				std::filesystem::remove("file_game/" + temp[ptrId]);
-				name_repeat_load = temp[ptrId];
+				std::filesystem::remove("file_game/" + temp[current_count - 6 + ptrId]);
+				name_repeat_load = temp[current_count - 6 + ptrId];
 				update_namegame();
 				for (int i = 0; i < current_max_id; i++)
 				{
@@ -1171,6 +1223,10 @@ int Player::load_game()
 				}
 				GotoXY(ptrInit.X, ptrInit.Y + ptrId * offset);
 				cout << "  ";
+				if(current_count>6)
+					current_count--;
+				if(ptrId == 6 && count_name >=7)
+					ptrId = max(0, ptrId + 1);
 				ptrId = max(0, ptrId - 1);
 				GotoXY(ptrInit.X, ptrInit.Y + ptrId * offset);
 				if (opt.darkMode == 1)
@@ -1208,13 +1264,13 @@ int Player::load_game()
 			}
 			if (count_name <= 0)
 				continue;
-			ifstream ci("file_game/" + temp[ptrId]);
+			ifstream ci("file_game/" + temp[current_count-6+ptrId]);
 			ci >> BruteForce >> Minimax >> type >> current_player>>TimeMode>>set_time;
 			for (int i = 1; i <= numcell; i++)
 				for (int j = 1; j <= numcell; j++)
 					ci >> _POINT[i][j];
 
-			name_repeat_load = temp[ptrId];
+			name_repeat_load = temp[current_count - 6 + ptrId];
 			ci.close();
 			load_board_mini();
 		}
