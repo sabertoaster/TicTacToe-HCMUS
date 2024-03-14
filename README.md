@@ -12,7 +12,9 @@
 ### Features of the application 
 - Scenes:
   > Main menu (Animated) (I worked really hard on this, pls give me a subscribe)
+  > <br>
   > In-game (with colorful avatars)
+  > <br>
   > Options
 - Dark / light mode
 - Background music / VFX toggle
